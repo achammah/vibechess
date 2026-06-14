@@ -2,3 +2,8 @@ node_modules/
 dist
 .env
 dist/index.html
+
+.npm-cache/
+.DS_Store
+.env
+.env.local
