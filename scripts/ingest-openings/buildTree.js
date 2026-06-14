@@ -6,18 +6,10 @@
 
 import { Chess } from "chess.js";
 
-/** EPD = first 4 FEN fields (placement, side, castling, en passant). */
-export const epdOf = (fen) => fen.split(" ").slice(0, 4).join(" ");
+// Shared with the browser explorer so ids match exactly.
+import { epdOf, hashId } from "../../src/lib/epd.js";
 
-/** Deterministic short id for a string (FNV-1a, 32-bit hex). */
-export const hashId = (str) => {
-  let h = 0x811c9dc5;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 0x01000193);
-  }
-  return (h >>> 0).toString(16).padStart(8, "0");
-};
+export { epdOf, hashId };
 
 const START_FEN = new Chess().fen();
 const START_EPD = epdOf(START_FEN);

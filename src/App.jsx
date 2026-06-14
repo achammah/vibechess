@@ -14,6 +14,7 @@ import OpeningStatsPanel from "@/components/opening-stats-panel";
 import PositionSetupDialog from "@/components/position-setup-dialog";
 import PuzzleMode from "@/components/puzzle-mode";
 import SavedGamesDialog from "@/components/saved-games-dialog";
+import OpeningsDialog from "@/components/openings-dialog";
 import SettingsDialog from "@/components/settings-dialog";
 import TrainingPanel from "@/components/training-panel";
 import useAiChat from "@/hooks/use-ai-chat";
@@ -50,6 +51,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [moveQuality, setMoveQuality] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [openingsOpen, setOpeningsOpen] = useState(false);
   const [lastMoveSquares, setLastMoveSquares] = useState(null);
   const [evalScore, setEvalScore] = useState(null);
   const [boardOrientation, setBoardOrientation] = useState("white");
@@ -940,6 +942,7 @@ const App = () => {
         onNewGame={handleNewGame}
         onOpenSettings={() => setSettingsOpen(true)}
         onOpenSavedGames={() => setSavedGamesOpen(true)}
+        onOpenOpenings={() => setOpeningsOpen(true)}
         opponent={opponent}
         onOpponentChange={setOpponent}
         difficulty={difficulty}
@@ -1048,6 +1051,7 @@ const App = () => {
 
       {/* Dialogs & Overlays */}
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <OpeningsDialog open={openingsOpen} onOpenChange={setOpeningsOpen} />
 
       <GameReportDialog
         open={gameReportOpen}
