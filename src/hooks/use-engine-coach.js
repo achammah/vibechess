@@ -3,6 +3,7 @@ import { useRef, useCallback } from "react";
 
 import { getGMThoughtProcess } from "@/lib/ai";
 import { analyzeFullGame } from "@/lib/analyzer";
+import { toBoardArrows } from "@/lib/board-annotations";
 import {
   buildAnalysisMessage,
   buildBestMoveCard,
@@ -11,8 +12,22 @@ import {
   fmtScore,
   pvToSan,
 } from "@/lib/chess-helpers";
+import {
+  GROUNDED_COACH_INSTRUCTION,
+  coachTask,
+  parseCoachResponse,
+  serializeEvidence,
+} from "@/lib/coach-prompt";
+import { buildEvidence } from "@/lib/evidence";
+import { explainGrounded } from "@/lib/google-ai";
 import { buildMyMoveCard, buildThreatCard } from "@/lib/intelligence";
 import { getStockfishEngine } from "@/lib/stockfish";
+
+/** Gemini key from Settings, with an optional dev fallback from the env. */
+const getGoogleKey = () =>
+  localStorage.getItem("chess-google-api-key") ||
+  import.meta.env.VITE_GOOGLE_API_KEY ||
+  "";
 
 const toMoveBullet = (move) =>
   `- **${move.move}** (${move.verdict}): ${move.idea}`;
@@ -429,6 +444,71 @@ const useEngineCoach = ({
     [applyEvalScore, setMessages],
   );
 
+  // ── Grounded Coach: GM explanation grounded in engine evidence ───────────
+  // Stockfish computes the truth (best line, tactics); the LLM only verbalizes
+  // it and returns board arrows/highlights we draw. No hallucinated tactics.
+  const handleGroundedExplain = useCallback(async () => {
+    setMessages((previous) => [
+      ...previous,
+      { role: "user", content: "🎓 Explain this position", type: "engine-query" },
+    ]);
+    setIsLoading(true);
+    try {
+      const sf = getStockfishEngine();
+      const fen = gameRef.current.fen();
+      const result = await sf.analyze(fen, 18, 3);
+      applyEvalScore(result, fen);
+
+      const evidence = buildEvidence(fen, { preResult: result });
+
+      // Always draw the engine's best move as a baseline arrow.
+      const bestUci = result.bestMove;
+      if (bestUci?.length >= 4) {
+        setBestMoveArrows([
+          { startSquare: bestUci.slice(0, 2), endSquare: bestUci.slice(2, 4), color: "#22c55e" },
+        ]);
+      }
+
+      const apiKey = getGoogleKey();
+      if (apiKey) {
+        const model = localStorage.getItem("chess-google-model") || "gemini-2.5-flash";
+        const reply = await explainGrounded({
+          instruction: GROUNDED_COACH_INSTRUCTION,
+          evidenceText: serializeEvidence(evidence),
+          task: coachTask(evidence),
+          apiKey,
+          model,
+        });
+        const { prose, arrows } = parseCoachResponse(reply);
+        if (arrows.length > 0) setBestMoveArrows(toBoardArrows(arrows));
+        setMessages((previous) => [
+          ...previous,
+          { role: "assistant", content: prose || reply, type: "engine" },
+        ]);
+      } else {
+        // No LLM key — fall back to a grounded engine summary.
+        setMessages((previous) => [
+          ...previous,
+          {
+            role: "assistant",
+            content:
+              `**Best move: ${evidence.engineBest?.san ?? "—"}**\n\n` +
+              serializeEvidence(evidence) +
+              `\n\n_Add a Gemini key in Settings for a full grandmaster explanation._`,
+            type: "engine",
+          },
+        ]);
+      }
+    } catch (error) {
+      setMessages((previous) => [
+        ...previous,
+        { role: "assistant", content: `Coach error: ${error.message}`, type: "engine" },
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [gameRef, applyEvalScore, setBestMoveArrows, setMessages, setIsLoading]);
+
   // ── Think Like a GM ─────────────────────────────────────────────────────
   const handleThinkLikeGM = useCallback(
     async (moveHistorySan = []) => {
@@ -512,6 +592,7 @@ const useEngineCoach = ({
     handleEngineAnalyze,
     handleEngineBestMove,
     handleEngineHint,
+    handleGroundedExplain,
     handleThinkLikeGM,
     triggerPostGameAnalysis,
     isAnalyzingRef: isAnalyzingReference,

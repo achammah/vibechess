@@ -1106,6 +1106,7 @@ const ChatPanel = ({
   onEngineAnalyze,
   onEngineBestMove,
   onEngineHint,
+  onGroundedExplain,
   onThinkLikeGM,
   onAskAI,
   onLearnWithAI,
@@ -1320,6 +1321,17 @@ const ChatPanel = ({
               <span className="text-[11px] text-cyan-300">Hint</span>
             </Button>
           </div>
+          {/* Grounded Coach — engine-grounded GM explanation with board arrows */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onGroundedExplain}
+            disabled={isLoading}
+            className="w-full flex items-center justify-center gap-2 py-2 border-emerald-700/40 bg-emerald-950/20 hover:bg-emerald-950/40 hover:border-emerald-600/60 text-emerald-300"
+          >
+            <Sparkles className="h-4 w-4 text-emerald-400" />
+            <span className="text-[11px] font-semibold">Explain (Grounded Coach)</span>
+          </Button>
           {/* Think Like a GM — full-width premium button */}
           <Button
             variant="outline"

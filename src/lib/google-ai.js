@@ -292,6 +292,31 @@ Student ELO: ~${elo}`;
   };
 };
 
+/**
+ * One-shot grounded explanation: the model verbalizes the engine evidence only.
+ * No board-action tools — we draw arrows/highlights ourselves from the parsed
+ * JSON block. Returns the raw reply text (prose + a fenced json block).
+ */
+export const explainGrounded = async ({
+  instruction,
+  evidenceText,
+  task,
+  apiKey,
+  model = "gemini-2.5-flash",
+}) => {
+  if (!apiKey) throw new Error("Please set your Google API key in Settings.");
+  const ai = createGoogleClient(apiKey);
+  const response = await ai.models.generateContent({
+    model,
+    systemInstruction: instruction,
+    config: { temperature: 0.3, maxOutputTokens: 700 },
+    contents: [
+      { role: "user", parts: [{ text: `TASK: ${task}\n\n${evidenceText}` }] },
+    ],
+  });
+  return response.text || "";
+};
+
 // ── Available Gemini models ───────────────────────────────────────────────────
 export const GEMINI_MODELS = [
   {

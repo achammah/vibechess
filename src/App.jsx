@@ -194,6 +194,7 @@ const App = () => {
     handleEngineAnalyze,
     handleEngineBestMove,
     handleEngineHint,
+    handleGroundedExplain,
     handleThinkLikeGM,
     triggerPostGameAnalysis,
     isAnalyzingRef,
@@ -1032,6 +1033,7 @@ const App = () => {
               onEngineAnalyze={handleEngineAnalyze}
               onEngineBestMove={handleEngineBestMove}
               onEngineHint={handleEngineHint}
+              onGroundedExplain={handleGroundedExplain}
               onThinkLikeGM={() => {
                 setCoachMode("ai");
                 handleThinkLikeGM(moveHistory.map((m) => m.san));
