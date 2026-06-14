@@ -269,66 +269,74 @@ alter table public.opening_positions   enable row level security;
 alter table public.opening_moves       enable row level security;
 alter table public.openings            enable row level security;
 
--- Owner-only policies (read+write where clerk_uid() matches user_id)
+-- Policies are dropped+recreated so the migration is re-runnable.
+-- Owner policies target the `authenticated` role (Clerk TPA token) + an
+-- ownership predicate; public reference tables are world-readable.
+
+-- users: a user reads/writes only their own row (keyed by id = Clerk sub).
+drop policy if exists users_owner_all on public.users;
+create policy users_owner_all on public.users
+  for all to authenticated
+  using (public.clerk_uid() = id)
+  with check (public.clerk_uid() = id);
+
+-- per-user tables keyed by user_id
 do $$
 declare t text;
 begin
   foreach t in array array[
-    'users','games','game_analyses','progress','puzzle_attempts',
+    'games','game_analyses','progress','puzzle_attempts',
     'sr_cards','sr_reviews','coach_conversations'
   ] loop
-    execute format($f$
-      create policy %1$s_owner_all on public.%1$s
-        for all
-        using (
-          %2$s = (case when '%1$s' = 'users' then id else user_id end)
-        )
-        with check (
-          %2$s = (case when '%1$s' = 'users' then id else user_id end)
-        );
-    $f$, t, 'public.clerk_uid()');
+    execute format('drop policy if exists %s_owner_all on public.%I', t, t);
+    execute format(
+      'create policy %s_owner_all on public.%I for all to authenticated '
+      || 'using (public.clerk_uid() = user_id) '
+      || 'with check (public.clerk_uid() = user_id)',
+      t, t);
   end loop;
 end $$;
 
--- repertoires: owner read+write; templates are world-readable
+-- repertoires: owner read+write; templates are world-readable.
+drop policy if exists repertoires_select on public.repertoires;
 create policy repertoires_select on public.repertoires
   for select using (is_template or user_id = public.clerk_uid());
+drop policy if exists repertoires_modify on public.repertoires;
 create policy repertoires_modify on public.repertoires
-  for all using (user_id = public.clerk_uid())
+  for all to authenticated
+  using (user_id = public.clerk_uid())
   with check (user_id = public.clerk_uid());
 
--- repertoire_lines: visible if parent repertoire is a template or owned by user
+-- repertoire_lines: visible if the parent repertoire is a template or owned.
+drop policy if exists repertoire_lines_select on public.repertoire_lines;
 create policy repertoire_lines_select on public.repertoire_lines
   for select using (
-    exists (
-      select 1 from public.repertoires r
-      where r.id = repertoire_id
-        and (r.is_template or r.user_id = public.clerk_uid())
-    )
-  );
+    exists (select 1 from public.repertoires r
+            where r.id = repertoire_id
+              and (r.is_template or r.user_id = public.clerk_uid())));
+drop policy if exists repertoire_lines_modify on public.repertoire_lines;
 create policy repertoire_lines_modify on public.repertoire_lines
-  for all using (
-    exists (select 1 from public.repertoires r
-            where r.id = repertoire_id and r.user_id = public.clerk_uid())
-  )
-  with check (
-    exists (select 1 from public.repertoires r
-            where r.id = repertoire_id and r.user_id = public.clerk_uid())
-  );
+  for all to authenticated
+  using (exists (select 1 from public.repertoires r
+                 where r.id = repertoire_id and r.user_id = public.clerk_uid()))
+  with check (exists (select 1 from public.repertoires r
+                      where r.id = repertoire_id and r.user_id = public.clerk_uid()));
 
--- coach_messages: visible/writable if parent conversation is owned by user
+-- coach_messages: gated by ownership of the parent conversation.
+drop policy if exists coach_messages_all on public.coach_messages;
 create policy coach_messages_all on public.coach_messages
-  for all using (
-    exists (select 1 from public.coach_conversations c
-            where c.id = conversation_id and c.user_id = public.clerk_uid())
-  )
-  with check (
-    exists (select 1 from public.coach_conversations c
-            where c.id = conversation_id and c.user_id = public.clerk_uid())
-  );
+  for all to authenticated
+  using (exists (select 1 from public.coach_conversations c
+                 where c.id = conversation_id and c.user_id = public.clerk_uid()))
+  with check (exists (select 1 from public.coach_conversations c
+                      where c.id = conversation_id and c.user_id = public.clerk_uid()));
 
--- public reference data: world-readable, no client writes (seeded server-side)
-create policy puzzles_read           on public.puzzles           for select using (true);
+-- public reference data: world-readable, no client writes (seeded server-side).
+drop policy if exists puzzles_read on public.puzzles;
+create policy puzzles_read on public.puzzles for select using (true);
+drop policy if exists opening_positions_read on public.opening_positions;
 create policy opening_positions_read on public.opening_positions for select using (true);
-create policy opening_moves_read     on public.opening_moves     for select using (true);
-create policy openings_read          on public.openings          for select using (true);
+drop policy if exists opening_moves_read on public.opening_moves;
+create policy opening_moves_read on public.opening_moves for select using (true);
+drop policy if exists openings_read on public.openings;
+create policy openings_read on public.openings for select using (true);

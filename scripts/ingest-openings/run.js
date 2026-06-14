@@ -83,15 +83,20 @@ const main = async () => {
   );
 
   console.log("Upserting openings backbone…");
-  const openings = rows
-    .filter((r) => r.name && r.pgn)
-    .map((r) => ({
-      id: `${r.eco ?? "x"}_${hashId(r.name)}`,
+  // Dedupe by id — the TSVs contain repeated (eco,name) pairs, and a single
+  // upsert batch cannot touch the same primary key twice.
+  const byId = new Map();
+  for (const r of rows.filter((r) => r.name && r.pgn)) {
+    const id = `${r.eco ?? "x"}_${hashId(r.name)}`;
+    byId.set(id, {
+      id,
       eco: r.eco ?? null,
       name: r.name,
       pgn: r.pgn,
       final_position_id: terminalId(r.pgn),
-    }));
+    });
+  }
+  const openings = [...byId.values()];
   await chunked(openings, (batch) =>
     supabase
       .from("openings")
