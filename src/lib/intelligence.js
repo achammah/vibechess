@@ -11,6 +11,12 @@
 import { Chess } from "chess.js";
 
 import { detectOpening } from "./openings";
+import {
+  PIECE_NAMES,
+  findHangingPieces,
+  detectFork,
+  detectPinsAndSkewers,
+} from "./tactics";
 
 // ─── Move-quality thresholds (centipawns lost vs best) ──────────────────────
 const QUALITY_LEVELS = [
@@ -61,7 +67,8 @@ const QUALITY_LEVELS = [
 /**
  *
  */
-const classifyMove = (cpLost) => {
+export const MOVE_QUALITY_LEVELS = QUALITY_LEVELS;
+export const classifyMove = (cpLost) => {
   // cpLost = best_score_before - score_after_player_move  (from player's perspective, cp)
   // Positive = player lost cp compared to best move
   for (const q of QUALITY_LEVELS) {
@@ -438,218 +445,6 @@ export const buildMyMoveCard = (
   };
 };
 
-// ─── Threat detection helpers ─────────────────────────────────────────────────
-
-/**
- * Get squares attacked by a given piece at a given square.
- * Uses chess.js moves() in a temporary game.
- */
-const getAttackedSquares = (game, square) => {
-  const piece = game.get(square);
-  if (!piece) return [];
-  // Get all moves for this piece (including captures of own pieces hack)
-  const temporaryGame = new Chess(game.fen());
-  const moves = temporaryGame.moves({ square, verbose: true });
-  return moves.map((m) => m.to);
-};
-
-/**
- * Check if a square is attacked by the given color.
- */
-const isSquareAttackedBy = (game, square, attackerColor) => {
-  // chess.js doesn't directly expose isAttacked; we check all pieces of attackerColor
-  const board = game.board();
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      const sq = board[r][c];
-      if (!sq || sq.color !== attackerColor) continue;
-      const file = String.fromCharCode(97 + c);
-      const rank = 8 - r;
-      const fromSq = `${file}${rank}`;
-      const attacked = getAttackedSquares(game, fromSq);
-      if (attacked.includes(square)) return true;
-    }
-  }
-  return false;
-};
-
-/**
- * Find hanging pieces for the given color (pieces attacked and not adequately defended).
- */
-const findHangingPieces = (game, victimColor) => {
-  const attacker = victimColor === "w" ? "b" : "w";
-  const board = game.board();
-  const PIECE_VALUES = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 100 };
-  const hanging = [];
-
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      const sq = board[r][c];
-      if (!sq || sq.color !== victimColor || sq.type === "k") continue;
-      const file = String.fromCharCode(97 + c);
-      const rank = 8 - r;
-      const square = `${file}${rank}`;
-
-      if (isSquareAttackedBy(game, square, attacker)) {
-        // Check if defended
-        if (!isSquareAttackedBy(game, square, victimColor)) {
-          hanging.push({
-            square,
-            piece: sq.type,
-            value: PIECE_VALUES[sq.type] || 0,
-          });
-        }
-      }
-    }
-  }
-
-  // Sort by value (highest first)
-  return hanging.sort((a, b) => b.value - a.value);
-};
-
-/**
- * Detect if opponent's last move created a fork (one piece attacks 2+ enemy pieces).
- * Returns the forking piece info if found.
- */
-const detectFork = (game, opponentColor, lastMoveTo) => {
-  if (!lastMoveTo) return null;
-  const victimColor = opponentColor === "w" ? "b" : "w";
-  const PIECE_VALUES = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 100 };
-
-  const sq = game.get(lastMoveTo);
-  if (!sq || sq.color !== opponentColor) return null;
-
-  // Get all squares attacked by the piece that just moved
-  const attacked = getAttackedSquares(game, lastMoveTo);
-
-  // Filter to valuable victim pieces
-  const targets = attacked.filter((s) => {
-    const p = game.get(s);
-    return p && p.color === victimColor && PIECE_VALUES[p.type] >= 3;
-  });
-
-  if (targets.length >= 2) {
-    return {
-      forkingPiece: sq.type,
-      forkingSquare: lastMoveTo,
-      targets: targets.map((s) => {
-        const p = game.get(s);
-        return { square: s, piece: p.type };
-      }),
-    };
-  }
-  return null;
-};
-
-/**
- * Piece names for display
- */
-const PIECE_NAMES = {
-  p: "Pawn",
-  n: "Knight",
-  b: "Bishop",
-  r: "Rook",
-  q: "Queen",
-  k: "King",
-};
-
-// ──────────────────────────────────────────────────────────────────────────────
-
-// ─── Pin / Skewer detection ───────────────────────────────────────────────────
-
-const ROOK_DIRS = [
-  [0, 1],
-  [0, -1],
-  [1, 0],
-  [-1, 0],
-];
-const BISHOP_DIRS = [
-  [1, 1],
-  [1, -1],
-  [-1, 1],
-  [-1, -1],
-];
-const QUEEN_DIRS = [...ROOK_DIRS, ...BISHOP_DIRS];
-const SLIDER_DIRS = { r: ROOK_DIRS, b: BISHOP_DIRS, q: QUEEN_DIRS };
-const SLIDER_TYPES = new Set(["r", "b", "q"]);
-const PIN_VALUES = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 100 };
-
-/**
- * Scan all opponent sliding pieces along rays looking for:
- * • Absolute / relative pins: slider → player's piece (lower value) → player's piece (higher value incl. king)
- * • Skewers:                  slider → player's high-value piece → player's piece (any)
- *
- * Returns { pins: PinInfo[], skewers: SkewInfo[] }
- */
-const detectPinsAndSkewers = (game, opponentColor) => {
-  const playerColor = opponentColor === "w" ? "b" : "w";
-  const board = game.board();
-  const pins = [];
-  const skewers = [];
-
-  const sqName = (r, c) => `${String.fromCharCode(97 + c)}${8 - r}`;
-
-  for (let r = 0; r < 8; r++) {
-    for (let c = 0; c < 8; c++) {
-      const sq = board[r][c];
-      if (!sq || sq.color !== opponentColor || !SLIDER_TYPES.has(sq.type)) {
-        continue;
-      }
-
-      const directories = SLIDER_DIRS[sq.type];
-      for (const [dr, dc] of directories) {
-        let pr = r + dr,
-          pc = c + dc;
-        let firstPiece = null,
-          firstSq = null;
-
-        while (pr >= 0 && pr < 8 && pc >= 0 && pc < 8) {
-          const target = board[pr][pc];
-          if (target) {
-            if (target.color === playerColor) {
-              if (!firstPiece) {
-                firstPiece = target;
-                firstSq = sqName(pr, pc);
-              } else {
-                // second player piece found
-                const fv = PIN_VALUES[firstPiece.type] ?? 0;
-                const sv = PIN_VALUES[target.type] ?? 0;
-                if (fv < sv) {
-                  // pin: first is less valuable — can't move without exposing second
-                  pins.push({
-                    attackerSquare: sqName(r, c),
-                    attackerPiece: sq.type,
-                    pinnedSquare: firstSq,
-                    pinnedPiece: firstPiece.type,
-                    pinnedAgainst: target.type,
-                    pinnedAgainstSquare: sqName(pr, pc),
-                  });
-                } else if (fv >= sv && fv >= 5) {
-                  // skewer: first is higher-value (major piece), forced to move
-                  skewers.push({
-                    attackerSquare: sqName(r, c),
-                    attackerPiece: sq.type,
-                    skeweredSquare: firstSq,
-                    skeweredPiece: firstPiece.type,
-                    collateralSquare: sqName(pr, pc),
-                    collateralPiece: target.type,
-                  });
-                }
-                break;
-              }
-            } else {
-              break; // own piece blocks the ray
-            }
-          }
-          pr += dr;
-          pc += dc;
-        }
-      }
-    }
-  }
-  return { pins, skewers };
-};
-
 /**
  * Analyze threats after the opponent's move and build a threat card.
  * @param {Chess}    game            chess.js game instance (position after opponent's move)
@@ -718,8 +513,8 @@ export const buildThreatCard = (
     });
   }
 
-  // 3. Hanging pieces
-  const hanging = findHangingPieces(game, playerColor);
+  // 3. Hanging pieces (threat card keeps the strict "undefended" definition)
+  const hanging = findHangingPieces(game, playerColor).filter((h) => h.undefended);
   if (hanging.length > 0) {
     const main = hanging[0];
     threats.push({
