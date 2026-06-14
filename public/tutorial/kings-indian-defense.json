@@ -1,0 +1,158 @@
+{
+  "id": "kings-indian-defense",
+  "kind": "tutorial",
+  "slug": "kings-indian-defense",
+  "title": "King's Indian Defense: Classical",
+  "eco": "E94",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Enter the dynamic King's Indian, where Black sacrifices pawn structure for piece activity and kingside attack.",
+  "description": "The King's Indian is a aggressive defense where Black allows White to build a pawn center, then attacks it with pawn breaks and piece play. You'll learn the key ideas behind this combative opening.",
+  "line": "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.Nf3 O-O 6.Be2 e5 7.O-O Nc6",
+  "objectives": [
+    "Understand why Black allows White to build a central pawn mass before attacking it.",
+    "Learn the typical pawn breaks: ...e5, ...f5, and ...c5 that challenge White's center.",
+    "Master the art of counterattacking against a pawn center."
+  ],
+  "plans": [
+    "White builds a central pawn wedge and attacks, but must be careful of the coming counterattack.",
+    "Black seeks to undermine the center with ...e5 or ...f5, then launch a kingside attack.",
+    "The position is complex with both sides having clear plans."
+  ],
+  "commonMistakes": [
+    "Do not attack too early. Build up your position first or Black's counterattack comes faster.",
+    "Avoid underestimating Black's piece activity. The King's Indian is very dangerous.",
+    "Do not let Black's pawn breaks go unchallenged. Meet them with accurate moves."
+  ],
+  "completionTitle": "Dynamic position with mutual chances",
+  "completionSummary": "The King's Indian Defense creates sharp, double-edged positions where both sides have aggressive plans.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Control the center",
+      "instruction": "Start with d4, controlling central space.",
+      "coaching": "The queen's pawn opening sets up the King's Indian scenario where White builds, Black attacks.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, attacking e4 and preparing kingside development.",
+      "coaching": "Standard King's Indian development. The knight controls e4 and prepares ...g6."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Expand on the queenside",
+      "instruction": "Play c4 to control more central space and prepare development.",
+      "coaching": "This sets up the typical pawn center White wants in the King's Indian.",
+      "hint": "Push the c-pawn to challenge d4.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "Black prepares the fianchetto",
+      "instruction": "Black prepares to fianchetto the bishop on g7.",
+      "coaching": "This is the key move in the King's Indian. Black will develop the bishop to g7 for kingside pressure."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "Natural development. The knight controls d5 and supports the e4 pawn.",
+      "hint": "Bring the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "Black fianchettoes",
+      "instruction": "The bishop develops to g7, targeting the center and kingside.",
+      "coaching": "This is the main setup: bishop on g7 gives Black strong diagonal pressure."
+    },
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Build the central pawn wedge",
+      "instruction": "Play e4, creating the central pawn wedge that Black will attack.",
+      "coaching": "This is the critical move that defines the King's Indian. White builds a central wall.",
+      "hint": "Push the e-pawn to e4.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black prepares development",
+      "instruction": "The pawn on d6 supports ...e5 and prepares for kingside castling.",
+      "coaching": "Standard development. Black is setting up for the coming central breaks."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Complete kingside development",
+      "instruction": "Move Nf3, developing the knight and supporting the e4 pawn.",
+      "coaching": "White continues development while maintaining the central wedge.",
+      "hint": "Develop the kingside knight.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles kingside",
+      "instruction": "Black castles, getting the king safe and connecting the rooks.",
+      "coaching": "Black is developed enough to castle. The king is now safe for the coming battle."
+    },
+    {
+      "actor": "player",
+      "san": "Be2",
+      "title": "Develop the bishop",
+      "instruction": "Move Be2, completing kingside development.",
+      "coaching": "White develops the bishop to a safe square, completing kingside development.",
+      "hint": "Develop the bishop to e2.",
+      "arrows": [{ "from": "f1", "to": "e2", "color": "#38bdf8" }],
+      "focusSquares": ["e2", "g2"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black breaks in the center",
+      "instruction": "The pawn pushes to e5, challenging the center.",
+      "coaching": "This is the main idea in the King's Indian: Black attacks the center with pawns.",
+      "hint": "Push the e-pawn to challenge e4.",
+      "arrows": [{ "from": "e7", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "d4", "e4"]
+    },
+    {
+      "actor": "player",
+      "san": "O-O",
+      "title": "White castles to safety",
+      "instruction": "Castle to get the king safe and connect the rooks.",
+      "coaching": "White castles, completing development. The real battle begins now.",
+      "hint": "Castle kingside to safety.",
+      "arrows": [{ "from": "e1", "to": "g1", "color": "#38bdf8" }],
+      "focusSquares": ["g1", "e1", "h1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to c6, supporting the e5 pawn and preparing queenside play.",
+      "coaching": "Black continues development. The knight also prepares ...d4 to challenge the center.",
+      "hint": "Develop the knight to c6.",
+      "arrows": [{ "from": "b8", "to": "c6", "color": "#38bdf8" }],
+      "focusSquares": ["c6", "e5", "d4"]
+    }
+  ]
+}

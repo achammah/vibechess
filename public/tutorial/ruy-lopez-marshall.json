@@ -1,0 +1,242 @@
+{
+  "id": "ruy-lopez-marshall",
+  "kind": "tutorial",
+  "slug": "ruy-lopez-marshall",
+  "title": "Ruy Lopez: Marshall Attack",
+  "eco": "C89",
+  "category": "open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Learn the Marshall Attack, a dangerous theoretical weapon where Black sacrifices a pawn for devastating counterplay.",
+  "description": "The Marshall Attack is one of the most famous opening surprises. After the normal Ruy Lopez moves, Black sacrifices a pawn for a powerful initiative. You'll learn the main line, the counterattacking ideas, and when to avoid the Marshall versus when to accept it.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1 b5 7.Bb3 d6 8.c3 O-O 9.h3 Na5 10.Bc2 c5 11.d4 Qc7",
+  "variations": {
+    "mainLine": "11...c5 - The Marshall Attack continues with 12.Nbd2 cxd4 13.cxd4",
+    "antiMarshall": "8.a4 - Avoiding the Marshall by preventing ...b5",
+    "exchange": "8.d4 - The Exchange Variation, also avoids the Marshall"
+  },
+  "objectives": [
+    "Understand the Marshall Attack: why Black sacrifices and what they get",
+    "Learn the main line moves and the typical tactics",
+    "Master White's defensive resources: the forced lines and alternatives",
+    "Recognize when the Marshall is playable and when to avoid it"
+  ],
+  "plans": [
+    "Black's plan: Develop rapidly, attack with ...c5, ...Qc7, ...Re8, and create threats",
+    "White must defend precisely or the attack becomes dangerous",
+    "The move ...exd4 followed by ...Re8 is a key tactical pattern",
+    "In the main line, White often plays a4 to prevent ...b5 and simplify"
+  ],
+  "commonMistakes": [
+    "Do not underestimate the Marshall - it's a dangerous weapon at all levels",
+    "Avoid playing carelessly - the attack is very real",
+    "Do not take on e5 too early - this often plays into Black's hands",
+    "White should prefer solid development over trying to win the pawn"
+  ],
+  "completionTitle": "Black has dangerous initiative for the pawn",
+  "completionSummary": "The Marshall Attack is a sharp, tactical opening. You've learned the main line and can now handle both sides.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Claim central space",
+      "instruction": "Play e4, controlling the center.",
+      "coaching": "The Marshall Attack occurs in the Ruy Lopez after specific move order.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black plays e5",
+      "instruction": "Black mirrors in the center.",
+      "coaching": "The open game begins. The Marshall is coming."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, attacking e5.",
+      "coaching": "Natural development toward the center.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to c6.",
+      "coaching": "Black mirrors White's development."
+    },
+    {
+      "actor": "player",
+      "san": "Bb5",
+      "title": "The Ruy Lopez",
+      "instruction": "Move the bishop to b5, pinning the knight.",
+      "coaching": "This is the Ruy Lopez, one of the most classical openings.",
+      "hint": "Move the bishop to b5.",
+      "arrows": [{ "from": "f1", "to": "b5", "color": "#38bdf8" }],
+      "focusSquares": ["b5", "c6", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "a6",
+      "title": "Black prevents Bxc6",
+      "instruction": "The pawn on a6 forces the bishop to retreat.",
+      "coaching": "This is the Open Sicilian move order applied to the Ruy Lopez."
+    },
+    {
+      "actor": "player",
+      "san": "Ba4",
+      "title": "Retreat the bishop",
+      "instruction": "Move the bishop to a4, maintaining the pin.",
+      "coaching": "White retreats, keeping the pressure on c6.",
+      "hint": "Move the bishop to a4.",
+      "arrows": [{ "from": "b5", "to": "a4", "color": "#38bdf8" }],
+      "focusSquares": ["a4", "c6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black continues development. The Marshall is approaching."
+    },
+    {
+      "actor": "player",
+      "san": "O-O",
+      "title": "White castles",
+      "instruction": "Castle kingside, getting the king to safety.",
+      "coaching": "White castles early, a sign of confidence against the Marshall.",
+      "hint": "Castle kingside.",
+      "arrows": [{ "from": "e1", "to": "g1", "color": "#38bdf8" }],
+      "focusSquares": ["g1", "f1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Be7",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to e7.",
+      "coaching": "Black prepares to castle and is setting up the Marshall."
+    },
+    {
+      "actor": "player",
+      "san": "Re1",
+      "title": "Support the center",
+      "instruction": "Move the rook to e1, supporting e4.",
+      "coaching": "This move prepares for the Marshall - but also defends against it.",
+      "hint": "Move the rook to e1.",
+      "arrows": [{ "from": "a1", "to": "e1", "color": "#38bdf8" }],
+      "focusSquares": ["e1", "e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b5",
+      "title": "The Marshall preparation",
+      "instruction": "Black pushes b5, preparing the sacrifice.",
+      "coaching": "This move prepares the Marshall Attack. Black is about to sacrifice."
+    },
+    {
+      "actor": "player",
+      "san": "Bb3",
+      "title": "White avoids the trap",
+      "instruction": "Move the bishop to b3, avoiding the c4 square.",
+      "coaching": "White plays Bb3 to avoid the tactical pitfalls of the Marshall.",
+      "hint": "Move the bishop to b3.",
+      "arrows": [{ "from": "a4", "to": "b3", "color": "#38bdf8" }],
+      "focusSquares": ["b3", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black prepares development",
+      "instruction": "The pawn on d6 supports ...c5 and development.",
+      "coaching": "Black is setting up the standard Marshall pawn structure."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Support the d4 square",
+      "instruction": "Play c3 to support d4.",
+      "coaching": "White prepares d4 while defending against Black's central break.",
+      "hint": "Move the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Both sides are now castled. The Marshall is about to begin."
+    },
+    {
+      "actor": "player",
+      "san": "h3",
+      "title": "Prevent Black's trick",
+      "instruction": "Play h3, preventing ...Ng4 and preparing development.",
+      "coaching": "This move prevents the immediate Marshall but allows the main line.",
+      "hint": "Push the h-pawn one square.",
+      "arrows": [{ "from": "h2", "to": "h3", "color": "#38bdf8" }],
+      "focusSquares": ["h3", "g4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Na5",
+      "title": "Black attacks the bishop",
+      "instruction": "The knight attacks c4, forcing the bishop to move.",
+      "coaching": "This is the Marshall move order. Black forces Bc2."
+    },
+    {
+      "actor": "player",
+      "san": "Bc2",
+      "title": "Retreat the bishop",
+      "instruction": "Move the bishop to c2.",
+      "coaching": "White retreats, completing development.",
+      "hint": "Move the bishop to c2.",
+      "arrows": [{ "from": "b3", "to": "c2", "color": "#38bdf8" }],
+      "focusSquares": ["c2", "d3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "The Marshall Advance",
+      "instruction": "Black pushes c5, opening the position.",
+      "coaching": "This is the key Marshall move! Black sacrifices a pawn for the attack."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "White accepts the gambit",
+      "instruction": "Play d4 to challenge the center.",
+      "coaching": "White accepts the pawn. Now both sides must play precisely.",
+      "hint": "Push the d-pawn to challenge c5.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "cxd4",
+      "title": "Black exchanges",
+      "instruction": "Black captures on d4.",
+      "coaching": "Black gets the pawn back but keeps the initiative."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "White recaptures",
+      "instruction": "Take back with the c-pawn.",
+      "coaching": "White maintains a slight material advantage but must defend."
+    },
+    {
+      "actor": "opponent",
+      "san": "Qc7",
+      "title": "Black develops the queen",
+      "instruction": "The queen moves to c7, supporting the attack.",
+      "coaching": "The queen joins the attack. White must be careful."
+    }
+  ]
+}

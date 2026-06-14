@@ -1,0 +1,177 @@
+{
+  "id": "kings-indian-four-pawns",
+  "kind": "tutorial",
+  "slug": "kings-indian-four-pawns",
+  "title": "King's Indian Defense: Four Pawns Attack",
+  "eco": "E76",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Play the aggressive Four Pawns Attack against the King's Indian, building a large center for a direct assault.",
+  "description": "The Four Pawns Attack is White's most aggressive try against the King's Indian Defense. By pushing e4, e5, and then building a pawn center, White challenges Black's position directly. This tutorial covers the main line and typical tactics.",
+  "line": "1.d4 Nf6 2.c4 g6 3.Nc3 Bg7 4.e4 d6 5.f4 O-O 6.Nf3 c5 7.d5 e6",
+  "variations": {
+    "mainLine": "7...e6 - The classical Four Pawns with pawns on e4, e5, f4",
+    "modernLine": "7...Na6 - The Modern Four Pawns with early queenside expansion",
+    "avoidance": "4.Nf3 - Avoiding the KID with the Trompowsky"
+  },
+  "objectives": [
+    "Understand the Four Pawns structure and why White builds a large center",
+    "Learn the typical plans: push e5 to attack, or play positionally",
+    "Master Black's counterattacking ideas: ...f5, ...c4, and ...b5",
+    "Recognize when to attack and when to consolidate"
+  ],
+  "plans": [
+    "White's plan: Build a big center, then push e5 to attack Black's king",
+    "Black's plan: Play ...f5 to break the center, or ...c4 for queenside play",
+    "The move ...Na6 is a common alternative, avoiding the main lines",
+    "Both sides must be careful about the e5/e6 tension in the center"
+  ],
+  "commonMistakes": [
+    "Do not push e5 too early - wait for proper development",
+    "Avoid weakening your king by pushing too many pawns forward",
+    "Do not underestimate Black's counterattack - the KID is dangerous",
+    "White should maintain central control before launching the final attack"
+  ],
+  "completionTitle": "Complex position with attacking chances for White",
+  "completionSummary": "The Four Pawns Attack is a sharp, aggressive line. You've learned the main ideas from both sides.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The King's Indian is one of Black's most dynamic defenses.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black attacks d4 and prepares the King's Indian setup."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Challenge the center",
+      "instruction": "Play c4 to challenge d5.",
+      "coaching": "This is the standard setup against the King's Indian.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "Black plays the King's Indian",
+      "instruction": "Black plays g6, setting up the fianchetto.",
+      "coaching": "This is the King's Indian! Black will develop the bishop to g7."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "White develops naturally, controlling d5 and e4.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "The King's Indian bishop",
+      "instruction": "The bishop develops to g7.",
+      "coaching": "The dragon bishop controls the long diagonal."
+    },
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Begin the Four Pawns",
+      "instruction": "Play e4 to build a large center.",
+      "coaching": "This is the Four Pawns Attack! White builds a central pawn mass.",
+      "hint": "Push the e-pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black supports the center",
+      "instruction": "The pawn on d6 supports e5.",
+      "coaching": "Black prepares the typical King's Indian structure."
+    },
+    {
+      "actor": "player",
+      "san": "f4",
+      "title": "Extend the center",
+      "instruction": "Play f4 to strengthen the e4 pawn.",
+      "coaching": "White builds a pawn center: e4, f4. Very aggressive!",
+      "hint": "Push the f-pawn two squares.",
+      "arrows": [{ "from": "f2", "to": "f4", "color": "#38bdf8" }],
+      "focusSquares": ["f4", "e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Both sides are now castled. The battle for the center intensifies."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Complete development",
+      "instruction": "Move Nf3, completing development.",
+      "coaching": "White develops the knight, supporting e5.",
+      "hint": "Move the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black challenges the center",
+      "instruction": "Black pushes c5, attacking d4.",
+      "coaching": "This is Black's typical break to challenge White's center."
+    },
+    {
+      "actor": "player",
+      "san": "d5",
+      "title": "White advances in the center",
+      "instruction": "Play d5 to create a large pawn center.",
+      "coaching": "This is the main line! White creates a massive pawn center.",
+      "hint": "Push the d-pawn to d5.",
+      "arrows": [{ "from": "d4", "to": "d5", "color": "#38bdf8" }],
+      "focusSquares": ["d5", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black pushes in the center",
+      "instruction": "Black pushes e6, challenging d5.",
+      "coaching": "Black meets the center advance with e6, creating tension."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "The key advance",
+      "instruction": "Play e5 to attack Black's king.",
+      "coaching": "This is the key move! White attacks with the pawn center.",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "f5",
+      "title": "Black breaks the center",
+      "instruction": "Play f5 to challenge the center.",
+      "coaching": "This is Black's typical break against the Four Pawns."
+    }
+  ]
+}

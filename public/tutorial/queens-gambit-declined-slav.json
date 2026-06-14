@@ -1,0 +1,163 @@
+{
+  "id": "queens-gambit-declined-slav",
+  "kind": "tutorial",
+  "slug": "queens-gambit-declined-slav",
+  "title": "Queen's Gambit Declined: Slav Defense",
+  "eco": "D10",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the solid Slav Defense, where Black declines the gambit and creates a firm pawn structure.",
+  "description": "The Slav Defense is one of the most popular replies to the Queen's Gambit. Black declines the pawn but maintains a solid structure. This tutorial covers the main line, the exchange variation, and typical plans for both sides.",
+  "line": "1.d4 d5 2.c4 c6 3.Nf3 Nf6 4.Nc3 dxc4 5.a4 Bf5",
+  "variations": {
+    "exchange": "5.e3 - The Exchange Slav without early complications",
+    "modern": "5.a4 - The_a4 Slav, preventing ...b5",
+    "meran": "5.e4 - The Meran Variation, a sharp alternative"
+  },
+  "objectives": [
+    "Understand the Slav structure and why it's so solid",
+    "Learn the typical pawn breaks: ...e6, ...c5, and ...b5",
+    "Master the piece development: where pieces go in the Slav",
+    "Recognize the typical endgame positions"
+  ],
+  "plans": [
+    "White's plan: Build pressure on the c4 pawn and use the bishop pair",
+    "Black's plan: Play ...e6, ...Be7, and challenge the center with ...c5",
+    "The move ...b5 is Black's main queenside expansion",
+    "White should avoid exchanging too much - keep the pressure"
+  ],
+  "commonMistakes": [
+    "Do not think the Slav is boring - there are many tactical ideas",
+    "Avoid playing ...e6 too early - wait for the right moment",
+    "Do not underestimate Black's queenside play - the ...b5 break is powerful",
+    "White should maintain pressure - Black is solid but passive"
+  ],
+  "completionTitle": "Solid position with long-term planning",
+  "completionSummary": "The Slav Defense is a reliable weapon. You've learned the main ideas and can navigate the position.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The Slav Defense is one of Black's most solid responses.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black responds in the center",
+      "instruction": "Black plays d5, challenging White's center.",
+      "coaching": "Black meets the Queen's Gambit with a solid central reply."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "The Queen's Gambit",
+      "instruction": "Play c4 to challenge d5.",
+      "coaching": "This is the Queen's Gambit, offering a pawn for development.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c6",
+      "title": "The Slav move",
+      "instruction": "Black plays c6, declining the gambit.",
+      "coaching": "This is the Slav Defense! Black maintains a solid pawn structure."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center.",
+      "coaching": "White develops naturally, controlling e5 and d4.",
+      "hint": "Move the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black continues development, attacking d4."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the other knight",
+      "instruction": "Move Nc3, developing and controlling d5.",
+      "coaching": "White develops the knight, controlling the key d5 square.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "dxc4",
+      "title": "Black captures the pawn",
+      "instruction": "Black captures on c4.",
+      "coaching": "Black takes the pawn, entering the Slav structure."
+    },
+    {
+      "actor": "player",
+      "san": "a4",
+      "title": "The a4 Slav",
+      "instruction": "Play a4 to prevent ...b5.",
+      "coaching": "This is the modern approach, preventing Black's typical break.",
+      "hint": "Push the a-pawn two squares.",
+      "arrows": [{ "from": "a2", "to": "a4", "color": "#38bdf8" }],
+      "focusSquares": ["a4", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bf5",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to f5.",
+      "coaching": "Black develops the bishop, attacking e4.",
+      "hint": "Move the bishop to f5.",
+      "arrows": [{ "from": "c8", "to": "f5", "color": "#38bdf8" }],
+      "focusSquares": ["f5", "e4"]
+    },
+    {
+      "actor": "player",
+      "san": "e3",
+      "title": "Support the pawn",
+      "instruction": "Play e3 to support the c4 pawn.",
+      "coaching": "White strengthens the position and prepares development.",
+      "hint": "Push the e-pawn one square.",
+      "arrows": [{ "from": "e2", "to": "e3", "color": "#38bdf8" }],
+      "focusSquares": ["e3", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black plays e6",
+      "instruction": "Black pushes e6, completing the Slav structure.",
+      "coaching": "Black adopts the typical Slav pawn structure: pawns on c6, e6, d5."
+    },
+    {
+      "actor": "player",
+      "san": "b3",
+      "title": "Regain the pawn",
+      "instruction": "Play b3 to regain the c4 pawn.",
+      "coaching": "White regains the pawn while maintaining the center.",
+      "hint": "Push the b-pawn two squares.",
+      "arrows": [{ "from": "b2", "to": "b3", "color": "#38bdf8" }],
+      "focusSquares": ["b3", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "cxb3",
+      "title": "Black exchanges",
+      "instruction": "Black captures on b3.",
+      "coaching": "Black exchanges, maintaining the solid structure."
+    }
+  ]
+}

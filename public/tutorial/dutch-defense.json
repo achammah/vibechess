@@ -1,0 +1,135 @@
+{
+  "id": "dutch-defense",
+  "kind": "tutorial",
+  "slug": "dutch-defense",
+  "title": "Dutch Defense: Leningrad",
+  "eco": "A80",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the aggressive Dutch Defense, where Black fights for kingside space and attack.",
+  "description": "The Dutch is an aggressive defense where Black aims for early kingside pawn play and attack. You'll learn the Leningrad Dutch, a modern interpretation that combines solidity with attacking chances.",
+  "line": "1.d4 f5 2.Nf3 Nf6 3.g3 g6 4.Bg2 Bg7 5.O-O O-O 6.c4 d6",
+  "objectives": [
+    "Understand the Dutch idea: claim kingside space and prepare a pawn storm.",
+    "Learn typical Dutch plans: ...f4, ...e5, or ...d5 depending on the structure.",
+    "Master the art of playing for initiative with limited material."
+  ],
+  "plans": [
+    "White can play quietly with Nc3 and Bg5, or go for a direct attack.",
+    "Black seeks to play ...f4 and ...e5, creating central pressure and kingside threats.",
+    "The Dutch is sharp: both sides have aggressive options."
+  ],
+  "commonMistakes": [
+    "Do not play too passively. The Dutch gives Black active piece play.",
+    "Avoid ignoring the kingside. That's where the battle is.",
+    "Do not underestimate Black's attacking chances. They are real."
+  ],
+  "completionTitle": "Double-edged position with attack plans",
+  "completionSummary": "The Dutch Defense creates dynamic positions where both sides must play accurately.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Control the center",
+      "instruction": "Play d4, controlling central space.",
+      "coaching": "The queen's pawn opening. White controls the center before Black's pawn move.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "f5",
+      "title": "The Dutch Defense",
+      "instruction": "Play f5, claiming kingside space and controlling e4.",
+      "coaching": "This is the Dutch: Black fights for kingside space and prepares to attack."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center.",
+      "coaching": "Natural development. The knight controls e5 and supports the center.",
+      "hint": "Develop the kingside knight.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, attacking e4.",
+      "coaching": "Standard development. The knight controls e4 and prepares ...g6."
+    },
+    {
+      "actor": "player",
+      "san": "g3",
+      "title": "Prepare kingside development",
+      "instruction": "Play g3, preparing to fianchetto the bishop.",
+      "coaching": "This is a common setup: White plays positionally and prepares kingside development.",
+      "hint": "Push the g-pawn one square.",
+      "arrows": [{ "from": "g2", "to": "g3", "color": "#38bdf8" }],
+      "focusSquares": ["g2", "g3", "f1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "Black prepares development",
+      "instruction": "Play g6, preparing to develop the bishop to g7.",
+      "coaching": "Black prepares the Leningrad setup: bishop on g7 for kingside pressure."
+    },
+    {
+      "actor": "player",
+      "san": "Bg2",
+      "title": "Develop the bishop",
+      "instruction": "Move Bg2, completing the fianchetto.",
+      "coaching": "The bishop develops to g2, controlling the center and long diagonal.",
+      "hint": "Fianchetto the bishop.",
+      "arrows": [{ "from": "f1", "to": "g2", "color": "#38bdf8" }],
+      "focusSquares": ["g2", "e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to g7, mirroring White's setup.",
+      "coaching": "Both sides have similar setups. The position is balanced but tense."
+    },
+    {
+      "actor": "player",
+      "san": "O-O",
+      "title": "White castles",
+      "instruction": "Castle to get the king safe and connect the rooks.",
+      "coaching": "White castles, completing kingside development.",
+      "hint": "Castle kingside to safety.",
+      "arrows": [{ "from": "e1", "to": "g1", "color": "#38bdf8" }],
+      "focusSquares": ["g1", "e1", "h1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles, getting the king safe.",
+      "coaching": "Both kings are now safe. The real battle begins with piece development."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Expand on the queenside",
+      "instruction": "Play c4, controlling more central space.",
+      "coaching": "White expands on the queenside while Black pushes on the kingside.",
+      "hint": "Push the c-pawn to c4.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black prepares development",
+      "instruction": "Play d6, supporting the e5 square and preparing piece development.",
+      "coaching": "Black prepares to develop pieces while maintaining kingside pressure."
+    }
+  ]
+}

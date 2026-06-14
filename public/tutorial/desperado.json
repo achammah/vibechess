@@ -1,0 +1,157 @@
+{
+  "id": "desperado",
+  "kind": "tutorial",
+  "slug": "desperado",
+  "title": "Tactics: Desperado",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn to sacrifice by moving as if you're already lost - but winning.",
+  "description": "A desperado is when a piece that seems doomed captures another piece, knowing it will be captured, but the capture results in a better outcome - often checkmate or winning material. This is a powerful tactical concept used by GMs.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Recognize positions where a desperado is possible",
+    "Understand when a piece is 'doomed' anyway",
+    "Learn to calculate the exchange favorably",
+    "Master the timing of desperado moves"
+  ],
+  "plans": [
+    "Ask: 'If my piece is going to die anyway, can it capture something first?'",
+    "Look for captures where the attacker also gets checkmate or a winning position",
+    "Often the desperado piece captures something valuable before being captured"
+  ],
+  "commonMistakes": [
+    "Don't play desperado if your piece could escape",
+    "Calculate the full sequence - sometimes the opponent can defend",
+    "The piece should be doomed, not just exposed"
+  ],
+  "completionTitle": "Making the most of doomed pieces",
+  "completionSummary": "You've learned to use the desperado concept to turn losing positions around.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push e5",
+      "instruction": "Play e5! This attacks the knight on f6.",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black defends",
+      "instruction": "Black pushes d5, attacking the bishop.",
+      "coaching": "The pawn attacks the bishop on c4. But look at the knight on f6..."
+    },
+    {
+      "actor": "player",
+      "san": "exf6",
+      "title": "The Desperado!",
+      "instruction": "Capture on f6 with the pawn! Even though it will be captured, this gives us a strong attack!",
+      "coaching": "This is a desperado! The pawn is going to be captured anyway, but we get a strong attack and open lines against the king.",
+      "hint": "Capture the knight on f6 with the pawn!",
+      "arrows": [{ "from": "e5", "to": "f6", "color": "#22c55e" }],
+      "focusSquares": ["f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "dxc4",
+      "title": "Black captures",
+      "instruction": "Black captures the bishop.",
+      "coaching": "Black captures, but now look at the position - we have open lines against Black's king!"
+    }
+  ]
+}

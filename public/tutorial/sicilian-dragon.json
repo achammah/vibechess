@@ -1,0 +1,211 @@
+{
+  "id": "sicilian-dragon",
+  "kind": "tutorial",
+  "slug": "sicilian-dragon",
+  "title": "Sicilian Defense: Dragon Variation",
+  "eco": "B70",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Enter the Dragon, where Black builds a massive pawn storm on the kingside while White attacks on the queenside.",
+  "description": "The Dragon is one of the most spectacular Sicilian variations. Named after the constellation, Black's pawn structure resembles a dragon. You'll learn the Yugoslav Attack (the main line) and understand why both sides push pawns aggressively on opposite wings.",
+  "line": "1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 g6",
+  "variations": {
+    "yugoslavAttack": "6.Be3 Bg7 7.f3 O-O 8.h4 - The main line with pawn storm",
+    "classical": "6.Be2 Bg7 7.O-O O-O - A solid alternative without the early h4",
+    "accelerated": "5...g6 instead of ...d6 first - The Accelerated Dragon"
+  },
+  "objectives": [
+    "Understand the Dragon pawn structure and the strategic ideas on both sides",
+    "Learn the dangerous Yugoslav Attack (6.Be3 Bg7 7.f3)",
+    "Master the typical tactics: the h4-h5-h6 sacrifice and the rook lift",
+    "Recognize when to attack and when to defend in Dragon positions"
+  ],
+  "plans": [
+    "White's plan: Castle queenside, push h4-h5-h6, and attack with the rooks",
+    "Black's plan: Push f5-f4, ...h5, and attack on the kingside",
+    "The move ...d5 is Black's central break to free their game",
+    "White can also play on the queenside with b4-b5 after proper preparation"
+  ],
+  "commonMistakes": [
+    "Do not castle kingside against the Dragon - you'll be in for a rough ride",
+    "Avoid playing h4 too early without proper development",
+    "Do not underestimate Black's kingside attack - the Dragon is dangerous",
+    "The endgame typically favors White due to Black's weakened king position"
+  ],
+  "completionTitle": "Both sides have major attacking chances",
+  "completionSummary": "The Dragon is a weapon of mass destruction. You've learned the main ideas and can now play both sides.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4 to claim central space.",
+      "coaching": "The Dragon is one of Black's most aggressive Sicilian options.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black plays the Sicilian",
+      "instruction": "Black challenges the center with c5.",
+      "coaching": "The Dragon is an ultra-aggressive response."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center.",
+      "coaching": "Natural development. The knight controls e5 and g5.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black supports the center",
+      "instruction": "The pawn on d6 supports ...e5 and prepares development.",
+      "coaching": "Standard Sicilian development before entering Dragon structures."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4 to open the position.",
+      "coaching": "This is the main line, accepting the isolated pawn structure.",
+      "hint": "Push the d-pawn to challenge c5.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "cxd4",
+      "title": "Black exchanges",
+      "instruction": "Black captures on d4.",
+      "coaching": "Black gives up the d-pawn for development."
+    },
+    {
+      "actor": "player",
+      "san": "Nxd4",
+      "title": "Recapture with the knight",
+      "instruction": "Take back with the knight, developing.",
+      "coaching": "White has central control and better development.",
+      "hint": "Capture on d4 with the knight.",
+      "arrows": [{ "from": "f3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black completes development and attacks e4."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the other knight",
+      "instruction": "Move Nc3 to complete development.",
+      "coaching": "White continues development. The knight controls d5 and e4.",
+      "hint": "Develop the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "The Dragon move",
+      "instruction": "Black plays g6, setting up the Dragon pawn structure.",
+      "coaching": "This is the Dragon! Black will develop the bishop to g7 in one move."
+    },
+    {
+      "actor": "player",
+      "san": "Be3",
+      "title": "The Yugoslav Attack begins",
+      "instruction": "Place the bishop on e3, preparing the attack.",
+      "coaching": "This is the Yugoslav Attack, White's most dangerous line against the Dragon.",
+      "hint": "Move the bishop to e3.",
+      "arrows": [{ "from": "c1", "to": "e3", "color": "#38bdf8" }],
+      "focusSquares": ["e3", "g7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "The Dragon Bishop",
+      "instruction": "The bishop develops to g7, controlling the long diagonal.",
+      "coaching": "The Dragon bishop is very powerful, controlling e5 and c3."
+    },
+    {
+      "actor": "player",
+      "san": "f3",
+      "title": "Support the center",
+      "instruction": "Play f3 to support e4 and prepare the attack.",
+      "coaching": "This move prepares the kingside pawn storm and secures the center.",
+      "hint": "Push the f-pawn one square.",
+      "arrows": [{ "from": "f2", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Both sides are now castled. The battle of the attacks begins."
+    },
+    {
+      "actor": "player",
+      "san": "h4",
+      "title": "The pawn storm begins",
+      "instruction": "Push h4 to begin the kingside attack.",
+      "coaching": "This is the main line! White begins pushing h4-h5-h6.",
+      "hint": "Push the h-pawn two squares.",
+      "arrows": [{ "from": "h2", "to": "h4", "color": "#38bdf8" }],
+      "focusSquares": ["h4", "h5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "h5",
+      "title": "Black pushes back",
+      "instruction": "Black pushes h5, contesting the kingside.",
+      "coaching": "Black meets the attack with their own pawn storm."
+    },
+    {
+      "actor": "player",
+      "san": "h5",
+      "title": "White advances",
+      "instruction": "Push h5 to open lines against Black's king.",
+      "coaching": "White continues the attack. The position is highly tactical.",
+      "hint": "Push h5 to open the h-file.",
+      "arrows": [{ "from": "h4", "to": "h5", "color": "#38bdf8" }],
+      "focusSquares": ["h5", "g6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "gxh5",
+      "title": "Black captures",
+      "instruction": "Black captures on h5, opening the g-file.",
+      "coaching": "Black accepts the challenge. The position is now very complex."
+    },
+    {
+      "actor": "player",
+      "san": "Rxh5",
+      "title": "White captures back",
+      "instruction": "Take back with the rook, attacking.",
+      "coaching": "White has a strong initiative. The rook on h5 is very active.",
+      "hint": "Capture on h5 with the rook.",
+      "arrows": [{ "from": "h1", "to": "h5", "color": "#38bdf8" }],
+      "focusSquares": ["h5", "g7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black's central break",
+      "instruction": "Black plays d5, opening the center.",
+      "coaching": "This is Black's standard break to free their game in the Dragon."
+    }
+  ]
+}

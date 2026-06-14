@@ -1,0 +1,10 @@
+{
+  "kind": "quiz",
+  "id": "m04",
+  "title": "Knight Fork",
+  "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 4 4",
+  "solution": ["Nfxe5"],
+  "theme": "fork",
+  "difficulty": "medium",
+  "description": "White to move — knight can fork two pieces!"
+}

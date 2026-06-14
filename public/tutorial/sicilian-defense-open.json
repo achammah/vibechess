@@ -1,0 +1,118 @@
+{
+  "id": "sicilian-defense-open",
+  "kind": "tutorial",
+  "slug": "sicilian-defense-open",
+  "title": "Sicilian Defense: Open Sicilian",
+  "eco": "B32",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Enter the dynamic world of the Sicilian, where Black fights for equality with pawn sacrifices and counterplay.",
+  "description": "The Open Sicilian is one of the most aggressive defenses in chess. You'll learn why Black accepts an isolated d-pawn for rapid development and active piece play, and how White can navigate the complications.",
+  "line": "1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6",
+  "objectives": [
+    "Understand why Black gives up a central pawn for rapid development and counterplay.",
+    "Learn the typical Sicilian structures and how to play them from both sides.",
+    "Master the art of playing with an isolated queen's pawn."
+  ],
+  "plans": [
+    "White uses the extra pawn to control space and attack, but must be careful of Black's piece activity.",
+    "The IQP (isolani) on d4 is both a strength and weakness: it controls central squares but can become a target.",
+    "Black seeks piece activity and pawn breaks like ...e5 or ...b5 to free their game."
+  ],
+  "commonMistakes": [
+    "Do not play passively with the extra pawn. Keep the initiative or Black will equalize.",
+    "Avoid opening lines for Black's pieces prematurely. The pawn is a temporary advantage.",
+    "Do not underestimate Black's tactical resources. The Sicilian is full of traps."
+  ],
+  "completionTitle": "Complex position with chances for both",
+  "completionSummary": "The Open Sicilian leads to dynamic positions where both sides have clear plans: White to attack, Black to counterattack.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Play e4 to control the center",
+      "instruction": "Start with e4, the most aggressive reply to 1...c5.",
+      "coaching": "The Sicilian Defense is Black's way of challenging e4 immediately, accepting an asymmetrical structure.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black challenges the center",
+      "instruction": "Black strikes at e4 with the pawn, creating an asymmetrical position.",
+      "coaching": "This is the Sicilian. Black accepts an isolated d-pawn for the chance to develop quickly and attack."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center.",
+      "coaching": "Natural development is best. The knight controls e5 and prepares castling.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black prepares development",
+      "instruction": "The pawn on d6 supports ...e5 and prepares ...Nf6.",
+      "coaching": "This is standard Sicilian development. Black is getting ready for piece play."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the position",
+      "instruction": "Play d4 to open the center and gain a spatial advantage.",
+      "coaching": "This is the main line. White accepts the isolated pawn structure to get the better position.",
+      "hint": "Push the d-pawn to challenge the c5 pawn.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "cxd4",
+      "title": "Black accepts the pawn",
+      "instruction": "Black exchanges, giving up the d-pawn for piece activity.",
+      "coaching": "Black gets rapid development and an isolated pawn. This is the main Sicilian idea."
+    },
+    {
+      "actor": "player",
+      "san": "Nxd4",
+      "title": "Recapture with the knight",
+      "instruction": "Take back with the knight, developing and controlling the center.",
+      "coaching": "White has a lead in development and a central pawn. The position favors White slightly.",
+      "hint": "Capture on d4 with the knight.",
+      "arrows": [{ "from": "f3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, attacking e4.",
+      "coaching": "Black is completing development. The knight also defends the isolated pawn."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the other knight",
+      "instruction": "Move Nc3, completing development and controlling important squares.",
+      "coaching": "White continues development. The knight controls d5 and e4, supporting the central position.",
+      "hint": "Develop the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "a6",
+      "title": "Black prepares queenside play",
+      "instruction": "The pawn on a6 prepares ...b5 and protects the knight on c6.",
+      "coaching": "This is a standard move in many Sicilian lines, preparing queenside counterplay."
+    }
+  ]
+}

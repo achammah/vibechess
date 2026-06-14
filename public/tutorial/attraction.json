@@ -1,0 +1,174 @@
+{
+  "id": "attraction",
+  "kind": "tutorial",
+  "slug": "attraction",
+  "title": "Tactics: Attraction and Trapping",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Lure enemy pieces to squares where they can be trapped or attacked.",
+  "description": "Attraction (or trapping) is a tactical theme where you lure an enemy piece to a specific square - usually one where it can be attacked, trapped, or where it will cause problems. This is often combined with other tactical themes like pins or discovered attacks.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6",
+  "objectives": [
+    "Recognize when you can lure pieces to bad squares",
+    "Learn to create 'traps' with bait",
+    "Understand how attraction leads to checkmate",
+    "Master combining attraction with other themes"
+  ],
+  "plans": [
+    "Look for squares where an enemy piece would be vulnerable",
+    "Create threats that force the piece to that square",
+    "Often involves sacrificing to attract the piece"
+  ],
+  "commonMistakes": [
+    "Don't attract a piece to a square where it can escape",
+    "Calculate the full sequence - the attraction should be forcing",
+    "Make sure you can follow up after the attraction"
+  ],
+  "completionTitle": "Luring your opponent into traps",
+  "completionSummary": "You've learned to use attraction tactics to trap enemy pieces.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push e5",
+      "instruction": "Play e5! This attacks the knight.",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Ng4",
+      "title": "Knight to g4",
+      "instruction": "Black moves the knight to g4, attacking h2.",
+      "coaching": "The knight attacks h2. But we've set up a trap..."
+    },
+    {
+      "actor": "player",
+      "san": "d5",
+      "title": "The attraction!",
+      "instruction": "Play d5! This lures the knight to a square where it will be trapped!",
+      "coaching": "The pawn on d5 attacks the knight on g4. Black might take it, but then we can trap the knight!",
+      "hint": "Push the d-pawn to d5!",
+      "arrows": [{ "from": "d4", "to": "d5", "color": "#22c55e" }],
+      "focusSquares": ["d5", "g4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nxe5",
+      "title": "Knight captures",
+      "instruction": "Black captures on d5.",
+      "coaching": "Now the knight is on e5 - let's trap it!"
+    },
+    {
+      "actor": "player",
+      "san": "Nf4",
+      "title": "Trap the knight!",
+      "instruction": "Play Nf4! This attacks the knight on e5 and threatens to trap it!",
+      "coaching": "The knight attacks e5. Now the black knight has few squares!",
+      "hint": "Move the knight to f4!",
+      "arrows": [{ "from": "f3", "to": "f4", "color": "#22c55e" }],
+      "focusSquares": ["f4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Knight moves",
+      "instruction": "The knight must move away.",
+      "coaching": "The knight moves, but we've gained a pawn and the initiative!"
+    }
+  ]
+}

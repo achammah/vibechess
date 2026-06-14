@@ -1,0 +1,108 @@
+{
+  "id": "discovered-attack",
+  "kind": "tutorial",
+  "slug": "discovered-attack",
+  "title": "Tactics: Discovered Attacks",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Master the art of discovered attacks - one of the most powerful tactical weapons in chess that can win material or deliver checkmate.",
+  "description": "A discovered attack occurs when a piece moves away to reveal an attack from another piece behind it. This is a fundamental tactical pattern that appears in every level of chess. GM-level players use discovered attacks to create double attacks, win material, and deliver checkmate.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5",
+  "objectives": [
+    "Recognize positions where a discovered attack is possible",
+    "Understand the difference between discovered attacks and discovered checks",
+    "Learn to create discovered attacks from seemingly static positions",
+    "Master the concept of the 'sacrificial' discovered attack"
+  ],
+  "plans": [
+    "Look for pieces lined up with enemy pieces - the piece behind might be able to attack",
+    "Consider moving a blocking piece to reveal an attack from your other piece",
+    "Discovered attacks often work best when combined with other threats"
+  ],
+  "commonMistakes": [
+    "Don't move a piece to create a discovered attack if it exposes your own king",
+    "Always calculate what the opponent can do after your discovered attack",
+    "A discovered attack is often just the first move - be ready for the follow-up"
+  ],
+  "completionTitle": "Powerful tactical weapon in your arsenal",
+  "completionSummary": "You've learned how to create and exploit discovered attacks, one of the most devastating tactical patterns in chess.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Setup for discovered attack",
+      "instruction": "Play e4 to begin the game and set up tactical possibilities.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5, mirroring White's central pawn.",
+      "coaching": "Symmetrical positions can still contain tactical opportunities."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3 to develop toward the center.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight to c6, attacking e5."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "The bishop lines up",
+      "instruction": "Move Bc4, placing the bishop on a square where it could attack f7.",
+      "coaching": "The bishop is now aimed at f7. If something moves off the e5-f6 diagonal, we could have a discovered attack.",
+      "hint": "Move the bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop moves to c5, putting pressure on f2."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Create the discovered attack",
+      "instruction": "Play d4! This moves the queen off the d1-h5 diagonal, but more importantly, we're setting up a discovered attack on the e5 knight.",
+      "coaching": "After d4, the knight on e5 is pinned - it cannot move because it would expose the king on e8 to a discovered attack from the bishop on c4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black must capture",
+      "instruction": "Black is forced to capture because moving the knight would expose the king.",
+      "coaching": "This is the power of the discovered attack - it creates forced moves."
+    },
+    {
+      "actor": "player",
+      "san": "Nxd4",
+      "title": "Win a piece",
+      "instruction": "Capture on d4 with the knight, winning a piece.",
+      "coaching": "The knight captures, developing and winning material. The discovered attack forced Black's hand.",
+      "hint": "Capture on d4 with the knight.",
+      "arrows": [{ "from": "f3", "to": "d4", "color": "#22c55e" }],
+      "focusSquares": ["d4", "c6"]
+    }
+  ]
+}

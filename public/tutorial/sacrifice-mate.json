@@ -1,0 +1,178 @@
+{
+  "id": "sacrifice-mate",
+  "kind": "tutorial",
+  "slug": "sacrifice-mate",
+  "title": "Tactics: Sacrificial Mates",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "advanced",
+  "summary": "Give up material to deliver checkmate - the GM specialty.",
+  "description": "Sacrificial mates are spectacular combination endings where you give up material (often the queen) to deliver checkmate. Recognizing these patterns and calculating the forced mate is a hallmark of GM-level chess.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Recognize when a sacrificial mate is possible",
+    "Learn to calculate forced mates",
+    "Understand common sacrificial mate patterns",
+    "Master the art of the queen sacrifice"
+  ],
+  "plans": [
+    "Look for positions where the king is exposed",
+    "Often involves luring the king to a bad square",
+    "Calculate to the end - there should be no escape"
+  ],
+  "commonMistakes": [
+    "Don't sacrifice if there's an escape for the king",
+    "Calculate carefully - the mate must be forced",
+    "Sometimes you need to give up more than the queen"
+  ],
+  "completionTitle": "Spectacular finishing moves",
+  "completionSummary": "You've learned to find and execute sacrificial mates.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "Pin the knight",
+      "instruction": "Play Bg5, pinning the knight.",
+      "hint": "Move the bishop to g5.",
+      "arrows": [{ "from": "c4", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "h6",
+      "title": "Black defends",
+      "instruction": "Black plays h6."
+    },
+    {
+      "actor": "player",
+      "san": "Bxf6",
+      "title": "Capture on f6",
+      "instruction": "Capture on f6!",
+      "hint": "Capture the knight on f6.",
+      "arrows": [{ "from": "g5", "to": "f6", "color": "#38bdf8" }],
+      "focusSquares": ["f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qxf6",
+      "title": "Queen captures",
+      "instruction": "Black's queen captures."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push e5",
+      "instruction": "Play e5! This attacks the queen.",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qe7",
+      "title": "Queen moves",
+      "instruction": "Black moves the queen."
+    },
+    {
+      "actor": "player",
+      "san": "Qxd8",
+      "title": "Win the queen",
+      "instruction": "Capture on d8! We've won the queen!",
+      "hint": "Capture the queen on d8!",
+      "arrows": [{ "from": "d1", "to": "d8", "color": "#22c55e" }],
+      "focusSquares": ["d8"]
+    }
+  ]
+}

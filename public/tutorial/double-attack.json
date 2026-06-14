@@ -1,0 +1,113 @@
+{
+  "id": "double-attack",
+  "kind": "tutorial",
+  "slug": "double-attack",
+  "title": "Tactics: Double Attacks",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "beginner",
+  "summary": "Learn to attack two objectives at once - a fundamental tactical pattern that wins material.",
+  "description": "A double attack threatens two pieces or squares simultaneously. Because your opponent can only respond to one threat, you will win material. This is one of the most common and important tactical patterns in chess.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6",
+  "objectives": [
+    "Identify pieces that can attack two targets at once",
+    "Learn to create double attacks from normal moves",
+    "Understand the concept of 'one threat - one response'",
+    "Master the fork and pin combinations"
+  ],
+  "plans": [
+    "Look for pieces that can be placed where they attack two valuable targets",
+    "Often, a simple move that attacks two pieces wins material",
+    "Knights are especially good at double attacks (forks)"
+  ],
+  "commonMistakes": [
+    "Don't launch a double attack without seeing what the opponent can do",
+    "Be careful not to create a double attack against your own pieces",
+    "A double attack is only good if you can escape any counter-threats"
+  ],
+  "completionTitle": "Material advantage through double attacks",
+  "completionSummary": "You've learned to identify and create double attacks, a fundamental tactical pattern.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Open the game",
+      "instruction": "Play e4 to control the center.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5, mirroring White's central control."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, attacking e5.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight to c6."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4, targeting f7.",
+      "hint": "Move the bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight to f6."
+    },
+    {
+      "actor": "player",
+      "san": "Ng5",
+      "title": "Attack f7",
+      "instruction": "Move Ng5, attacking f7! This forces a response from Black.",
+      "coaching": "The knight attacks f7. Black must defend this critical square.",
+      "hint": "Move the knight to g5, attacking f7.",
+      "arrows": [{ "from": "f3", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5", "f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black defends f7",
+      "instruction": "Black pushes d5, attacking the bishop.",
+      "coaching": "Black defends f7 and attacks our bishop - we need to move it."
+    },
+    {
+      "actor": "player",
+      "san": "Nf7",
+      "title": "The double attack",
+      "instruction": "Move the knight to f7! This attacks both the queen on d8 AND the rook on h8!",
+      "coaching": "This is a classic double attack - the knight attacks two major pieces! Black can only save one.",
+      "hint": "Move the knight to f7, attacking queen and rook!",
+      "arrows": [{ "from": "g5", "to": "f7", "color": "#22c55e" }],
+      "focusSquares": ["f7", "d8", "h8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qe7",
+      "title": "Black saves the queen",
+      "instruction": "The queen must move to safety.",
+      "coaching": "Black saves the queen, but we've won a rook!"
+    }
+  ]
+}

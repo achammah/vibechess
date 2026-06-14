@@ -1,0 +1,135 @@
+{
+  "id": "nimzowitsch-defense",
+  "kind": "tutorial",
+  "slug": "nimzowitsch-defense",
+  "title": "Nimzowitsch Defense: Classical",
+  "eco": "B00",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the Nimzowitsch Defense, a hypermodern opening where Black puts a knight on the fourth rank early.",
+  "description": "The Nimzowitsch is an aggressive, slightly unsound opening where Black moves a knight to c6 or b4 early. You'll learn why it's dangerous if White doesn't respond accurately.",
+  "line": "1.e4 Nc6 2.Nf3 e6 3.d4 d5 4.Bb5 Nf6 5.e5 Nd7 6.Bxc6 bxc6",
+  "objectives": [
+    "Understand the Nimzowitsch idea: unconventional development for dynamic play.",
+    "Learn typical White responses: develop and punish lazy knights.",
+    "Master the key: don't let Black develop in peace."
+  ],
+  "plans": [
+    "White uses the extra move to develop and attack the knight.",
+    "Black seeks to justify the early knight with piece activity.",
+    "The position is sharp: accurate play decides."
+  ],
+  "commonMistakes": [
+    "Do not over-react. The knight is not dangerous if you develop.",
+    "Avoid chasing the knight. Just develop and punish.",
+    "Do not underestimate Black's resourcefulness."
+  ],
+  "completionTitle": "White has better development",
+  "completionSummary": "The Nimzowitsch Defense teaches that unusual development can be punished with accurate play.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4 to control central space.",
+      "coaching": "White controls the center. Black has a surprise coming.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "The Nimzowitsch Defense",
+      "instruction": "The knight develops to c6, an unusual but aggressive move.",
+      "coaching": "This is Nimzowitsch: Black moves the knight to c6, attacking e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing and attacking e5.",
+      "coaching": "Natural development. White attacks the knight.",
+      "hint": "Develop the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black solidifies",
+      "instruction": "Play e6, supporting d5 and preparing development.",
+      "coaching": "Black solidifies the center. The position is taking shape."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "White builds central control. Black must develop carefully.",
+      "hint": "Push the d-pawn to d4.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black challenges the center",
+      "instruction": "Play d5, challenging White's center.",
+      "coaching": "Black challenges. The center is now contested."
+    },
+    {
+      "actor": "player",
+      "san": "Bb5",
+      "title": "Attack the knight",
+      "instruction": "Move Bb5, attacking the knight on c6.",
+      "coaching": "White attacks the knight. Black must decide: move or defend.",
+      "hint": "Develop the bishop to b5.",
+      "arrows": [{ "from": "f1", "to": "b5", "color": "#38bdf8" }],
+      "focusSquares": ["b5", "c6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black develops. The position is complex."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push in the center",
+      "instruction": "Play e5 to gain space.",
+      "coaching": "White gains space. The knight on c6 is now under pressure.",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "d4", "c6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nd7",
+      "title": "Black moves the knight",
+      "instruction": "The knight moves to d7.",
+      "coaching": "Black moves the knight to safety. The position is complex."
+    },
+    {
+      "actor": "player",
+      "san": "Bxc6",
+      "title": "Trade the bishop",
+      "instruction": "Capture on c6, winning a pawn.",
+      "coaching": "White wins a pawn. But Black gets counterplay.",
+      "hint": "Capture the knight on c6.",
+      "arrows": [{ "from": "b5", "to": "c6", "color": "#38bdf8" }],
+      "focusSquares": ["c6", "b7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "bxc6",
+      "title": "Black recaptures",
+      "instruction": "Black recaptures, opening lines.",
+      "coaching": "Black gets a weak pawn but open lines. The game is complex."
+    }
+  ]
+}

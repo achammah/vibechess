@@ -1,0 +1,180 @@
+{
+  "id": "benko-gambit",
+  "kind": "tutorial",
+  "slug": "benko-gambit",
+  "title": "Benko Gambit: Accepted",
+  "eco": "A57",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Explore the Benko Gambit, where Black sacrifices a pawn for queenside pressure and piece activity.",
+  "description": "The Benko Gambit is one of Black's most aggressive weapons. By sacrificing a pawn on b4, Black gains queenside pressure and piece activity. This tutorial covers the main line and typical patterns.",
+  "line": "1.d4 Nf6 2.c4 c5 3.d5 b5 4.cxb5 a6 5.bxa6 Bxa6",
+  "variations": {
+    "accepted": "5...Bxa6 - The Benko Gambit Accepted",
+    "declined": "5...g6 - The Benko Gambit Declined",
+    "modern": "4.Nf3 - The Modern Benko"
+  },
+  "objectives": [
+    "Understand the Benko Gambit: why the pawn sacrifice is worthwhile",
+    "Learn why Black gets queenside pressure and piece activity",
+    "Master typical plans: ...a6, ...Bxa6, and ...Rfb8",
+    "Recognize the typical tactical patterns"
+  ],
+  "plans": [
+    "White's plan: Hold the extra pawn and use central control",
+    "Black's plan: Create pressure on the b-file and queenside",
+    "The move ...a6 and ...Bxa6 is the main line",
+    "White should avoid exchanging - keep the pressure"
+  ],
+  "commonMistakes": [
+    "Do not think the Benko is bad for Black - it's very dangerous",
+    "Avoid playing too passively - keep the initiative",
+    "Do not underestimate Black's queenside play - it's powerful",
+    "White should maintain central control and piece activity"
+  ],
+  "completionTitle": "Complex position with Black's initiative",
+  "completionSummary": "The Benko Gambit is a sharp line. You've learned the main ideas and can play both sides.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The Benko Gambit is one of Black's most aggressive weapons.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black attacks d4 and prepares the Benko Gambit."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Challenge the center",
+      "instruction": "Play c4 to challenge d5.",
+      "coaching": "This is the standard setup against the Benko.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "The Benko Gambit begins",
+      "instruction": "Black pushes c5, attacking d4.",
+      "coaching": "This is the Benko Gambit! Black attacks the center."
+    },
+    {
+      "actor": "player",
+      "san": "d5",
+      "title": "White advances in the center",
+      "instruction": "Play d5 to create a large center.",
+      "coaching": "White advances, creating central space.",
+      "hint": "Push the d-pawn to d5.",
+      "arrows": [{ "from": "d4", "to": "d5", "color": "#38bdf8" }],
+      "focusSquares": ["d5", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b5",
+      "title": "The gambit move",
+      "instruction": "Black pushes b5, sacrificing a pawn.",
+      "coaching": "This is the Benko Gambit! Black sacrifices for queenside pressure."
+    },
+    {
+      "actor": "player",
+      "san": "cxb5",
+      "title": "White accepts the gambit",
+      "instruction": "Capture on b5 with the c-pawn.",
+      "coaching": "White accepts the pawn. Now Black gets initiative.",
+      "hint": "Capture on b5 with the c-pawn.",
+      "arrows": [{ "from": "c4", "to": "b5", "color": "#38bdf8" }],
+      "focusSquares": ["b5", "a5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "a6",
+      "title": "Black pushes a6",
+      "instruction": "Black plays a6, preparing to regain the pawn.",
+      "coaching": "Black prepares ...Bxa6 to regain the pawn with activity."
+    },
+    {
+      "actor": "player",
+      "san": "bxa6",
+      "title": "White pushes forward",
+      "instruction": "Capture on a6 with the b-pawn.",
+      "coaching": "White pushes the pawn, creating a protected passed pawn.",
+      "hint": "Capture on a6 with the b-pawn.",
+      "arrows": [{ "from": "b5", "to": "a6", "color": "#38bdf8" }],
+      "focusSquares": ["a6", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bxa6",
+      "title": "Black regains the pawn",
+      "instruction": "Capture on a6 with the bishop.",
+      "coaching": "Black regains the pawn with a powerful bishop on a6.",
+      "hint": "Capture on a6 with the bishop.",
+      "arrows": [{ "from": "c8", "to": "a6", "color": "#38bdf8" }],
+      "focusSquares": ["a6", "b5"]
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "White develops the knight, controlling d5.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black supports the center",
+      "instruction": "Black plays d6, preparing development.",
+      "coaching": "Black strengthens the center and prepares development."
+    },
+    {
+      "actor": "player",
+      "san": "g3",
+      "title": "Prepare the bishop",
+      "instruction": "Play g3 to prepare Bg2.",
+      "coaching": "White prepares the fianchetto, controlling the long diagonal.",
+      "hint": "Push the g-pawn one square.",
+      "arrows": [{ "from": "g2", "to": "g3", "color": "#38bdf8" }],
+      "focusSquares": ["g3", "g2"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "Black plays g6",
+      "instruction": "Black plays g6, setting up the fianchetto.",
+      "coaching": "Black is setting up a King's Indian-style structure."
+    },
+    {
+      "actor": "player",
+      "san": "Bg2",
+      "title": "Develop the bishop",
+      "instruction": "Move the bishop to g2.",
+      "coaching": "White develops the bishop, controlling the long diagonal.",
+      "hint": "Move the bishop to g2.",
+      "arrows": [{ "from": "c1", "to": "g2", "color": "#38bdf8" }],
+      "focusSquares": ["g2", "a8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to g7.",
+      "coaching": "Black develops the bishop, completing the fianchetto."
+    }
+  ]
+}

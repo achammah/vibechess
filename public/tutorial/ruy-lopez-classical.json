@@ -1,0 +1,84 @@
+{
+  "id": "ruy-lopez-classical",
+  "kind": "tutorial",
+  "slug": "ruy-lopez-classical",
+  "title": "Ruy Lopez: Classical Defense",
+  "eco": "C64",
+  "category": "open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Master the Ruy Lopez Classical, where White develops naturally and prepares to break through Black's solid but passive setup.",
+  "description": "This tutorial teaches the Classical Defense to the Ruy Lopez, one of the oldest and most respected lines. You'll learn why White's bishop pair and central control matter, and how to play for a small but lasting advantage through better development.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bb5 Bc5",
+  "objectives": [
+    "Control the center with e4 and prepare d4 to open the position for your bishop pair.",
+    "Understand why the Classical move ...Bc5 is solid but gives White a free hand to expand.",
+    "Learn how to use the extra tempo from Black's passive setup to build a genuine initiative."
+  ],
+  "plans": [
+    "White typically plays c3 and d4 to open the center, using the bishop pair to dominate.",
+    "If Black plays ...d6, consider Bc4 for a more aggressive setup targeting f7.",
+    "The key is patience: Black is solid but has no active plan, so methodical development is enough."
+  ],
+  "commonMistakes": [
+    "Do not rush to win a pawn with Bxc6. This gives Black counterplay and releases the tension prematurely.",
+    "Avoid overextending before development is complete. The advantage comes from better pieces, not premature attacks.",
+    "Do not fear Black's ...d5 break. If you develop properly, you can meet it actively."
+  ],
+  "completionTitle": "White has a commanding position",
+  "completionSummary": "You've learned the Classical Ruy Lopez: a solid opening where White's patient development is rewarded with a lasting initiative.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Claim central space",
+      "instruction": "Start with the standard e4, controlling the center and opening lines for your queen and bishop.",
+      "coaching": "The e4 pawn is the most common first move for a reason: it immediately contests the center and prepares for piece development.",
+      "hint": "Push the king pawn two squares forward.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black mirrors in the center",
+      "instruction": "Black responds symmetrically, establishing an equal central presence.",
+      "coaching": "The open game begins. Both sides have pawns in the center, setting up classic strategic battles."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight toward the center",
+      "instruction": "Move the knight to f3, attacking e5 and supporting d4.",
+      "coaching": "The knight on f3 controls e5 and g5, and prepares castling. This is the most natural developing move.",
+      "hint": "Bring the knight from g1 toward the center.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops the other knight",
+      "instruction": "The knight develops to its natural square, also eyeing e5 and d4.",
+      "coaching": "Black matches your development. The symmetrical knight development is sound, keeping the position balanced."
+    },
+    {
+      "actor": "player",
+      "san": "Bb5",
+      "title": "The Ruy Lopez key move",
+      "instruction": "Place the bishop on b5, attacking the knight on c6 and controlling the critical e5 square.",
+      "coaching": "This is the defining move of the Ruy Lopez. White pins the knight and prepares to dominate the center. Black must now decide how to handle the pin.",
+      "hint": "Move the bishop to the long diagonal, pinning the knight on c6.",
+      "arrows": [{ "from": "f1", "to": "b5", "color": "#38bdf8" }],
+      "focusSquares": ["b5", "c6", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "The Classical Defense",
+      "instruction": "Black develops the bishop to c5, challenging White's central control without weakening.",
+      "coaching": "This is the Classical Defense: solid and sound. Black matches White's development and prepares to castle. The position is balanced, but White has a tiny lead in development."
+    }
+  ]
+}

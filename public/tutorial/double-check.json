@@ -1,0 +1,164 @@
+{
+  "id": "double-check",
+  "kind": "tutorial",
+  "slug": "double-check",
+  "title": "Tactics: Double Check",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "The most powerful check - delivering check from two directions at once.",
+  "description": "A double check occurs when a move gives check in two different directions simultaneously. This forces the king to move - it cannot capture or block the check. Double checks often lead to forced checkmate or huge material gains.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Recognize how double check arises",
+    "Understand why double check forces king movement",
+    "Learn to create double checks",
+    "Master double check combinations"
+  ],
+  "plans": [
+    "Look for moves that can give check in two ways",
+    "Often a discovered check becomes a double check",
+    "After double check, the king must move"
+  ],
+  "commonMistakes": [
+    "Don't assume double check always leads to mate",
+    "Calculate what happens after the king moves",
+    "Sometimes the opponent can block one check"
+  ],
+  "completionTitle": "Forcing the king to move",
+  "completionSummary": "You've learned to create and exploit double checks.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push e5",
+      "instruction": "Play e5!",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black defends",
+      "instruction": "Black pushes d5."
+    },
+    {
+      "actor": "player",
+      "san": "Nxe5",
+      "title": "Knight to e5",
+      "instruction": "Move the knight to e5! This gives discovered check on the queen!",
+      "hint": "Move the knight to e5.",
+      "arrows": [{ "from": "f3", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "d8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Be6",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "Ng6",
+      "title": "Double check!",
+      "instruction": "Move Ng6! This gives double check - from the knight and from the bishop!",
+      "coaching": "This is a double check! The knight attacks the king from g6, and by moving, it reveals a check from the bishop on c4 to the rook on h8! Black must move the king!",
+      "hint": "Move the knight to g6 - DOUBLE CHECK!",
+      "arrows": [{ "from": "e5", "to": "g6", "color": "#22c55e" }],
+      "focusSquares": ["g6", "e8", "h8"]
+    }
+  ]
+}

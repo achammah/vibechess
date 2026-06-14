@@ -1,0 +1,135 @@
+{
+  "id": "modern-defense",
+  "kind": "tutorial",
+  "slug": "modern-defense",
+  "title": "Modern Defense: Pterodactyl",
+  "eco": "B06",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the Modern Defense with the Pterodactyl, where Black creates an unusual pawn structure for dynamic play.",
+  "description": "The Modern Defense is a flexible opening where Black allows White to build then attacks. The Pterodactyl is a tricky system where Black fianchettoes and plays ...b5 early.",
+  "line": "1.e4 g6 2.d4 Bg7 3.Nc3 d6 4.Nf3 a6 5.a4 b6 6.Bg5 Bg4",
+  "objectives": [
+    "Understand the Modern idea: let White build, then strike back.",
+    "Learn the Pterodactyl: unusual but dangerous.",
+    "Master flexible play in asymmetric positions."
+  ],
+  "plans": [
+    "White uses extra space to attack, but must be careful of Black's counterplay.",
+    "Black seeks piece activity and pawn breaks.",
+    "The Pterodactyl is tricky: both sides have unusual plans."
+  ],
+  "commonMistakes": [
+    "Do not underestimate Black's setup. It's solid.",
+    "Avoid passive play. Keep the initiative.",
+    "Do not ignore Black's queenside play."
+  ],
+  "completionTitle": "Dynamic position with chances for both",
+  "completionSummary": "The Modern Defense teaches flexible play and dynamic counterattack.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4 to control central space.",
+      "coaching": "White controls the center. Black will respond with the Modern.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "The Modern Defense",
+      "instruction": "Play g6, preparing the fianchetto.",
+      "coaching": "This is the Modern: Black avoids early theory and develops flexibly."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to establish central control.",
+      "coaching": "White builds the center. Black will attack it with pieces.",
+      "hint": "Push the queen pawn to d4.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "Black fianchettoes",
+      "instruction": "The bishop develops to g7.",
+      "coaching": "This is the Modern setup: bishop on g7 gives strong diagonal pressure."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "Natural development. White is building a central position.",
+      "hint": "Develop the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black solidifies",
+      "instruction": "Play d6, supporting the center.",
+      "coaching": "Black prepares development while keeping the position solid."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, completing kingside development.",
+      "coaching": "White develops naturally, preparing for castling.",
+      "hint": "Develop the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "a6",
+      "title": "The Pterodactyl begins",
+      "instruction": "Play a6, preparing the b5 break.",
+      "coaching": "This is the Pterodactyl: Black plays ...a6, then ...b5, creating queenside pressure."
+    },
+    {
+      "actor": "player",
+      "san": "a4",
+      "title": "Prevent b5",
+      "instruction": "Play a4 to prevent the b5 break.",
+      "coaching": "White prevents the break. But Black has other ideas.",
+      "hint": "Push a4 to stop ...b5.",
+      "arrows": [{ "from": "a2", "to": "a4", "color": "#38bdf8" }],
+      "focusSquares": ["a4", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b6",
+      "title": "Black prepares b5 anyway",
+      "instruction": "Play b6, keeping the b5 idea alive.",
+      "coaching": "Black prepares b5 anyway. The battle continues on the queenside."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "Develop the bishop",
+      "instruction": "Move Bg5, developing and pressuring.",
+      "coaching": "White develops actively. The center is heating up.",
+      "hint": "Develop the bishop to g5.",
+      "arrows": [{ "from": "c1", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5", "f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg4",
+      "title": "Black develops",
+      "instruction": "The bishop develops to g4.",
+      "coaching": "Black develops. The Pterodactyl is taking shape."
+    }
+  ]
+}

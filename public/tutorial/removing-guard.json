@@ -1,0 +1,158 @@
+{
+  "id": "removing-guard",
+  "kind": "tutorial",
+  "slug": "removing-guard",
+  "title": "Tactics: Removal of the Guard",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn to remove the defender and capture protected pieces.",
+  "description": "The removal of the guard (also called 'defender removal') is a tactical theme where you capture or drive away the piece that defends another piece or critical square. This allows you to capture the defended piece or deliver checkmate. Essential for GM-level tactics.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Nf6 4.Ng5",
+  "objectives": [
+    "Recognize when a piece is protected by another",
+    "Learn to identify the defender",
+    "Understand how to remove the guard",
+    "Master combining removal with other tactical themes"
+  ],
+  "plans": [
+    "Find the piece that is defended - it might be worth capturing",
+    "Look for its defender - if you can remove it, you can capture",
+    "Often involves a sacrifice to remove the guard"
+  ],
+  "commonMistakes": [
+    "Don't capture a protected piece without removing the guard first",
+    "Remember: sometimes a piece is defended by multiple pieces",
+    "The removal can be by capture or by driving the defender away"
+  ],
+  "completionTitle": "Breaking through defenses",
+  "completionSummary": "You've learned to identify and exploit defended pieces through removal of the guard.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Ng5",
+      "title": "Attack f7",
+      "instruction": "Move Ng5! This attacks f7.",
+      "coaching": "The knight attacks f7, a weak square in Black's position.",
+      "hint": "Move the knight to g5.",
+      "arrows": [{ "from": "f3", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5", "f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black defends f7",
+      "instruction": "Black pushes d5, attacking the bishop.",
+      "coaching": "The pawn attacks our bishop on c4. We need to move it."
+    },
+    {
+      "actor": "player",
+      "san": "exd5",
+      "title": "Capture on d5",
+      "instruction": "Capture on d5 with the pawn!",
+      "hint": "Capture the pawn on d5.",
+      "arrows": [{ "from": "e4", "to": "d5", "color": "#38bdf8" }],
+      "focusSquares": ["d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e4",
+      "title": "Black pushes",
+      "instruction": "Black pushes e4, attacking the knight on g5."
+    },
+    {
+      "actor": "player",
+      "san": "Qe2",
+      "title": "Queen to e2",
+      "instruction": "Move Qe2, defending the knight.",
+      "hint": "Move the queen to e2.",
+      "arrows": [{ "from": "d1", "to": "e2", "color": "#38bdf8" }],
+      "focusSquares": ["e2", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Be7",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "d3",
+      "title": "Push d3",
+      "instruction": "Play d3, preparing to attack.",
+      "hint": "Push the d-pawn one square.",
+      "arrows": [{ "from": "d2", "to": "d3", "color": "#38bdf8" }],
+      "focusSquares": ["d3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside."
+    },
+    {
+      "actor": "player",
+      "san": "Bxf7",
+      "title": "Capture on f7",
+      "instruction": "Capture on f7! This attacks the king!",
+      "coaching": "The bishop captures on f7. But wait - there's a defender!",
+      "hint": "Capture the knight on f7 with the bishop.",
+      "arrows": [{ "from": "c4", "to": "f7", "color": "#22c55e" }],
+      "focusSquares": ["f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Kxf7",
+      "title": "King captures",
+      "instruction": "The king must capture the bishop!",
+      "coaching": "The king captures on f7. Now look at the position - the knight on g5 is attacking f7, and the queen on e2 is aimed at f7! The bishop was the guard..."
+    }
+  ]
+}

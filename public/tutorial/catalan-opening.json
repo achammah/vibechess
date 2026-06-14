@@ -1,0 +1,194 @@
+{
+  "id": "catalan-opening",
+  "kind": "tutorial",
+  "slug": "catalan-opening",
+  "title": "Catalan Opening: Closed Variation",
+  "eco": "E06",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Learn the strategic Catalan, where White plays a reversed Benoni for a small but lasting advantage.",
+  "description": "The Catalan is one of White's most prestigious openings. By playing d4 and then g3/Bg2, White creates a reversed Benoni structure with a slight edge. This tutorial covers the main line, typical plans, and endgame techniques.",
+  "line": "1.d4 d5 2.c4 e6 3.Nf3 Nf6 4.g3 Be7 5.Bg2 O-O 6.O-O dxc4",
+  "variations": {
+    "mainLine": "6...dxc4 - The Catalan Accepted",
+    "decline": "6...c6 - The Catalan Declined, avoiding the exchange",
+    "modern": "5...O-O 6.O-O b6 - The Modern Catalan"
+  },
+  "objectives": [
+    "Understand the Catalan structure: why it's positionally desirable",
+    "Learn why the bishop pair and central control matter",
+    "Master typical plans: e3, Nbd2, or Ne5 depending on position",
+    "Recognize the typical endgame positions"
+  ],
+  "plans": [
+    "White's plan: Use the bishop pair and central control for a small edge",
+    "Black's plan: Exchange pieces and create counterplay on the queenside",
+    "The move ...dxc4 gives White a small but lasting advantage",
+    "White should avoid exchanging - keep pieces for the advantage"
+  ],
+  "commonMistakes": [
+    "Do not think the Catalan is boring - there are many subtle ideas",
+    "Avoid playing too passively - maintain the initiative",
+    "Do not underestimate Black's activity - the queen and bishop can be dangerous",
+    "White should prepare e3 carefully before pushing e4"
+  ],
+  "completionTitle": "Strategic position with White's slight edge",
+  "completionSummary": "The Catalan is a prestigious opening. You've learned the main ideas and can navigate the position.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The Catalan is one of White's most strategic openings.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black responds in the center",
+      "instruction": "Black plays d5, challenging White's center.",
+      "coaching": "Black meets the Catalan with a solid central reply."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "The Catalan move",
+      "instruction": "Play c4 to challenge d5.",
+      "coaching": "This is the Catalan! White offers a reversed Benoni.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black plays e6",
+      "instruction": "Black plays e6, preparing the Queen's Gambit structure.",
+      "coaching": "Black is setting up the Catalan structure."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center.",
+      "coaching": "White develops naturally, controlling e5.",
+      "hint": "Move the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black continues development, attacking d4."
+    },
+    {
+      "actor": "player",
+      "san": "g3",
+      "title": "The Catalan fianchetto",
+      "instruction": "Play g3 to prepare Bg2.",
+      "coaching": "This is the Catalan setup! White fianchettoes the bishop.",
+      "hint": "Push the g-pawn one square.",
+      "arrows": [{ "from": "g2", "to": "g3", "color": "#38bdf8" }],
+      "focusSquares": ["g3", "g2"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Be7",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to e7.",
+      "coaching": "Black develops the bishop, preparing castling."
+    },
+    {
+      "actor": "player",
+      "san": "Bg2",
+      "title": "The Catalan bishop",
+      "instruction": "Move the bishop to g2, controlling the long diagonal.",
+      "coaching": "This is the key move! The bishop controls e4, d5, and c6.",
+      "hint": "Move the bishop to g2.",
+      "arrows": [{ "from": "c1", "to": "g2", "color": "#38bdf8" }],
+      "focusSquares": ["g2", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Black gets the king to safety."
+    },
+    {
+      "actor": "player",
+      "san": "O-O",
+      "title": "White castles",
+      "instruction": "White castles kingside.",
+      "coaching": "White castles, completing development.",
+      "hint": "Castle kingside.",
+      "arrows": [{ "from": "e1", "to": "g1", "color": "#38bdf8" }],
+      "focusSquares": ["g1", "f1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "dxc4",
+      "title": "Black accepts the gambit",
+      "instruction": "Black captures on c4.",
+      "coaching": "This is the Catalan Accepted. Black takes the pawn."
+    },
+    {
+      "actor": "player",
+      "san": "Qc2",
+      "title": "Develop the queen",
+      "instruction": "Move the queen to c2, supporting the pawn.",
+      "coaching": "White develops the queen, preparing to regain the pawn.",
+      "hint": "Move the queen to c2.",
+      "arrows": [{ "from": "d1", "to": "c2", "color": "#38bdf8" }],
+      "focusSquares": ["c2", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b5",
+      "title": "Black pushes b5",
+      "instruction": "Black pushes b5, creating queenside pressure.",
+      "coaching": "Black creates counterplay on the queenside."
+    },
+    {
+      "actor": "player",
+      "san": "a4",
+      "title": "Challenge Black's expansion",
+      "instruction": "Play a4 to challenge b5.",
+      "coaching": "White meets the queenside play with a4.",
+      "hint": "Push the a-pawn two squares.",
+      "arrows": [{ "from": "a2", "to": "a4", "color": "#38bdf8" }],
+      "focusSquares": ["a4", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "a6",
+      "title": "Black supports the pawn",
+      "instruction": "Black plays a6, supporting b5.",
+      "coaching": "Black maintains the pawn structure."
+    },
+    {
+      "actor": "player",
+      "san": "axb5",
+      "title": "Exchange on b5",
+      "instruction": "Capture on b5 with the a-pawn.",
+      "coaching": "White exchanges, gaining the b-file.",
+      "hint": "Capture on b5.",
+      "arrows": [{ "from": "a4", "to": "b5", "color": "#38bdf8" }],
+      "focusSquares": ["b5", "a6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "axb5",
+      "title": "Black recaptures",
+      "instruction": "Black recaptures with the a-pawn.",
+      "coaching": "Black gets a pawn on b5 but loses castling rights."
+    }
+  ]
+}

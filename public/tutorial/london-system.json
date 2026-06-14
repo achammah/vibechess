@@ -1,0 +1,144 @@
+{
+  "id": "london-system",
+  "kind": "tutorial",
+  "slug": "london-system",
+  "title": "London System: Standard Setup",
+  "eco": "D02",
+  "category": "symmetrical",
+  "side": "white",
+  "difficulty": "beginner",
+  "summary": "Master the reliable London System, a flexible setup that avoids theory and plays solid chess.",
+  "description": "The London System is one of White's most reliable openings. By playing d4, Bf4, and e3, White creates a solid position that avoids main line theory. This tutorial covers the standard setup and typical plans for both sides.",
+  "line": "1.d4 d5 2.Bf4 Nf6 3.e3 c5 4.c3 Nc6 5.Nd2",
+  "variations": {
+    "mainLine": "5.Nd2 - The standard London with Nd2",
+    "sysyp": "5.Nf3 - The Nf3 London, avoiding the Jobava",
+    "modern": "4.dxc5 - The accelerated London"
+  },
+  "objectives": [
+    "Understand the London structure: why it's solid and reliable",
+    "Learn why it avoids theory: the move order is flexible",
+    "Master typical plans: e4 break, or play positionally",
+    "Recognize the typical pawn structures"
+  ],
+  "plans": [
+    "White's plan: Build a solid position, then push e4 to attack",
+    "Black's plan: Play ...c5, ...e6, and create counterplay",
+
+    "The move e4 is White's main break to open the position",
+    "White should maintain central pressure and piece activity"
+  ],
+  "commonMistakes": [
+    "Do not think the London is boring - there are many strategic ideas",
+    "Avoid playing too passively - keep the initiative",
+    "Do not underestimate Black's activity - they have many options",
+    "White should prepare e4 carefully before pushing"
+  ],
+  "completionTitle": "Solid position with long-term planning",
+  "completionSummary": "The London System is a reliable opening. You've learned the main ideas and can navigate the position.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The London System is one of White's most reliable openings.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black responds in the center",
+      "instruction": "Black plays d5, challenging White's center.",
+      "coaching": "Black meets the London with a solid central reply."
+    },
+    {
+      "actor": "player",
+      "san": "Bf4",
+      "title": "The London move",
+      "instruction": "Move the bishop to f4, controlling e5.",
+      "coaching": "This is the London System! White develops the bishop early.",
+      "hint": "Move the bishop to f4.",
+      "arrows": [{ "from": "c1", "to": "f4", "color": "#38bdf8" }],
+      "focusSquares": ["f4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black continues development, attacking d4."
+    },
+    {
+      "actor": "player",
+      "san": "e3",
+      "title": "Support the center",
+      "instruction": "Play e3 to support the d4 pawn.",
+      "coaching": "White strengthens the center and prepares development.",
+      "hint": "Push the e-pawn one square.",
+      "arrows": [{ "from": "e2", "to": "e3", "color": "#38bdf8" }],
+      "focusSquares": ["e3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black challenges the center",
+      "instruction": "Black pushes c5, attacking d4.",
+      "coaching": "This is Black's typical break against the London."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Support the d4 pawn",
+      "instruction": "Play c3 to support d4.",
+      "coaching": "White strengthens the center, preparing for development.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to c6.",
+      "coaching": "Black continues development, mirroring White's setup."
+    },
+    {
+      "actor": "player",
+      "san": "Nd2",
+      "title": "Develop the knight",
+      "instruction": "Move Nd2, developing toward the center.",
+      "coaching": "White develops the knight, supporting e4 and c4.",
+      "hint": "Move the knight to d2.",
+      "arrows": [{ "from": "g1", "to": "d2", "color": "#38bdf8" }],
+      "focusSquares": ["d2", "e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black plays e6",
+      "instruction": "Black plays e6, completing the structure.",
+      "coaching": "Black adopts a solid pawn structure."
+    },
+    {
+      "actor": "player",
+      "san": "Ngf3",
+      "title": "Develop the other knight",
+      "instruction": "Move the knight to f3.",
+      "coaching": "White completes development.",
+      "hint": "Move the knight from g1 to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Be7",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to e7.",
+      "coaching": "Black develops the bishop, preparing castling."
+    }
+  ]
+}

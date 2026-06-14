@@ -1,0 +1,12 @@
+{
+  "kind": "quiz",
+  "id": "h02",
+  "title": "Légall's Trap",
+  "fen": "r1bqkb1r/pppp1ppp/2n2n2/4p3/2B1P3/5N2/PPPP1PPP/RNBQKB1R w KQkq - 4 4",
+  "solution": ["Bxf7", "Kxf7", "Ng5"],
+  "theme": "fork",
+  "difficulty": "hard",
+  "description": "White to move — find the famous trap sequence!",
+  "moveCount": 3,
+  "turn": "white"
+}

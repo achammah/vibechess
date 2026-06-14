@@ -1,0 +1,228 @@
+{
+  "id": "sicilian-najdorf",
+  "kind": "tutorial",
+  "slug": "sicilian-najdorf",
+  "title": "Sicilian Defense: Najdorf Variation",
+  "eco": "B90",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Master the aggressive Najdorf, where Black creates a powerful kingside attack at the cost of pawn structure weaknesses.",
+  "description": "The Najdorf is one of Black's most dangerous weapons against 1.e4. You'll learn why the move ...a5 (the English Attack) is so feared, and how to navigate the complex positions that arise. This tutorial covers multiple patterns: the English Attack, the Polugayevsky Variation, and typical endgame structures.",
+  "line": "1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 a6 6.Bg5",
+  "variations": {
+    "englishAttack": "6.Bg5 e6 7.f4 - White pushes kingside pawns for attack",
+    "polugayevsky": "6.Bg5 e6 7.f4 h5 - Black counters with kingside pawn storm",
+    "classical": "6.Be3 - A solid alternative avoiding the English Attack"
+  },
+  "objectives": [
+    "Understand the strategic trade-off: Black gets attack, White gets structure",
+    "Learn the dangerous English Attack (6.Bg5 e6 7.f4) and how to meet it",
+    "Master the typical pawn breaks: ...e5, ...b5, and ...d5",
+    "Recognize the Endgame that arises in many Najdorf lines"
+  ],
+  "plans": [
+    "White's plan: Build a solid center, castle kingside, and attack on the queenside with b4-b5",
+    "If Black plays ...e5, consider Nde2 or Ndb5 to control the d5 square",
+    "The move h4-h5-h6 is a standard Kingside Attack pattern",
+    "In the endgame, Black's isolated pawn on d5 can become a target"
+  ],
+  "commonMistakes": [
+    "Do not underestimate Black's attack. The Najdorf is one of the most aggressive openings",
+    "Avoid moving the queen too early. Wait for Black to commit before launching counterattacks",
+    "Do not castle kingside too early if Black has already pushed f5-f4",
+    "The b5 break is White's main queenside weapon - don't forget about it"
+  ],
+  "completionTitle": "Complex battle with attacking chances for both",
+  "completionSummary": "The Najdorf is a sharp, double-edged opening. You've learned the main patterns and plans from both sides.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4 to claim central space and open lines for your pieces.",
+      "coaching": "The Sicilian Najdorf is Black's most ambitious response to 1.e4, creating imbalanced positions.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black plays the Sicilian",
+      "instruction": "Black strikes at the center with c5, creating an asymmetrical position.",
+      "coaching": "The Sicilian creates a race: Black attacks, White builds structure."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center and attacking e5.",
+      "coaching": "Natural development is best. The knight controls important central squares.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black supports the center",
+      "instruction": "The pawn on d6 supports ...e5 and prepares ...Nf6.",
+      "coaching": "This is standard in most Sicilian lines. Black is setting up for piece play."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4 to open the position and gain a spatial advantage.",
+      "coaching": "This is the main line. White accepts the isolated pawn structure for better position.",
+      "hint": "Push the d-pawn to challenge c5.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "cxd4",
+      "title": "Black exchanges",
+      "instruction": "Black captures on d4, giving up the d-pawn for rapid development.",
+      "coaching": "This is the main idea of the Sicilian: pawn for development."
+    },
+    {
+      "actor": "player",
+      "san": "Nxd4",
+      "title": "Recapture and develop",
+      "instruction": "Take back with the knight, developing and controlling the center.",
+      "coaching": "White has a lead in development and central control. Slight edge.",
+      "hint": "Capture on d4 with the knight.",
+      "arrows": [{ "from": "f3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, attacking e4.",
+      "coaching": "Black completes development and puts pressure on e4."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the other knight",
+      "instruction": "Move Nc3, completing development and controlling important squares.",
+      "coaching": "White continues development. The knight controls d5 and e4.",
+      "hint": "Develop the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "a6",
+      "title": "The Najdorf move",
+      "instruction": "The pawn on a6 prepares ...b5 and protects the knight on c6.",
+      "coaching": "This is the Najdorf's signature move, preparing queenside expansion and defending b5."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "The English Attack setup",
+      "instruction": "Place the bishop on g5, putting pressure on f6 and preparing f4.",
+      "coaching": "This is the start of the English Attack, White's most dangerous continuation. It prepares a kingside pawn storm.",
+      "hint": "Move the bishop to g5, pinning the knight.",
+      "arrows": [{ "from": "c1", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5", "f6", "e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black plays the Najdorf structure",
+      "instruction": "The pawn on e6 supports d5 and prepares ...Be7.",
+      "coaching": "Black adopts the typical Najdorf pawn structure: pawns on e6, d6, c5."
+    },
+    {
+      "actor": "player",
+      "san": "f4",
+      "title": "Begin the kingside attack",
+      "instruction": "Play f4 to build a pawn center and prepare the attack.",
+      "coaching": "This is the English Attack: White pushes f4 to support e5 and attack.",
+      "hint": "Push the f-pawn two squares.",
+      "arrows": [{ "from": "f2", "to": "f4", "color": "#38bdf8" }],
+      "focusSquares": ["f4", "e5", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Be7",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to e7, defending the king and clearing a8.",
+      "coaching": "Black completes kingside development and prepares castling."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Recapture with the knight",
+      "instruction": "Move the knight to f3, completing development.",
+      "coaching": "White has a strong central position and attacking chances on both wings.",
+      "hint": "Move the knight to f3.",
+      "arrows": [{ "from": "d4", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside, getting the king to safety.",
+      "coaching": "Both sides have now castled. The battle intensifies."
+    },
+    {
+      "actor": "player",
+      "san": "Be2",
+      "title": "Develop the bishop",
+      "instruction": "Move the bishop to e2, completing development.",
+      "coaching": "White develops the bishop to a square where it supports the kingside attack.",
+      "hint": "Move the bishop to e2.",
+      "arrows": [{ "from": "f1", "to": "e2", "color": "#38bdf8" }],
+      "focusSquares": ["e2", "f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b5",
+      "title": "Black's queenside expansion",
+      "instruction": "Black pushes b5, challenging White's queenside.",
+      "coaching": "This is Black's main queenside break in the Najdorf. It creates counterplay."
+    },
+    {
+      "actor": "player",
+      "san": "a4",
+      "title": "Challenge Black's expansion",
+      "instruction": "Play a4 to challenge b5 and gain space on the queenside.",
+      "coaching": "White meets the queenside play with a4, contesting Black's expansion.",
+      "hint": "Push the a-pawn to challenge b5.",
+      "arrows": [{ "from": "a2", "to": "a4", "color": "#38bdf8" }],
+      "focusSquares": ["a4", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b4",
+      "title": "Black advances on the queenside",
+      "instruction": "Black pushes b4, gaining queenside space.",
+      "coaching": "Black continues queenside expansion. The position is complex."
+    },
+    {
+      "actor": "player",
+      "san": "axb5",
+      "title": "Exchange on b4",
+      "instruction": "Capture on b4 with the a-pawn.",
+      "coaching": "White exchanges, gaining the b-file and removing Black's queenside pawn.",
+      "hint": "Capture on b4.",
+      "arrows": [{ "from": "a4", "to": "b5", "color": "#38bdf8" }],
+      "focusSquares": ["b5", "a5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "axb5",
+      "title": "Black recaptures",
+      "instruction": "Black recaptures with the a-pawn.",
+      "coaching": "Black gets an isolated pawn on a5 but keeps queenside pressure."
+    }
+  ]
+}

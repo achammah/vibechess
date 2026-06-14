@@ -1,0 +1,177 @@
+{
+  "id": "grunfeld-exchange",
+  "kind": "tutorial",
+  "slug": "grunfeld-exchange",
+  "title": "Grünfeld Defense: Exchange Variation",
+  "eco": "D85",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Enter the Grünfeld Exchange, where White challenges Black's center directly with pawns.",
+  "description": "The Grünfeld Defense is one of Black's most dynamic openings. The Exchange Variation (4.cxd5 Nxd5 5.e4) is White's main line, directly challenging Black's central structure. This tutorial covers the main line and typical patterns.",
+  "line": "1.d4 Nf6 2.c4 g6 3.Nc3 d5 4.cxd5 Nxd5 5.e4 Nxc3 6.bxc3",
+  "variations": {
+    "mainLine": "6.bxc3 - The main line with bxc3",
+    "modern": "6.axb3 - The Russian Variation, avoiding doubled pawns",
+    "avoidance": "4.Nf3 - Avoiding the Exchange with the Fianchetto"
+  },
+  "objectives": [
+    "Understand the Grünfeld structure: central pawn vs. piece activity",
+    "Learn why White accepts doubled pawns: e4 break and space advantage",
+    "Master typical plans: e5/e6 for White, ...c5 for Black",
+    "Recognize the typical tactical patterns"
+  ],
+  "plans": [
+    "White's plan: Use the e4 break to open the position for the bishops",
+    "Black's plan: Play ...c5, ...Qc7, and create counterplay",
+    "The move ...c5 is Black's main break to challenge the center",
+    "White should avoid exchanging too much - keep the pressure"
+  ],
+  "commonMistakes": [
+    "Do not think the Exchange is boring - it's very tactical",
+    "Avoid playing e4 too early without proper development",
+    "Do not underestimate Black's counterattack - the Grünfeld is dangerous",
+    "White should maintain central pressure before pushing too far"
+  ],
+  "completionTitle": "Dynamic position with attacking chances",
+  "completionSummary": "The Grünfeld Exchange is a sharp line. You've learned the main ideas and can play both sides.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The Grünfeld is one of Black's most dynamic defenses.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black attacks d4 and prepares the Grünfeld."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Challenge the center",
+      "instruction": "Play c4 to challenge d5.",
+      "coaching": "This is the standard setup against the Grünfeld.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "Black plays g6",
+      "instruction": "Black plays g6, setting up the fianchetto.",
+      "coaching": "This is the Grünfeld! Black will develop the bishop to g7."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "White develops the knight, controlling d5.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black plays d5",
+      "instruction": "Black plays d5, challenging the center.",
+      "coaching": "This is the key move! Black attacks c4 and controls e4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd5",
+      "title": "The Exchange begins",
+      "instruction": "Capture on d5 with the c-pawn.",
+      "coaching": "This is the Exchange Variation! White accepts the pawn structure.",
+      "hint": "Capture on d5 with the c-pawn.",
+      "arrows": [{ "from": "c4", "to": "d5", "color": "#38bdf8" }],
+      "focusSquares": ["d5", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nxd5",
+      "title": "Black recaptures",
+      "instruction": "Black captures on d5 with the knight.",
+      "coaching": "Black gets the pawn back and simplifies the position."
+    },
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "The central break",
+      "instruction": "Play e4 to challenge the center.",
+      "coaching": "This is the main line! White attacks with e4.",
+      "hint": "Push the e-pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nxc3",
+      "title": "Black captures",
+      "instruction": "Black captures on c3.",
+      "coaching": "Black exchanges, giving White doubled pawns."
+    },
+    {
+      "actor": "player",
+      "san": "bxc3",
+      "title": "White recaptures",
+      "instruction": "Take back with the c-pawn.",
+      "coaching": "White accepts the doubled pawns but gains central control.",
+      "hint": "Capture on c3 with the c-pawn.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to g7.",
+      "coaching": "Black develops the bishop, controlling the long diagonal."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, completing development.",
+      "coaching": "White develops the knight, supporting e4.",
+      "hint": "Move the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Black gets the king to safety."
+    },
+    {
+      "actor": "player",
+      "san": "Be2",
+      "title": "Develop the bishop",
+      "instruction": "Move the bishop to e2.",
+      "coaching": "White develops the bishop, completing development.",
+      "hint": "Move the bishop to e2.",
+      "arrows": [{ "from": "f1", "to": "e2", "color": "#38bdf8" }],
+      "focusSquares": ["e2", "f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black's central break",
+      "instruction": "Black pushes c5, challenging the center.",
+      "coaching": "This is Black's typical break in the Grünfeld Exchange."
+    }
+  ]
+}

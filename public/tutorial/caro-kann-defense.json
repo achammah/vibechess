@@ -1,0 +1,111 @@
+{
+  "id": "caro-kann-defense",
+  "kind": "tutorial",
+  "slug": "caro-kann-defense",
+  "title": "Caro-Kann Defense: Classical",
+  "eco": "B10",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "beginner",
+  "summary": "Learn the solid Caro-Kann, where Black safely develops and aims to draw White into a positional battle.",
+  "description": "The Caro-Kann is one of Black's most solid defenses. You'll learn why it's popular at all levels: it avoids the complexities of the Sicilian and leads to positions where Black has a firm pawn structure.",
+  "line": "1.e4 c6 2.d4 d5 3.Nc3 Bg4 4.Nf3 Bxf3 5.Qxf3",
+  "objectives": [
+    "Understand why the Caro-Kann is considered solid: it avoids tactical complications.",
+    "Learn the typical pawn structures and how to play them from both sides.",
+    "Master the idea of exchanging bishops to reduce White's attacking chances."
+  ],
+  "plans": [
+    "White typically uses the extra space to attack, but must be careful of Black's solid structure.",
+    "Black seeks to equalize by trading pieces and creating a drawish position.",
+    "The position often becomes technical, where each side must play precise moves."
+  ],
+  "commonMistakes": [
+    "Do not play too aggressively. Black is solid and will punish overextension.",
+    "Avoid opening the position when Black wants trades. Keep it complex.",
+    "Do not underestimate Black's position. The Caro-Kann is very sound."
+  ],
+  "completionTitle": "Solid position for both sides",
+  "completionSummary": "The Caro-Kann teaches that solid development can be just as effective as aggressive play.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4, the standard reply to 1...c6.",
+      "coaching": "White claims central space. The Caro-Kann will respond with ...d5 to challenge it.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c6",
+      "title": "The Caro-Kann setup",
+      "instruction": "Black prepares ...d5 while keeping the position solid.",
+      "coaching": "This is the defining move of the Caro-Kann. Black avoids the Sicilian complications."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Build the center",
+      "instruction": "Play d4 to claim central space.",
+      "coaching": "White establishes a central pawn presence. Black will now challenge it with ...d5.",
+      "hint": "Push the queen pawn to claim space.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black challenges the center",
+      "instruction": "Play d5 to challenge White's central control.",
+      "coaching": "This is the standard Caro-Kann response. Black claims space in the center."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "Natural development. The knight controls d5 and supports the e4 pawn.",
+      "hint": "Develop the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg4",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to g4, pinning the knight and creating pressure.",
+      "coaching": "This is a standard move in the Caro-Kann. The bishop pins and creates tactical ideas."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, unpinned and developing toward the center.",
+      "coaching": "White develops the knight. The pin is not dangerous because White can defend.",
+      "hint": "Develop the kingside knight.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bxf3",
+      "title": "Black exchanges the bishop",
+      "instruction": "Black trades the bishop, simplifying and reducing White's attacking chances.",
+      "coaching": "This is typical Caro-Kann strategy: trade pieces to reduce White's initiative."
+    },
+    {
+      "actor": "player",
+      "san": "Qxf3",
+      "title": "Recapture with the queen",
+      "instruction": "Take back with the queen, completing development.",
+      "coaching": "White gets the queen out early. The position is now simplified but still playable.",
+      "hint": "Capture on f3 with the queen.",
+      "arrows": [{ "from": "d1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "c6"]
+    }
+  ]
+}

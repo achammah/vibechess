@@ -1,0 +1,183 @@
+{
+  "id": "deflection",
+  "kind": "tutorial",
+  "slug": "deflection",
+  "title": "Tactics: Deflection and Decoys",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn to lure enemy pieces away from their critical squares.",
+  "description": "Deflection (also called decoy) is a tactical pattern where you force an enemy piece to move to a less important square, allowing you to achieve your goal - often delivering checkmate or winning material. This is a key skill for GM-level tactics.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Identify critical squares that enemy pieces must defend",
+    "Learn to create threats that force pieces to move",
+    "Understand how deflection leads to checkmate or material gain",
+    "Master the concept of the 'sacrificial' deflection"
+  ],
+  "plans": [
+    "Find what your opponent must defend (king, key piece, critical square)",
+    "Create a threat that can only be answered by moving that defender",
+    "The deflection often involves a sacrifice"
+  ],
+  "commonMistakes": [
+    "Don't deflect if the piece can simply move and still defend",
+    "Calculate carefully - deflection must be forcing",
+    "Sometimes you need to attack something else first to set up deflection"
+  ],
+  "completionTitle": "Force your opponent's hand",
+  "completionSummary": "You've learned to use deflection tactics to force favorable outcomes.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4 to begin.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3, preparing d4.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the c-pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push e5",
+      "instruction": "Play e5! This attacks the knight on f6.",
+      "coaching": "The pawn on e5 attacks f6. The knight must move or be defended.",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black defends",
+      "instruction": "Black pushes d5, attacking the bishop.",
+      "coaching": "The pawn attacks the bishop on c4, but more importantly, d5 blocks the e5 pawn from advancing."
+    },
+    {
+      "actor": "player",
+      "san": "Bxd5",
+      "title": "Capture on d5",
+      "instruction": "Capture on d5 with the bishop!",
+      "hint": "Capture the pawn on d5.",
+      "arrows": [{ "from": "c4", "to": "d5", "color": "#22c55e" }],
+      "focusSquares": ["d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qxd5",
+      "title": "Queen captures",
+      "instruction": "Black's queen captures on d5.",
+      "coaching": "Now the queen is on d5, but look at Black's king position..."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "The deflection",
+      "instruction": "Play Nc3! This attacks the queen on d5 AND creates a threat against the king.",
+      "coaching": "The queen must move. If she moves, we attack something else. If she captures the knight, we might have another tactic.",
+      "hint": "Move the knight to c3, attacking the queen!",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#22c55e" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qa5",
+      "title": "Queen moves",
+      "instruction": "The queen must move away.",
+      "coaching": "The queen moves to a5, but we've gained a move and possibly queen access to the d-file."
+    },
+    {
+      "actor": "player",
+      "san": "Rd1",
+      "title": "Take the d-file",
+      "instruction": "Move Rd1, taking control of the d-file.",
+      "hint": "Move the rook to d1.",
+      "arrows": [{ "from": "a1", "to": "d1", "color": "#38bdf8" }],
+      "focusSquares": ["d1"]
+    }
+  ]
+}

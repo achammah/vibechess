@@ -1,0 +1,111 @@
+{
+  "id": "queens-gambit-declined",
+  "kind": "tutorial",
+  "slug": "queens-gambit-declined",
+  "title": "Queen's Gambit Declined: Main Line",
+  "eco": "D35",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Learn the solid Queen's Gambit Declined, where Black declines the gambit and fights for equality through central control.",
+  "description": "The QGD is one of the most respected defenses to 1.d4. You'll learn why Black's acceptance of a slightly worse but solid position is sound, and how White tries to squeeze a small advantage from the symmetrical setup.",
+  "line": "1.d4 d5 2.c4 e6 3.Nc3 Nf6 4.cxd5 exd5 5.Bg5",
+  "objectives": [
+    "Understand the symmetrical pawn structure and why it favors White slightly.",
+    "Learn the typical plans for both sides in the QGD.",
+    "Master the bishop pair advantage in closed positions."
+  ],
+  "plans": [
+    "White uses the bishop pair and central control to maintain a small but lasting edge.",
+    "Black seeks to simplify and trade pieces, reducing White's attacking chances.",
+    "The key is patience: White should improve pieces while Black waits for a concrete plan."
+  ],
+  "commonMistakes": [
+    "Do not rush. The advantage is small, so accurate play is needed.",
+    "Avoid trading pieces prematurely. The bishop pair is valuable in this structure.",
+    "Do not underestimate Black's solidity. With accurate play, Black can equalize."
+  ],
+  "completionTitle": "White has a slight but lasting edge",
+  "completionSummary": "The QGD is a positional masterpiece where White's patient play is rewarded with a small but persistent advantage.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Control the center from White's side",
+      "instruction": "Play d4 to claim central space and open lines for your pieces.",
+      "coaching": "The queen's pawn opening is solid and classical, controlling key central squares.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black matches in the center",
+      "instruction": "Black responds with d5, establishing a symmetrical central structure.",
+      "coaching": "The Queen's Gambit position begins. Black challenges for the center."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "The Queen's Gambit",
+      "instruction": "Offer the c-pawn to disrupt Black's central control.",
+      "coaching": "This is the Queen's Gambit: White offers a pawn to gain better development and central control.",
+      "hint": "Push the c-pawn to challenge d4.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black declines the gambit",
+      "instruction": "Black protects the d5 pawn with e6, maintaining central control.",
+      "coaching": "This is the Queen's Gambit Declined. Black chooses solidity over material."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight to the center",
+      "instruction": "Move Nc3, developing toward the center and supporting the d4 pawn.",
+      "coaching": "Natural development. The knight controls d5 and b5, and supports the center.",
+      "hint": "Bring the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight moves to f6, attacking e4 and supporting central control.",
+      "coaching": "Black develops soundly. The knight also prepares castling."
+    },
+    {
+      "actor": "player",
+      "san": "cxd5",
+      "title": "Take the pawn",
+      "instruction": "Capture on d5, gaining a pawn while opening lines.",
+      "coaching": "White accepts the pawn. Now Black must decide how to recapture.",
+      "hint": "Capture on d5 with the pawn.",
+      "arrows": [{ "from": "c4", "to": "d5", "color": "#38bdf8" }],
+      "focusSquares": ["d5", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd5",
+      "title": "Black recaptures",
+      "instruction": "Black takes back with the pawn, opening the e-file.",
+      "coaching": "The position is now balanced. White has a small central advantage."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "Develop the bishop with pressure",
+      "instruction": "Move Bg5, pressuring f6 and developing actively.",
+      "coaching": "This is a standard move in the QGD, pinning the knight and developing the bishop.",
+      "hint": "Develop the bishop to g5, targeting the knight on f6.",
+      "arrows": [{ "from": "c1", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5", "f6"]
+    }
+  ]
+}

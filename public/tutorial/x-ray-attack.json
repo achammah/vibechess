@@ -1,0 +1,150 @@
+{
+  "id": "x-ray-attack",
+  "kind": "tutorial",
+  "slug": "x-ray-attack",
+  "title": "Tactics: X-Ray Attack",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "advanced",
+  "summary": "Attack through pieces - the hidden X-Ray attack.",
+  "description": "An X-Ray attack (or see-through attack) occurs when a piece attacks an enemy piece through another piece. The attacking piece doesn't actually capture anything on the way - it's the threat on the piece behind that matters. This is a sophisticated GM-level tactical concept.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Recognize when pieces are lined up through each other",
+    "Understand the difference between X-Ray and discovered attacks",
+    "Learn to create X-Ray attacks",
+    "Master the concept of attacking through pieces"
+  ],
+  "plans": [
+    "Look for pieces that can attack through other pieces",
+    "Often X-Ray attacks target the king or queen",
+    "The piece in between might be able to move, creating discovered attacks"
+  ],
+  "commonMistakes": [
+    "Don't confuse X-Ray with discovered attacks - they're different",
+    "Remember: the piece in between doesn't block the attack",
+    "X-Ray attacks can be very subtle"
+  ],
+  "completionTitle": "Attacking through the veil",
+  "completionSummary": "You've learned to use X-Ray attacks to create hidden tactical threats.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "X-Ray attack setup",
+      "instruction": "Play Bg5! This attacks the knight on f6 through the queen on d8!",
+      "coaching": "This is an X-Ray attack! The bishop attacks f6 through the queen on d8. When the bishop moves, it might reveal an attack on the queen!",
+      "hint": "Move the bishop to g5 - an X-Ray attack!",
+      "arrows": [{ "from": "c4", "to": "g5", "color": "#22c55e" }],
+      "focusSquares": ["g5", "f6", "d8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "h6",
+      "title": "Black defends",
+      "instruction": "Black plays h6, defending the bishop.",
+      "coaching": "Black defends the bishop, but we can now attack through it!"
+    },
+    {
+      "actor": "player",
+      "san": "Bxf6",
+      "title": "Capture on f6",
+      "instruction": "Capture on f6! The X-Ray attack succeeded!",
+      "hint": "Capture the knight on f6.",
+      "arrows": [{ "from": "g5", "to": "f6", "color": "#22c55e" }],
+      "focusSquares": ["f6"]
+    }
+  ]
+}

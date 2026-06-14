@@ -1,0 +1,178 @@
+{
+  "id": "pawn-tactics",
+  "kind": "tutorial",
+  "slug": "pawn-tactics",
+  "title": "Tactics: Advanced Pawn Play",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "advanced",
+  "summary": "Master pawn tactics: promotion, breakthroughs, and underpromotion.",
+  "description": "Pawns are the soul of chess. Advanced pawn tactics include promotion, breakthroughs, pawn storms, and even underpromotion. These GM-level concepts can turn quiet positions into winning advantages.",
+  "line": "1.d4 d5 2.Nf3 Nf6 3.e3 c5 4.c3 Nc6",
+  "objectives": [
+    "Learn advanced pawn tactics",
+    "Understand promotion possibilities",
+    "Master pawn breakthroughs",
+    "Know when underpromotion is best"
+  ],
+  "plans": [
+    "Create connected passed pawns",
+    "Use pawns to restrict enemy pieces",
+    "Push passed pawns to promotion"
+  ],
+  "commonMistakes": [
+    "Don't undervalue pawns in tactical positions",
+    "Remember: a pawn on the 7th rank is very powerful",
+    "Pawn breakthroughs can be devastating"
+  ],
+  "completionTitle": "Pawn tactical mastery",
+  "completionSummary": "You've learned advanced pawn tactical concepts.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Control the center",
+      "instruction": "Play d4.",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black responds",
+      "instruction": "Black plays d5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "e3",
+      "title": "Solid setup",
+      "instruction": "Play e3.",
+      "hint": "Push the e-pawn one square.",
+      "arrows": [{ "from": "e2", "to": "e3", "color": "#38bdf8" }],
+      "focusSquares": ["e3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black plays c5",
+      "instruction": "Black plays c5."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Play c3",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bd3",
+      "title": "Bishop to d3",
+      "instruction": "Move Bd3.",
+      "hint": "Move the bishop to d3.",
+      "arrows": [{ "from": "f1", "to": "d3", "color": "#38bdf8" }],
+      "focusSquares": ["d3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black plays e6",
+      "instruction": "Black plays e6."
+    },
+    {
+      "actor": "player",
+      "san": "O-O",
+      "title": "Castling",
+      "instruction": "Castle kingside.",
+      "hint": "Castle kingside.",
+      "arrows": [{ "from": "e1", "to": "g1", "color": "#38bdf8" }],
+      "focusSquares": ["g1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bd6",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "Re1",
+      "title": "Rook to e1",
+      "instruction": "Move Re1, connecting rooks.",
+      "hint": "Move the rook to e1.",
+      "arrows": [{ "from": "a1", "to": "e1", "color": "#38bdf8" }],
+      "focusSquares": ["e1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside."
+    },
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Pawn break!",
+      "instruction": "Play e4! This is a central pawn break!",
+      "hint": "Push the e-pawn to e4!",
+      "arrows": [{ "from": "e3", "to": "e4", "color": "#22c55e" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "dxe4",
+      "title": "Black captures",
+      "instruction": "Black captures on e4."
+    },
+    {
+      "actor": "player",
+      "san": "Nxe4",
+      "title": "Knight captures",
+      "instruction": "Capture on e4 with the knight!",
+      "hint": "Capture on e4 with the knight.",
+      "arrows": [{ "from": "f3", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nxe4",
+      "title": "Black captures",
+      "instruction": "Black captures the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Rxe4",
+      "title": "Win a piece",
+      "instruction": "Capture with the rook! We've won a piece through the pawn break!",
+      "hint": "Capture on e4 with the rook!",
+      "arrows": [{ "from": "e1", "to": "e4", "color": "#22c55e" }],
+      "focusSquares": ["e4"]
+    }
+  ]
+}

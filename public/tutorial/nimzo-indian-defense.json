@@ -1,0 +1,141 @@
+{
+  "id": "nimzo-indian-defense",
+  "kind": "tutorial",
+  "slug": "nimzo-indian-defense",
+  "title": "Nimzo-Indian Defense: Classical",
+  "eco": "E20",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the Nimzo-Indian, where Black pins and threatens to double White's pawns in exchange for quick development.",
+  "description": "The Nimzo-Indian is one of Black's most respected defenses to 1.d4. You'll learn why Black's move ...Bb4 pins the knight and forces White to make important decisions about the pawn structure.",
+  "line": "1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.e3 O-O 5.Nf3 d5 6.Bd3 c5",
+  "objectives": [
+    "Understand the pin on the knight and why it's strategically dangerous.",
+    "Learn how to play with doubled c-pawns (or avoid them).",
+    "Master the strategic ideas in the Nimzo-Indian structure."
+  ],
+  "plans": [
+    "White can accept doubled pawns for the bishop pair, or avoid it with e3 or Qc2.",
+    "Black seeks to keep the position closed while maintaining the pin.",
+    "The position often becomes a strategic battle where each side has clear plans."
+  ],
+  "commonMistakes": [
+    "Do not ignore the pin. It only gets worse if you don't address it.",
+    "Avoid passive play. With the bishop pair, White should be active.",
+    "Do not underestimate Black's position. It's solid and has many plans."
+  ],
+  "completionTitle": "Strategic battle with plans for both",
+  "completionSummary": "The Nimzo-Indian creates deep strategic positions where understanding the ideas matters more than memorization.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Control the center",
+      "instruction": "Start with d4, claiming central space.",
+      "coaching": "The queen's pawn opening is solid and leads to many strategic battles.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, a standard move in Indian defenses.",
+      "coaching": "Black prepares to play ...e6 or ...b6, developing harmoniously."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Play c4 to challenge the center",
+      "instruction": "Push c4, starting the Queen's Gambit structure.",
+      "coaching": "This is the standard move that leads to the Nimzo-Indian after Black's reply.",
+      "hint": "Push the c-pawn to challenge d4.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black prepares the Nimzo",
+      "instruction": "The pawn on e6 supports d5 and prepares ...Bb4.",
+      "coaching": "This is the setup for the Nimzo-Indian: Black will pin the knight on c3."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "Natural development. But now Black can play ...Bb4 with a pin.",
+      "hint": "Develop the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb4",
+      "title": "The Nimzo-Indian pin",
+      "instruction": "Black pins the knight, threatening to double the c-pawns.",
+      "coaching": "This is the defining move. The bishop pins the knight and controls the e4 square.",
+      "hint": "Move the bishop to b4, pinning the knight.",
+      "arrows": [{ "from": "c8", "to": "b4", "color": "#38bdf8" }],
+      "focusSquares": ["b4", "c3", "e4"]
+    },
+    {
+      "actor": "player",
+      "san": "e3",
+      "title": "Avoid doubling (or accept it)",
+      "instruction": "Play e3 to avoid the pin's immediate consequences.",
+      "coaching": "This move avoids doubling and prepares to develop the bishop. White accepts slightly slower development.",
+      "hint": "Push the e-pawn one square to avoid the pin.",
+      "arrows": [{ "from": "e2", "to": "e3", "color": "#38bdf8" }],
+      "focusSquares": ["e3", "d3", "c1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles, getting the king safe.",
+      "coaching": "Black completes kingside development while White is still figuring out the structure."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, completing kingside development.",
+      "coaching": "White continues development despite the pin. The position is strategically complex.",
+      "hint": "Develop the kingside knight.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black claims central space",
+      "instruction": "Play d5, challenging White's central control.",
+      "coaching": "Black claims space in the center. The position is now balanced but complex."
+    },
+    {
+      "actor": "player",
+      "san": "Bd3",
+      "title": "Develop the bishop",
+      "instruction": "Move Bd3, developing the bishop to an active square.",
+      "coaching": "The bishop develops to a good square, supporting the central position.",
+      "hint": "Develop the bishop to d3.",
+      "arrows": [{ "from": "f1", "to": "d3", "color": "#38bdf8" }],
+      "focusSquares": ["d3", "c5", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black breaks in the center",
+      "instruction": "Black challenges the center with c5, opening the position.",
+      "coaching": "This is a standard break in the Nimzo-Indian. Black seeks active piece play.",
+      "hint": "Push the c-pawn to challenge d4.",
+      "arrows": [{ "from": "c7", "to": "c5", "color": "#38bdf8" }],
+      "focusSquares": ["c5", "d4"]
+    }
+  ]
+}

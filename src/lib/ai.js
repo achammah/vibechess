@@ -1,0 +1,293 @@
+const SYSTEM_PROMPT = `You are a patient, encouraging chess teacher working one-on-one with a student.
+
+Core rules:
+- Be concise by default. Go deeper only when explicitly asked.
+- NEVER move pieces or change the board. Only talk about what you see.
+- Answer exactly what was asked. Do not volunteer unrequested analysis.
+- Use plain language matched to the student's level.
+- Write candidate moves inline (e.g. "Try 1...Nf6") — never narrate board changes.
+- Encourage the student; frame mistakes as learning opportunities.`;
+
+const formatSummarySourceMessages = (messages) =>
+  messages
+    .filter((message) => typeof message?.content === "string")
+    .map((message) => {
+      const role = message.role === "assistant" ? "Assistant" : "User";
+      return `${role}: ${message.content.trim()}`;
+    })
+    .join("\n\n");
+
+/**
+ * Send a chat message to OpenAI and return the assistant's response text.
+ */
+export const sendChatMessage = async ({
+  messages,
+  fen,
+  apiKey,
+  model = "gpt-4o-mini",
+}) => {
+  if (!apiKey) {
+    throw new Error("Please set your API key in Settings first.");
+  }
+
+  const systemMessage = {
+    role: "system",
+    content: `${SYSTEM_PROMPT}\n\nCurrent board position (FEN): ${fen}`,
+  };
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [systemMessage, ...messages],
+      temperature: 0.7,
+      max_tokens: 500,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error?.message || `API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content || "No response received.";
+};
+
+/**
+ * Request a position explanation from the AI.
+ */
+export const explainPosition = async ({ fen, moveHistory, apiKey, model }) => {
+  const moveString =
+    moveHistory.length > 0 ? moveHistory.join(" ") : "No moves yet";
+  return sendChatMessage({
+    messages: [
+      {
+        role: "user",
+        content: `Explain the current position. Moves so far: ${moveString}. What are the key ideas for both sides?`,
+      },
+    ],
+    fen,
+    apiKey,
+    model,
+  });
+};
+
+/**
+ * Request a hint from the AI.
+ */
+export const getHint = async ({ fen, apiKey, model, hintLevel = 1 }) => {
+  const levels = {
+    1: "Give me a general hint about what I should focus on in this position. Don't reveal the exact move.",
+    2: "Give me a specific directional hint. Which piece should I consider moving and roughly where?",
+    3: "What is the best move in this position and why?",
+  };
+
+  return sendChatMessage({
+    messages: [
+      {
+        role: "user",
+        content: levels[hintLevel] || levels[1],
+      },
+    ],
+    fen,
+    apiKey,
+    model,
+  });
+};
+
+/**
+ * Evaluate the quality of the last move.
+ */
+export const evaluateMove = async ({ fen, lastMove, apiKey, model }) =>
+  sendChatMessage({
+    messages: [
+      {
+        role: "user",
+        content: `Rate the last move "${lastMove}" as one of: Excellent, Good, Inaccuracy, Mistake, or Blunder. Respond with ONLY the rating word on the first line, then a brief explanation on the next line.`,
+      },
+    ],
+    fen,
+    apiKey,
+    model,
+  });
+
+export const summarizeConversation = async ({
+  messages,
+  existingSummary = "",
+  apiKey,
+  model = "gpt-4o-mini",
+}) => {
+  if (!apiKey) {
+    throw new Error("Please set your OpenAI API key in Settings first.");
+  }
+
+  const sourceMessages = formatSummarySourceMessages(messages);
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Compress a chess coaching conversation into a compact markdown summary. Preserve only stable user goals, strategic ideas, candidate lines worth remembering, and unresolved questions. Do not retain transient FEN details because live board state is provided separately each turn. Return only markdown under the headings ## Goals, ## Key Ideas, and ## Open Questions.",
+        },
+        {
+          role: "user",
+          content: [
+            "Existing summary:",
+            existingSummary || "None",
+            "",
+            "New conversation slice:",
+            sourceMessages || "None",
+          ].join("\n"),
+        },
+      ],
+      temperature: 0.2,
+      max_tokens: 220,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error?.message || `API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content?.trim() || existingSummary;
+};
+
+/**
+ * Think Like a GM: given a FEN and Stockfish's top 3 lines, ask GPT to
+ * simulate a Grandmaster thought process in 4 structured steps.
+ * @param {{ fen: string, stockfishLines: Array, moveHistorySan: string[], elo: number, apiKey: string, model: string }} options
+ * @returns {Promise<{ positionLabel, step1, step2, step3, step4, bestMove, bestMoveReason }>}
+ */
+export const getGMThoughtProcess = async ({
+  fen,
+  stockfishLines,
+  moveHistorySan = [],
+  elo = 1000,
+  apiKey,
+  model = "gpt-4o-mini",
+}) => {
+  if (!apiKey) {
+    throw new Error("Please set your OpenAI API key in Settings first.");
+  }
+
+  // Format Stockfish lines for the prompt
+  const linesText = stockfishLines
+    .map((l, index) => {
+      const evalString = l.isMate
+        ? `M${Math.abs(l.mateIn)}`
+        : l.scoreCp !== null
+          ? l.scoreCp >= 0
+            ? `+${(l.scoreCp / 100).toFixed(2)}`
+            : (l.scoreCp / 100).toFixed(2)
+          : "?";
+      const movesText = l.sanMoves?.slice(0, 5).join(" ") || "";
+      return `${index + 1}. ${movesText}  [eval: ${evalString}]`;
+    })
+    .join("\n");
+
+  const moveCount = Math.ceil(moveHistorySan.length / 2);
+  const lastMoveSan = moveHistorySan.at(-1) || "";
+  const positionContext =
+    moveCount > 0
+      ? `Position after move ${moveCount}${lastMoveSan ? ` (${lastMoveSan})` : ""}`
+      : "Opening position";
+
+  const prompt = `You are a Grandmaster chess teacher. A student (~${elo} ELO) pressed "Think like a GM" to understand your thought process. This is a pure text explanation — do NOT instruct to play moves or change the board in any way.
+
+Position: ${positionContext}
+FEN: ${fen}
+Move history: ${moveHistorySan.length > 0 ? moveHistorySan.join(" ") : "No moves yet"}
+
+Stockfish top 3 candidate moves (depth 18):
+${linesText}
+
+Walk through the GM thought process in 4 concise steps. Keep every point to 1–2 short sentences. Return ONLY valid JSON (no markdown, no extra text):
+{
+  "positionLabel": "brief label like 'Italian Game, move 8' or 'Middlegame after 12. Nf3'",
+  "step1": {
+    "title": "What's Happening?",
+    "points": ["one material/balance note", "one key threat or tactic", "one piece activity note"]
+  },
+  "step2": {
+    "title": "Candidate Moves",
+    "moves": [
+      { "move": "SAN move", "idea": "one concise sentence: the idea and key trade-off", "verdict": "best" },
+      { "move": "SAN move", "idea": "one concise sentence: the idea and key trade-off", "verdict": "good" },
+      { "move": "SAN move", "idea": "one concise sentence: the idea and key trade-off", "verdict": "risky" }
+    ]
+  },
+  "step3": {
+    "title": "Calculation",
+    "lines": [
+      { "sequence": ["move1", "move2", "move3"], "eval": "+0.8 White", "verdict": "Best line" },
+      { "sequence": ["move1", "move2", "move3"], "eval": "+0.3 White", "verdict": "Playable" }
+    ]
+  },
+  "step4": {
+    "title": "The Plan",
+    "immediate": ["one immediate goal", "one follow-up idea"],
+    "longTerm": ["one long-term strategic idea"]
+  },
+  "bestMove": "SAN of best move",
+  "bestMoveReason": "one sentence explaining why this move is best, pitched at a ${elo} ELO student"
+}
+
+Rules:
+- Use simple language for a ${elo} ELO student.
+- step2.moves must use the exact moves from Stockfish lines above.
+- step3.lines must show actual move sequences from the Stockfish analysis.
+- bestMove must be the first move of Stockfish line 1.
+- Return ONLY raw JSON, nothing else.`;
+
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a Grandmaster chess coach. Always respond with valid JSON only.",
+        },
+        { role: "user", content: prompt },
+      ],
+      temperature: 0.4,
+      max_tokens: 1200,
+      response_format: { type: "json_object" },
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.error?.message || `API error: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const raw = data.choices?.[0]?.message?.content;
+  if (!raw) throw new Error("No response from AI.");
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new Error("AI returned invalid JSON. Please try again.");
+  }
+};

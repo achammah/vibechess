@@ -1,0 +1,10 @@
+{
+  "kind": "quiz",
+  "id": "e10",
+  "title": "Back Rank Mate",
+  "fen": "6k1/5ppp/8/8/8/8/6PP/5R1K w - - 0 1",
+  "solution": ["Rxf7"],
+  "theme": "back-rank",
+  "difficulty": "easy",
+  "description": "White to move — capture and checkmate!"
+}

@@ -1,0 +1,128 @@
+{
+  "id": "italian-game-giuoco-piano",
+  "kind": "tutorial",
+  "slug": "italian-game-giuoco-piano",
+  "title": "Italian Game: Giuoco Piano",
+  "eco": "C50",
+  "category": "open",
+  "side": "white",
+  "difficulty": "beginner",
+  "summary": "Learn the peaceful Italian Game where both sides develop harmoniously, but White seeks a small edge through central control.",
+  "description": "The Giuoco Piano (quiet game) is one of the oldest opening principles. You'll learn how to develop pieces harmoniously while maintaining central pressure, understanding why the position stays balanced but White has practical chances.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4 exd4 6.cxd4",
+  "objectives": [
+    "Develop pieces to active squares while maintaining central control.",
+    "Understand why the center is the key battleground and how to fight for it.",
+    "Learn the thematic break d4 and when to use it to open the position."
+  ],
+  "plans": [
+    "White aims to control the center with pawns while developing pieces to good squares.",
+    "The move d4 is a standard break to open the position for your bishop pair.",
+    "Black will try to simplify and equalize, so White must keep pressing."
+  ],
+  "commonMistakes": [
+    "Do not play too passively. White needs to maintain pressure or Black equalizes easily.",
+    "Avoid moving the same piece twice in the opening. Complete development first.",
+    "Do not fear Black's central breaks. Met them actively with proper development."
+  ],
+  "completionTitle": "White has central control",
+  "completionSummary": "The Giuoco Piano teaches fundamental opening principles: develop pieces, control the center, and keep pressing for a small advantage.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Claim central space",
+      "instruction": "Play e4 to control the center and open lines for your pieces.",
+      "coaching": "The king pawn opening is the most classical way to fight for the center.",
+      "hint": "Push the e-pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds symmetrically",
+      "instruction": "Black matches with e5, creating a balanced central structure.",
+      "coaching": "The open game begins. Both sides have equal presence in the center."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight actively",
+      "instruction": "Move Nf3, attacking e5 and preparing kingside development.",
+      "coaching": "The knight develops toward the center, controlling important squares.",
+      "hint": "Place the knight on its natural f3 square.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to c6, mirroring White's development.",
+      "coaching": "Symmetrical development keeps the position balanced."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Develop the bishop actively",
+      "instruction": "Move the bishop to c4, targeting the weak f7 square.",
+      "coaching": "The bishop on c4 eyes f7, one of the weakest squares in Black's position.",
+      "hint": "Develop the bishop to the long diagonal.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black matches development",
+      "instruction": "The bishop develops to c5, also targeting f2.",
+      "coaching": "Black matches piece for piece. The position is balanced but tensions are rising."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Support the d4 square",
+      "instruction": "Play c3 to support d4 and prepare the central break.",
+      "coaching": "This move prepares d4 while also protecting the bishop on c4.",
+      "hint": "Move the c-pawn one square forward.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the other knight",
+      "instruction": "The knight moves to f6, completing kingside development.",
+      "coaching": "Black is developing soundly. Both sides are preparing for the critical central decisions."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "The central break",
+      "instruction": "Play d4 to open the center and activate your pieces.",
+      "coaching": "This is the thematic break in the Italian. It opens lines for your bishops and queen.",
+      "hint": "Push the d-pawn to challenge e5.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black accepts the pawn",
+      "instruction": "Black exchanges in the center, opening lines.",
+      "coaching": "Taking is the most common response. Black gains a pawn but opens the position for White's bishops."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture and maintain pressure",
+      "instruction": "Take back with the c-pawn, keeping central control.",
+      "coaching": "White maintains a small edge: better development and central control.",
+      "hint": "Recapture with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "c4", "f1"]
+    }
+  ]
+}

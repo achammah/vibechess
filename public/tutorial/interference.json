@@ -1,0 +1,172 @@
+{
+  "id": "interference",
+  "kind": "tutorial",
+  "slug": "interference",
+  "title": "Tactics: Interference",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "advanced",
+  "summary": "Break the connection between enemy pieces with interference.",
+  "description": "Interference is a tactical theme where you interpose a piece between two enemy pieces, breaking their connection or line of communication. This often disrupts defensive coordination and can lead to checkmate or winning material.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Recognize when two enemy pieces are connected",
+    "Learn to interpose a piece between them",
+    "Understand how interference disrupts defense",
+    "Master the concept of the 'interfering' move"
+  ],
+  "plans": [
+    "Look for pieces that protect each other",
+    "Find a square where you can interpose",
+    "Often the interposition gives check or creates a threat"
+  ],
+  "commonMistakes": [
+    "Don't interfere if the opponent can simply capture your piece",
+    "Make sure the interposition can't be defended",
+    "The interference move often needs to give check"
+  ],
+  "completionTitle": "Breaking enemy connections",
+  "completionSummary": "You've learned to use interference to disrupt enemy coordination.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push e5",
+      "instruction": "Play e5!",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black defends",
+      "instruction": "Black pushes d5."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop and attack",
+      "instruction": "Move Nc3, attacking d5.",
+      "hint": "Move the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Now Black's king is on g8. Look at the rook on h8 and queen on d8..."
+    },
+    {
+      "actor": "player",
+      "san": "Ne7",
+      "title": "The interference!",
+      "instruction": "Move Ne7! This interferes with the queen's defense of the rook!",
+      "coaching": "The knight on e7 blocks the queen from defending h8! This is interference!",
+      "hint": "Move the knight to e7 - interference!",
+      "arrows": [{ "from": "f3", "to": "e7", "color": "#22c55e" }],
+      "focusSquares": ["e7", "h8", "d8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qe8",
+      "title": "Queen moves",
+      "instruction": "The queen must move.",
+      "coaching": "The queen must move, giving up control of the kingside."
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{
+  "id": "ruy-lopez-berlin",
+  "kind": "tutorial",
+  "slug": "ruy-lopez-berlin",
+  "title": "Ruy Lopez: Berlin Defense",
+  "eco": "C65",
+  "category": "open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Master the solid Berlin Defense, where Black simplifies into an endgame with active piece play.",
+  "description": "The Berlin Defense is one of the most solid replies to the Ruy Lopez. After the moves 1.e4 e5 2.Nf3 Nc6 3.Bb5 Nf6, Black transposes into the Berlin. The position simplifies quickly, and both sides fight for endgame advantages. This tutorial covers the main line and typical endgame patterns.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bb5 Nf6 4.O-O Nxe4",
+  "variations": {
+    "mainLine": "4...Nxe4 - The Berlin accepts the exchange",
+    "endgameLine": "5.Re1 Nd6 6.Bxc6 dxc6 - The typical Berlin endgame structure",
+    "modernLine": "5.d4 - The Open Berlin with more complications"
+  },
+  "objectives": [
+    "Understand the Berlin structure: why Black gives up the bishop pair for simplification",
+    "Learn the typical endgame positions and how to play them",
+    "Master the pawn structure: c6, d5, and the isolated e5 pawn",
+    "Recognize when White has an advantage and how to convert it"
+  ],
+  "plans": [
+    "White's plan: Press in the endgame with the extra pawn and better structure",
+    "Black's plan: Activate the pieces and create counterplay against White's king",
+    "The move ...d5 is Black's main break to free their game",
+    "White should avoid exchanging too many pieces - keep some complexity"
+  ],
+  "commonMistakes": [
+    "Do not think the Berlin is boring - there are many subtle endgame tricks",
+    "Avoid taking too many pawns - keep pieces on for winning chances",
+    "Do not underestimate Black's piece activity - they play well in the endgame",
+    "White should avoid the trap of playing for a win too early"
+  ],
+  "completionTitle": "Complex endgame with balanced chances",
+  "completionSummary": "The Berlin Defense is a solid choice. You've learned the main ideas and can navigate the endgame.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Claim central space",
+      "instruction": "Play e4 to control the center.",
+      "coaching": "The Berlin Defense is one of the oldest defenses to the Ruy Lopez.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds symmetrically",
+      "instruction": "Black mirrors in the center.",
+      "coaching": "The open game begins. The Berlin is coming."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, attacking e5.",
+      "coaching": "Natural development toward the center.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to c6.",
+      "coaching": "Black mirrors White's development."
+    },
+    {
+      "actor": "player",
+      "san": "Bb5",
+      "title": "The Ruy Lopez",
+      "instruction": "Move the bishop to b5, pinning the knight.",
+      "coaching": "This is the Ruy Lopez, controlling e5 and preparing development.",
+      "hint": "Move the bishop to b5.",
+      "arrows": [{ "from": "f1", "to": "b5", "color": "#38bdf8" }],
+      "focusSquares": ["b5", "c6", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "The Berlin move",
+      "instruction": "The knight develops to f6, attacking e4.",
+      "coaching": "This is the Berlin Defense! Black attacks e4 immediately."
+    },
+    {
+      "actor": "player",
+      "san": "O-O",
+      "title": "White castles",
+      "instruction": "Castle kingside, getting the king to safety.",
+      "coaching": "White castles, preparing to meet the exchange sacrifice.",
+      "hint": "Castle kingside.",
+      "arrows": [{ "from": "e1", "to": "g1", "color": "#38bdf8" }],
+      "focusSquares": ["g1", "f1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nxe4",
+      "title": "The Berlin Exchange",
+      "instruction": "Black captures on e4, giving up the bishop pair.",
+      "coaching": "This is the key position of the Berlin: Black accepts an exchange."
+    },
+    {
+      "actor": "player",
+      "san": "Re1",
+      "title": "Attack the knight",
+      "instruction": "Move the rook to e1, attacking the knight.",
+      "coaching": "White attacks! The knight on e4 is now under pressure.",
+      "hint": "Move the rook to e1.",
+      "arrows": [{ "from": "f1", "to": "e1", "color": "#38bdf8" }],
+      "focusSquares": ["e1", "e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nd6",
+      "title": "Black retreats the knight",
+      "instruction": "The knight retreats to d6.",
+      "coaching": "Black retreats, simplifying into the typical Berlin endgame."
+    },
+    {
+      "actor": "player",
+      "san": "Bxc6",
+      "title": "White simplifies",
+      "instruction": "Capture on c6 with the bishop.",
+      "coaching": "White exchanges bishops, entering the Berlin endgame.",
+      "hint": "Capture on c6 with the bishop.",
+      "arrows": [{ "from": "b5", "to": "c6", "color": "#38bdf8" }],
+      "focusSquares": ["c6", "d6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "dxc6",
+      "title": "Black recaptures",
+      "instruction": "Black captures on c6 with the d-pawn.",
+      "coaching": "This creates the typical Berlin pawn structure: c6, e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nxe5",
+      "title": "Win a pawn",
+      "instruction": "Capture on e5 with the knight.",
+      "coaching": "White wins a pawn. The endgame begins.",
+      "hint": "Capture on e5 with the knight.",
+      "arrows": [{ "from": "f3", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qe7",
+      "title": "Black develops the queen",
+      "instruction": "The queen moves to e7, attacking the knight.",
+      "coaching": "Black attacks! The knight on e5 must move."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Support the knight",
+      "instruction": "Play d4 to support the knight on e5.",
+      "coaching": "White supports the knight and controls central space.",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight moves to f6.",
+      "coaching": "Black continues development. The position is now balanced."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Support the center",
+      "instruction": "Play c3 to support the d4 pawn.",
+      "coaching": "White strengthens the center and prepares development.",
+      "hint": "Move the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Both sides are now castled. The endgame phase begins."
+    }
+  ]
+}

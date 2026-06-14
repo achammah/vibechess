@@ -1,0 +1,165 @@
+{
+  "id": "overloading",
+  "kind": "tutorial",
+  "slug": "overloading",
+  "title": "Tactics: Overloading",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Make your opponent's piece do too much - then exploit it.",
+  "description": "Overloading is when an enemy piece has too many defensive duties. By attacking one of its other obligations, you force it to give up defending something else, allowing you to capture material or deliver checkmate. This is a key GM-level tactical concept.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Identify pieces with multiple defensive duties",
+    "Learn to create double attacks on overloaded pieces",
+    "Understand how to force the overload",
+    "Master combining overload with other tactics"
+  ],
+  "plans": [
+    "Find pieces that defend multiple important squares or pieces",
+    "Attack one of their duties to force them to give up the other",
+    "Often a simple move can create an overload"
+  ],
+  "commonMistakes": [
+    "Don't overload if the piece can simply move away",
+    "Calculate whether the opponent can defend both duties",
+    "Sometimes you need to remove other defenders first"
+  ],
+  "completionTitle": "Exploiting divided attention",
+  "completionSummary": "You've learned to identify and exploit overloaded enemy pieces.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push e5",
+      "instruction": "Play e5!",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black defends",
+      "instruction": "Black pushes d5."
+    },
+    {
+      "actor": "player",
+      "san": "exd6",
+      "title": "Capture on d6",
+      "instruction": "Capture on d6 with the pawn!",
+      "coaching": "This pawn attacks the bishop on b6 AND the queen on d8! The bishop is overloaded - it must defend both!",
+      "hint": "Capture on d6 with the pawn!",
+      "arrows": [{ "from": "e5", "to": "d6", "color": "#22c55e" }],
+      "focusSquares": ["d6", "b6", "d8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bxd6",
+      "title": "Bishop captures",
+      "instruction": "The bishop must capture the pawn.",
+      "coaching": "The bishop captures. But now we can capture the bishop!"
+    },
+    {
+      "actor": "player",
+      "san": "Bxf7",
+      "title": "Win the bishop",
+      "instruction": "Capture on f7! We've won a piece through overloading!",
+      "hint": "Capture the bishop on d6 with the bishop!",
+      "arrows": [{ "from": "c4", "to": "d6", "color": "#22c55e" }],
+      "focusSquares": ["d6"]
+    }
+  ]
+}

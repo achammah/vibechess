@@ -1,0 +1,118 @@
+{
+  "id": "scandinavian-defense",
+  "kind": "tutorial",
+  "slug": "scandinavian-defense",
+  "title": "Scandinavian Defense: Modern",
+  "eco": "B01",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "beginner",
+  "summary": "Learn the aggressive Scandinavian where Black captures and holds the center, creating unique tactical opportunities.",
+  "description": "The Scandinavian is a tricky opening where Black captures on e4 (or d4) and tries to hold the pawn. You'll learn why it's dangerous for Black if they don't handle it correctly, and how White can punish greedy play.",
+  "line": "1.e4 d5 2.exd5 Qxd5 3.Nc3 Qa5 4.d4 Nf6 5.Nf3 Bg4",
+  "objectives": [
+    "Understand why capturing on e4 is risky: Black must develop quickly or lose the pawn.",
+    "Learn typical White responses: develop, attack the queen, and punish slow development.",
+    "Master the key idea: don't let Black develop in peace."
+  ],
+  "plans": [
+    "White uses the extra tempo to develop and attack the queen.",
+    "If Black holds the pawn, White attacks it with piece pressure.",
+    "The Scandinavian is sharp: accurate play from either side decides."
+  ],
+  "commonMistakes": [
+    "Do not play passively. White has a lead in development.",
+    "Avoid letting Black develop peacefully. Keep the pressure on.",
+    "Do not underestimate Black's counterplay. The open queen file is dangerous."
+  ],
+  "completionTitle": "White has development advantage",
+  "completionSummary": "The Scandinavian teaches that capturing in front can be dangerous if development lags.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4, controlling central space.",
+      "coaching": "The king pawn opening. White controls the center and invites the Scandinavian response.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "The Scandinavian setup",
+      "instruction": "Play d5 to challenge e4 immediately.",
+      "coaching": "This is the Scandinavian: Black attacks e4 before developing pieces."
+    },
+    {
+      "actor": "player",
+      "san": "exd5",
+      "title": "Capture the pawn",
+      "instruction": "Take on d5, opening the game.",
+      "coaching": "White accepts the pawn. Now Black must develop or lose it.",
+      "hint": "Capture on d5 with the pawn.",
+      "arrows": [{ "from": "e4", "to": "d5", "color": "#38bdf8" }],
+      "focusSquares": ["d5", "e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qxd5",
+      "title": "Black captures greedily",
+      "instruction": "The queen takes, holding the pawn but lagging in development.",
+      "coaching": "This is the main line: Black holds the pawn but the queen is exposed."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop and attack",
+      "instruction": "Move Nc3, developing and attacking the queen.",
+      "coaching": "The knight attacks the queen and develops. White has the lead in development.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qa5",
+      "title": "Black moves the queen",
+      "instruction": "The queen moves to safety, developing.",
+      "coaching": "The queen moves to a5, developing. But White continues to develop."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center and prepare development.",
+      "coaching": "White claims space while Black's queen is exposed.",
+      "hint": "Push the d-pawn to d4.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, attacking e4.",
+      "coaching": "Black continues development. The position is now complex."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Complete development",
+      "instruction": "Move Nf3, completing kingside development.",
+      "coaching": "White develops the knight, threatening the queen's retreat.",
+      "hint": "Develop the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg4",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to g4, pinning the knight.",
+      "coaching": "Black pins and develops. The position is now balanced but complex."
+    }
+  ]
+}

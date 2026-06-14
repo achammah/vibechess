@@ -1,0 +1,101 @@
+{
+  "id": "english-opening",
+  "kind": "tutorial",
+  "slug": "english-opening",
+  "title": "English Opening: Symmetrical",
+  "eco": "A10",
+  "category": "symmetrical",
+  "side": "white",
+  "difficulty": "beginner",
+  "summary": "Learn the English Opening, where White avoids main line theory and plays for a positional edge.",
+  "description": "The English is a flexible opening where White plays c4 early, often transposing to other openings or creating unique positions. You'll learn why it's popular at top levels: it avoids theory and plays on White's terms.",
+  "line": "1.c4 c5 2.Nf3 Nf6 3.g3 b6 4.Bg2 Bb7",
+  "objectives": [
+    "Understand the English idea: control the center with a pawn, then develop pieces.",
+    "Learn typical English plans: expand on the queenside or play in the center.",
+    "Master the symmetrical English and its key ideas."
+  ],
+  "plans": [
+    "White uses the extra move to develop harmoniously and control the center.",
+    "Black can mirror with ...c5 or play asymmetrically with ...e5 or ...d5.",
+    "The position often becomes a strategic battle where both sides have plans."
+  ],
+  "commonMistakes": [
+    "Do not play too passively. Use the extra move to get a small advantage.",
+    "Avoid transposing to worse positions. Know your lines.",
+    "Do not underestimate Black's symmetry. They have equal chances."
+  ],
+  "completionTitle": "Balanced position with strategic play",
+  "completionSummary": "The English Opening teaches flexible thinking and positional play, avoiding the sharpest theory.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "The English Opening",
+      "instruction": "Play c4, controlling the center from the side.",
+      "coaching": "This is the English. White avoids 1.e4/1.d4 and controls the center with a side pawn.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black mirrors",
+      "instruction": "Play c5, mirroring White's pawn structure.",
+      "coaching": "The symmetrical English. Black matches White's setup, creating a balanced position."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center.",
+      "coaching": "Natural development. The knight controls e5 and d4 from f3.",
+      "hint": "Develop the kingside knight.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, attacking c4.",
+      "coaching": "Standard development. The knight controls e4 and threatens the c4 pawn."
+    },
+    {
+      "actor": "player",
+      "san": "g3",
+      "title": "Prepare kingside development",
+      "instruction": "Play g3, preparing to fianchetto the bishop.",
+      "coaching": "This is a common English idea: develop the bishop to g2 for central control.",
+      "hint": "Push the g-pawn one square.",
+      "arrows": [{ "from": "g2", "to": "g3", "color": "#38bdf8" }],
+      "focusSquares": ["g2", "g3", "f1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b6",
+      "title": "Black prepares fianchetto",
+      "instruction": "Play b6, preparing to fianchetto the bishop.",
+      "coaching": "Black mirrors the plan with queenside expansion."
+    },
+    {
+      "actor": "player",
+      "san": "Bg2",
+      "title": "Develop the bishop",
+      "instruction": "Move Bg2, completing the fianchetto.",
+      "coaching": "The bishop develops to g2, controlling the center and long diagonal.",
+      "hint": "Fianchetto the bishop to g2.",
+      "arrows": [{ "from": "f1", "to": "g2", "color": "#38bdf8" }],
+      "focusSquares": ["g2", "e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb7",
+      "title": "Black fianchettoes",
+      "instruction": "The bishop develops to b7, mirroring White's setup.",
+      "coaching": "Symmetrical structure. Both sides have similar setups, creating a balanced game."
+    }
+  ]
+}

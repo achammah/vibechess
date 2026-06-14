@@ -1,0 +1,121 @@
+{
+  "id": "pirc-defense",
+  "kind": "tutorial",
+  "slug": "pirc-defense",
+  "title": "Pirc Defense: Classical",
+  "eco": "B07",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the dynamic Pirc Defense, where Black allows White to build a center then attacks it with piece play.",
+  "description": "The Pirc is a hypermodern defense where Black lets White build a pawn center before attacking it with pieces. You'll learn why this can be dangerous for White if they don't develop carefully.",
+  "line": "1.e4 d6 2.d4 Nf6 3.Nc3 g6 4.Be3 Bg7 5.Qd2 c6",
+  "objectives": [
+    "Understand the hypermodern idea: let White build, then attack with pieces.",
+    "Learn typical Pirc plans: ...Bg4, ...O-O, and central breaks like ...e5 or ...c5.",
+    "Master how to play both sides of the Pirc structure."
+  ],
+  "plans": [
+    "White should develop quickly and attack before Black's pieces coordinate.",
+    "Black seeks to undermine the center and launch a kingside attack.",
+    "The Pirc is double-edged: both sides have aggressive options."
+  ],
+  "commonMistakes": [
+    "Do not overextend with the pawn center. It becomes a target.",
+    "Avoid slow development. The Pirc punishes passive White play.",
+    "Do not underestimate Black's attack. It's fast and dangerous."
+  ],
+  "completionTitle": "Dynamic position with attacking chances",
+  "completionSummary": "The Pirc Defense creates sharp positions where both sides have clear plans: White to attack, Black to counterattack.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4, starting the game.",
+      "coaching": "The king pawn opening. White wants to build a central pawn center.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black prepares development",
+      "instruction": "Play d6, supporting the e5 square and preparing ...Nf6.",
+      "coaching": "This is the Pirc setup: Black avoids early central conflict to develop pieces first."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Build the center",
+      "instruction": "Play d4 to claim central space.",
+      "coaching": "White establishes central control. Black will attack this pawn center with pieces.",
+      "hint": "Push the queen pawn to claim space.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6, attacking e4.",
+      "coaching": "Standard development. The knight attacks the e4 pawn and prepares ...g6."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "Natural development. The knight supports the e4 pawn and controls d5.",
+      "hint": "Develop the queen's knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "g6",
+      "title": "Black fianchettoes",
+      "instruction": "Play g6, preparing to develop the bishop to g7.",
+      "coaching": "This is the Pirc's main idea: fianchetto for kingside pressure against White's center."
+    },
+    {
+      "actor": "player",
+      "san": "Be3",
+      "title": "Develop the bishop",
+      "instruction": "Move Be3, developing and preparing for kingside castling.",
+      "coaching": "The bishop develops to a good square while keeping the king safe.",
+      "hint": "Develop the bishop to e3.",
+      "arrows": [{ "from": "c1", "to": "e3", "color": "#38bdf8" }],
+      "focusSquares": ["e3", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg7",
+      "title": "Black fianchettoes the bishop",
+      "instruction": "The bishop develops to g7, targeting the center.",
+      "coaching": "This is the main Pirc setup: bishop on g7 gives strong diagonal pressure."
+    },
+    {
+      "actor": "player",
+      "san": "Qd2",
+      "title": "Develop the queen",
+      "instruction": "Move Qd2, developing the queen and preparing castling.",
+      "coaching": "The queen develops to a safe square while supporting kingside development.",
+      "hint": "Move the queen to d2.",
+      "arrows": [{ "from": "d1", "to": "d2", "color": "#38bdf8" }],
+      "focusSquares": ["d2", "d1", "g1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c6",
+      "title": "Black prepares queenside play",
+      "instruction": "Play c6, preparing ...b5 and queenside expansion.",
+      "coaching": "Black prepares queenside counterplay while completing development.",
+      "hint": "Push the c-pawn to c6.",
+      "arrows": [{ "from": "c7", "to": "c6", "color": "#38bdf8" }],
+      "focusSquares": ["c6", "b5"]
+    }
+  ]
+}

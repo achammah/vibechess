@@ -1,0 +1,121 @@
+{
+  "id": "pin-tactics",
+  "kind": "tutorial",
+  "slug": "pin-tactics",
+  "title": "Tactics: Pins and Skewers",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Master the art of pinning - immobilize enemy pieces and win material.",
+  "description": "A pin is when a piece attacks an enemy piece that cannot move without exposing a more valuable piece behind it. A skewer is similar but attacks the more valuable piece first, forcing it to move and exposing the piece behind. These are essential GM-level tactical weapons.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5",
+  "objectives": [
+    "Recognize positions where pins are possible",
+    "Understand the difference between absolute pins (to the king) and relative pins",
+    "Learn to exploit pinned pieces",
+    "Master the skewer - a more active version of the pin"
+  ],
+  "plans": [
+    "Look for enemy pieces that are lined up with their king or queen",
+    "A pinned piece cannot move - use this to attack something else",
+    "Skewers are often more forcing than pins"
+  ],
+  "commonMistakes": [
+    "Don't pin a piece to the king if you can't follow up",
+    "Remember: you can only win a pinned piece if you can capture it safely",
+    "A piece can only be pinned if there's something behind it"
+  ],
+  "completionTitle": "Control your opponent's pieces",
+  "completionSummary": "You've learned to create and exploit pins and skewers, essential tactical patterns.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4 to begin.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, attacking e5.",
+      "hint": "Bring the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4, aiming at f7.",
+      "hint": "Move bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop to c5."
+    },
+    {
+      "actor": "player",
+      "san": "d3",
+      "title": "Solid setup",
+      "instruction": "Play d3, solid development.",
+      "hint": "Push the d-pawn one square.",
+      "arrows": [{ "from": "d2", "to": "d3", "color": "#38bdf8" }],
+      "focusSquares": ["d3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight to f6."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "The pinning bishop",
+      "instruction": "Play Bg5! This pins the knight on f6 to the queen on d8!",
+      "coaching": "The knight cannot move because the queen is behind it. This is a relative pin.",
+      "hint": "Move the bishop to g5, pinning the knight!",
+      "arrows": [{ "from": "c4", "to": "g5", "color": "#22c55e" }],
+      "focusSquares": ["g5", "f6", "d8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "h6",
+      "title": "Black defends",
+      "instruction": "Black plays h6, defending the bishop.",
+      "coaching": "Black has options: they can move the knight, defend it, or interpose."
+    },
+    {
+      "actor": "player",
+      "san": "Bxf6",
+      "title": "Win a piece",
+      "instruction": "Capture on f6! The knight was pinned and couldn't move.",
+      "coaching": "Because the knight was pinned to the queen, it couldn't move. We win a piece!",
+      "hint": "Capture on f6 with the bishop.",
+      "arrows": [{ "from": "g5", "to": "f6", "color": "#22c55e" }],
+      "focusSquares": ["f6"]
+    }
+  ]
+}

@@ -1,0 +1,216 @@
+{
+  "id": "french-defense-advance-milner-barry",
+  "kind": "tutorial",
+  "slug": "french-defense-advance-milner-barry",
+  "title": "French Defense: Advance with the Milner-Barry Trap",
+  "eco": "C02",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "club",
+  "summary": "Use the Advance Variation to claim space, build a real kingside initiative, and punish Black if they get greedy in the center.",
+  "description": "This lesson is built for White. You will lock the center with e5, support d4 with c3, develop toward the kingside, and then learn a practical Milner-Barry tactical idea that punishes Black's premature pawn grab. The point is not raw memorization. The point is to understand why White's space advantage and piece placement make the tactic work.",
+  "line": "1.e4 e6 2.d4 d5 3.e5 c5 4.c3 Nc6 5.Nf3 Qb6 6.Bd3 cxd4 7.cxd4 Nxd4? 8.Nxd4 Qxd4 9.Bb5+ Bd7 10.Qxd4",
+  "objectives": [
+    "Build the e5-d4 pawn chain so White gets more space and clearer kingside plans than in open French positions.",
+    "See why c3 matters: it supports d4, keeps the center intact, and prepares a recapture if Black challenges with ...cxd4.",
+    "Understand why Bd3 is more than development. It coordinates with the queen on d1 and turns the d-file into a tactical battleground."
+  ],
+  "plans": [
+    "Against the French, White usually attacks on the kingside while Black looks for counterplay with ...c5 and sometimes ...f6.",
+    "The move ...Qb6 pressures d4 and b2, so White should develop with purpose rather than panic. The central structure still favors White if you stay organized.",
+    "In this specific line, the bishop on d3 and queen on d1 create a tactical resource: once Black's queen lands on d4, Bb5+ makes the queen impossible to save."
+  ],
+  "commonMistakes": [
+    "Do not rush random kingside pawn pushes before development. In the French, the attack is strongest after your pieces are placed correctly.",
+    "Do not fear ...Qb6 too much. Black is applying pressure, but White can answer it with development and accurate recaptures.",
+    "If Black grabs with ...Nxd4? here, do not settle for a passive move. The point of the setup is to hit back immediately with the tactical check on b5."
+  ],
+  "completionTitle": "White has won Black's queen",
+  "completionSummary": "The tutorial ends with Qxd4, and White simply wins the black queen. That is the reward for building the right structure first: your tactical shot works because your bishop and queen were already coordinated.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Claim central space immediately",
+      "instruction": "Start with e4. You want the center before Black can define the structure.",
+      "coaching": "The French is all about central tension. White's best practical route is to take space early and force Black to explain how they will challenge it.",
+      "hint": "Push the king pawn two squares to occupy the center.",
+      "arrows": [
+        { "from": "e2", "to": "e4", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black chooses the French setup",
+      "instruction": "Black prepares ...d5 while keeping the center closed and solid.",
+      "coaching": "The pawn on e6 supports ...d5, but it also blocks Black's c8 bishop. That bishop can become a long-term problem if White keeps the center locked."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Build the full center",
+      "instruction": "Add the d-pawn so White controls more space and prepares the e5 advance if needed.",
+      "coaching": "The French is not a one-pawn opening. White wants the pair of pawns on e4 and d4 so Black's ...d5 strike can be answered in a principled way.",
+      "hint": "Support e4 and occupy the center with your queen pawn.",
+      "arrows": [
+        { "from": "d2", "to": "d4", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black hits back in the center",
+      "instruction": "This is the classical French challenge to e4.",
+      "coaching": "Now White has to choose a structure. In this lesson, you take space with e5 and make Black prove they can break your center down."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Lock the center and gain space",
+      "instruction": "Advance to e5. This is the heart of the French Advance Variation.",
+      "coaching": "Once the pawn reaches e5, White gets extra room and clear kingside plans. Black will look for counterplay against the base of the chain with ...c5 and later ...f6.",
+      "hint": "Push the e-pawn one more square and keep the center closed.",
+      "arrows": [
+        { "from": "e4", "to": "e5", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["e5", "d4", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black attacks the pawn chain",
+      "instruction": "Black challenges d4 from the side, which is the standard French counterplay plan.",
+      "coaching": "This is why White must stay disciplined. The d4 pawn is the base of your chain, so every developing move should either support it or increase your activity."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Reinforce the base of the chain",
+      "instruction": "Play c3 to support d4 and prepare to recapture if Black exchanges.",
+      "coaching": "This is the correct French logic. You are not just defending a pawn. You are keeping your space advantage intact and preserving the center that gives White the easier game.",
+      "hint": "Support d4 with your c-pawn.",
+      "arrows": [
+        { "from": "c2", "to": "c3", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["c3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "More pressure on d4",
+      "instruction": "Black develops and increases the pressure on your center.",
+      "coaching": "The knight supports ...cxd4 ideas and helps Black attack d4 again later. This is why White's next developing moves must be accurate."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop without weakening the center",
+      "instruction": "Bring the knight to f3. It supports d4, prepares castling ideas, and keeps your kingside flexible.",
+      "coaching": "This is a useful French habit: develop pieces to active squares while keeping your structure compact. You are preparing the board for a real middlegame plan, not just memorizing moves.",
+      "hint": "Develop the kingside knight to its natural square.",
+      "arrows": [
+        { "from": "g1", "to": "f3", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["f3", "d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qb6",
+      "title": "Black targets d4 and b2",
+      "instruction": "The queen move looks aggressive because it adds direct pressure to your center.",
+      "coaching": "This is a standard French resource. Black wants you to get nervous about d4 and b2. The correct answer is calm development, not an artificial defensive move."
+    },
+    {
+      "actor": "player",
+      "san": "Bd3",
+      "title": "Complete the Milner-Barry setup",
+      "instruction": "Develop the bishop to d3. It points toward h7 and secretly prepares the tactic in this lesson.",
+      "coaching": "This bishop move is the quality difference between a tutorial and a short drill. The bishop belongs on d3 not only for attack, but because it works with your queen on d1 if Black's queen ever lands on d4.",
+      "hint": "Develop the bishop to the diagonal that points toward h7.",
+      "arrows": [
+        { "from": "f1", "to": "d3", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["d3", "h7", "d1", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "cxd4",
+      "title": "Black opens the center",
+      "instruction": "Black removes the c-pawn and challenges whether your setup was really prepared.",
+      "coaching": "This exchange is normal. Because you played c3 earlier, White can recapture and keep the important d4 square under control."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Restore the chain correctly",
+      "instruction": "Recapture with the c-pawn so the center stays intact and the c-file opens for later play.",
+      "coaching": "Now the structure is exactly what you wanted: White still has central presence, and Black's queen is still staring at a position that is tactically sensitive.",
+      "hint": "Use the c-pawn to recapture on d4.",
+      "arrows": [
+        { "from": "c3", "to": "d4", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["d4", "d1", "d3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nxd4",
+      "title": "Black gets greedy",
+      "instruction": "This looks like a free pawn, but it walks into the prepared tactic.",
+      "coaching": "The knight jump to d4 is the mistake you were building toward. Because your bishop and queen are coordinated, Black cannot safely keep control of the d4 square."
+    },
+    {
+      "actor": "player",
+      "san": "Nxd4",
+      "title": "Remove the advanced knight immediately",
+      "instruction": "Take the knight. Do not hesitate or look for something fancier.",
+      "coaching": "This move clears c6, which matters for the next tactical check. It also keeps the sequence forcing, which is what strong opening play should do once a mistake appears.",
+      "hint": "Recapture the knight on d4 with your knight.",
+      "arrows": [
+        { "from": "f3", "to": "d4", "color": "#38bdf8" }
+      ],
+      "focusSquares": ["d4", "c6", "e2", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qxd4",
+      "title": "Black's queen lands on the tactical square",
+      "instruction": "The queen looks active, but it has stepped onto the exact square your setup was targeting.",
+      "coaching": "Now the tactic is ready. Your bishop on d3 and queen on d1 were placed with this moment in mind. One forcing move wins the queen."
+    },
+    {
+      "actor": "player",
+      "san": "Bb5+",
+      "title": "The key tactical shot",
+      "instruction": "Play Bb5+. The check is the whole point: Black must answer the king threat and cannot save the queen on d4.",
+      "coaching": "This is why quality opening study matters. The tactic works only because c6 is cleared, your bishop is developed, and the queen on d1 can recapture on d4 next move.",
+      "hint": "Use your bishop to give check from b5.",
+      "arrows": [
+        { "from": "d3", "to": "b5", "color": "#22c55e" }
+      ],
+      "focusSquares": ["b5", "e8", "d4", "d1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bd7",
+      "title": "Black is forced to answer the check",
+      "instruction": "Blocking is natural, but it does not solve the queen problem.",
+      "coaching": "Any legal reply here leaves the queen on d4 hanging. The tactic is already complete. White only has to collect the material."
+    },
+    {
+      "actor": "player",
+      "san": "Qxd4",
+      "title": "Finish the tactic cleanly",
+      "instruction": "Take the queen. White wins decisive material because the opening setup was built on real coordination.",
+      "coaching": "That is the lesson. The French Advance is not just about memorizing e5 and c3. It is about building a center, completing development, and being ready when Black overextends.",
+      "hint": "Use your queen to capture the undefended queen on d4.",
+      "arrows": [
+        { "from": "d1", "to": "d4", "color": "#22c55e" }
+      ],
+      "focusSquares": ["d1", "d4"]
+    }
+  ]
+}

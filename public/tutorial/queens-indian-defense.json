@@ -1,0 +1,163 @@
+{
+  "id": "queens-indian-defense",
+  "kind": "tutorial",
+  "slug": "queens-indian-defense",
+  "title": "Queen's Indian Defense: Classical",
+  "eco": "E12",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the Queen's Indian Defense, where Black fights White's central pawn with piece pressure.",
+  "description": "The Queen's Indian Defense is one of Black's most solid responses to 1.d4. By playing ...b6 and ...Bb7, Black fights White's central pawn with the bishop. This tutorial covers the Classical setup and typical plans.",
+  "line": "1.d4 Nf6 2.c4 e6 3.Nf3 b6 4.a3 Ba6",
+  "variations": {
+    "classical": "4...Ba6 - The Classical Queen's Indian with Ba6",
+    "modern": "4...Bb7 - The Modern Queen's Indian, playing in the center",
+    "fianchetto": "4.g3 - The Fianchetto Variation"
+  },
+  "objectives": [
+    "Understand the Queen's Indian structure: why the bishop on b7 is powerful",
+    "Learn why Black fights the center with pieces, not pawns",
+    "Master typical plans: ...d5, ...c5, or ...e5 depending on position",
+    "Recognize the typical pawn structures"
+  ],
+  "plans": [
+    "White's plan: Build a central pawn majority and use the bishop pair",
+    "Black's plan: Play ...d5, ...c5, or ...e5 to challenge the center",
+    "The move ...Ba6 is the main line, threatening b5",
+    "White should maintain central pressure before expanding"
+  ],
+  "commonMistakes": [
+    "Do not think the Queen's Indian is boring - there are many strategic ideas",
+    "Avoid playing too passively - keep the initiative",
+    "Do not underestimate Black's activity - the bishop on b7 is powerful",
+    "White should prepare e4 carefully before pushing"
+  ],
+  "completionTitle": "Strategic position with chances for both",
+  "completionSummary": "The Queen's Indian is a solid defense. You've learned the main ideas and can navigate the position.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The Queen's Indian is one of Black's most solid defenses.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black attacks d4 and prepares the Queen's Indian."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Challenge the center",
+      "instruction": "Play c4 to challenge d5.",
+      "coaching": "This is the standard setup against the Queen's Indian.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black plays e6",
+      "instruction": "Black plays e6, preparing the Queen's Indian.",
+      "coaching": "Black is setting up the Queen's Indian structure."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, developing toward the center.",
+      "coaching": "White develops naturally, controlling e5.",
+      "hint": "Move the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b6",
+      "title": "The Queen's Indian move",
+      "instruction": "Black plays b6, preparing the bishop development.",
+      "coaching": "This is the Queen's Indian! Black will develop the bishop to b7."
+    },
+    {
+      "actor": "player",
+      "san": "a3",
+      "title": "Prevent ...b5",
+      "instruction": "Play a3 to prevent ...b5.",
+      "coaching": "This move prevents Black's typical ...b5 break.",
+      "hint": "Push the a-pawn one square.",
+      "arrows": [{ "from": "a2", "to": "a3", "color": "#38bdf8" }],
+      "focusSquares": ["a3", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Ba6",
+      "title": "The Classical bishop",
+      "instruction": "The bishop develops to a6.",
+      "coaching": "This is the Classical Queen's Indian! The bishop attacks c4.",
+      "hint": "Move the bishop to a6.",
+      "arrows": [{ "from": "c8", "to": "a6", "color": "#38bdf8" }],
+      "focusSquares": ["a6", "c4"]
+    },
+    {
+      "actor": "player",
+      "san": "b3",
+      "title": "Support the c4 pawn",
+      "instruction": "Play b3 to support c4.",
+      "coaching": "White strengthens the c4 pawn and prepares development.",
+      "hint": "Push the b-pawn two squares.",
+      "arrows": [{ "from": "b2", "to": "b3", "color": "#38bdf8" }],
+      "focusSquares": ["b3", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bxf1",
+      "title": "Black exchanges the bishop",
+      "instruction": "Black captures on f1.",
+      "coaching": "Black exchanges the bishop, simplifying the position."
+    },
+    {
+      "actor": "player",
+      "san": "Kxf1",
+      "title": "White recaptures",
+      "instruction": "Take back with the king.",
+      "coaching": "White accepts the exchange, getting the king to safety.",
+      "hint": "Capture on f1 with the king.",
+      "arrows": [{ "from": "e1", "to": "f1", "color": "#38bdf8" }],
+      "focusSquares": ["f1", "g1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d5",
+      "title": "Black's central break",
+      "instruction": "Play d5 to challenge the center.",
+      "coaching": "This is Black's typical break in the Queen's Indian."
+    },
+    {
+      "actor": "player",
+      "san": "cxd5",
+      "title": "White exchanges",
+      "instruction": "Capture on d5 with the c-pawn.",
+      "coaching": "White exchanges, maintaining central control.",
+      "hint": "Capture on d5.",
+      "arrows": [{ "from": "c4", "to": "d5", "color": "#38bdf8" }],
+      "focusSquares": ["d5", "c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd5",
+      "title": "Black recaptures",
+      "instruction": "Take back with the e-pawn.",
+      "coaching": "Black gets an isolated pawn but keeps piece activity."
+    }
+  ]
+}

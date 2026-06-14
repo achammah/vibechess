@@ -1,0 +1,179 @@
+{
+  "id": "alekhine-defense",
+  "kind": "tutorial",
+  "slug": "alekhine-defense",
+  "title": "Alekhine's Defense: Four Pawns Attack",
+  "eco": "B05",
+  "category": "semi-open",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Learn the aggressive Four Pawns Attack where White builds a large center then crashes through.",
+  "description": "Alekhine's Defense is hypermodern: Black lures White into overextending, then attacks the center. You'll learn why the Four Pawns Attack is White's most dangerous response.",
+  "line": "1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.c4 Nb6 5.f4 dxe5 6.fxe5 Nc6 7.Nc3 Bg4 8.Nf3 e6 9.Bg5",
+  "objectives": [
+    "Understand the hypermodern idea: let White build, then attack the center.",
+    "Learn the Four Pawns Attack: build a big center and crash through.",
+    "Master the key idea: the center determines everything."
+  ],
+  "plans": [
+    "White builds a pawn center and attacks before Black's pieces coordinate.",
+    "Black seeks to undermine the center with ...c5 or ...e5.",
+    "The position is sharp: accurate calculation matters."
+  ],
+  "commonMistakes": [
+    "Do not overextend. The center is a target.",
+    "Avoid slow development. Strike before Black is ready.",
+    "Do not underestimate Black's counterplay. The knight is very active."
+  ],
+  "completionTitle": "Complex position with White's initiative",
+  "completionSummary": "The Four Pawns Attack creates dangerous positions where White's central control can be decisive.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4 to start.",
+      "coaching": "White controls the center. But Black has a surprise.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Alekhine's Defense",
+      "instruction": "The knight attacks e4, inviting White to overextend.",
+      "coaching": "This is Alekhine's: Black attacks the center with pieces, not pawns."
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "Push and lock the center",
+      "instruction": "Play e5 to block the knight and claim space.",
+      "coaching": "White pushes, building a pawn wedge. This is the Four Pawns foundation.",
+      "hint": "Push the e-pawn to e5.",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "d4", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nd5",
+      "title": "Black jumps to the center",
+      "instruction": "The knight jumps to d5, attacking the e5 pawn.",
+      "coaching": "This is typical Alekhine: knight jumps into the center to attack the pawn."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Build the pawn center",
+      "instruction": "Play d4 to establish a strong central presence.",
+      "coaching": "White builds the pawn center. The battle is on!",
+      "hint": "Push the d-pawn to d4.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "d6",
+      "title": "Black prepares development",
+      "instruction": "Play d6, supporting the center and preparing development.",
+      "coaching": "Black develops practically. The position is heating up."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Expand on the queenside",
+      "instruction": "Play c4 to control more space.",
+      "coaching": "White expands queenside while Black deals with the center.",
+      "hint": "Push the c-pawn to c4.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5", "b5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nb6",
+      "title": "Black attacks the pawn",
+      "instruction": "The knight attacks c4.",
+      "coaching": "Black attacks the pawn. White must decide: hold or give?"
+    },
+    {
+      "actor": "player",
+      "san": "f4",
+      "title": "The Four Pawns begin",
+      "instruction": "Play f4, the defining move of this line.",
+      "coaching": "This is the Four Pawns Attack! White builds a massive center.",
+      "hint": "Push the f-pawn to f4.",
+      "arrows": [{ "from": "f2", "to": "f4", "color": "#38bdf8" }],
+      "focusSquares": ["f4", "e5", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "dxe5",
+      "title": "Black breaks in the center",
+      "instruction": "Black captures, opening lines.",
+      "coaching": "Black breaks the center. The position is now tactical."
+    },
+    {
+      "actor": "player",
+      "san": "fxe5",
+      "title": "Recapture and maintain pressure",
+      "instruction": "Take back, keeping the center intact.",
+      "coaching": "White maintains the central mass. The attack continues.",
+      "hint": "Recapture with the pawn.",
+      "arrows": [{ "from": "f4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "d4", "c5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to c6.",
+      "coaching": "Black develops. The position is complex and double-edged."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "White develops the knight. The center is the key.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bg4",
+      "title": "Black develops the bishop",
+      "instruction": "The bishop develops to g4.",
+      "coaching": "Black develops with pressure. The game is heating up."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, completing kingside development.",
+      "coaching": "White develops the knight. The attack is building.",
+      "hint": "Develop the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "g5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black solidifies",
+      "instruction": "Play e6 to reinforce the center.",
+      "coaching": "Black solidifies. The position is complex."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "Develop with pressure",
+      "instruction": "Move Bg5, developing and pinning.",
+      "coaching": "White develops actively. The attack continues.",
+      "hint": "Develop the bishop to g5.",
+      "arrows": [{ "from": "c1", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5", "f6"]
+    }
+  ]
+}

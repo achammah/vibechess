@@ -1,0 +1,168 @@
+{
+  "id": "back-rank-mate",
+  "kind": "tutorial",
+  "slug": "back-rank-mate",
+  "title": "Tactics: Back Rank Mate",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "beginner",
+  "summary": "The most common checkmate pattern - trap the enemy king on the back rank.",
+  "description": "Back rank mate occurs when the enemy king is trapped on the back rank by its own pawns and a rook or queen delivers checkmate along the rank. This is one of the most frequent tactical patterns in chess, even at the highest levels.",
+  "line": "1.d4 d5 2.Nf3 Nf6 3.e3 c5 4.c3 Nc6",
+  "objectives": [
+    "Recognize when the back rank is vulnerable",
+    "Understand how pawns can trap a king",
+    "Learn to create back rank mates from seemingly quiet positions",
+    "Master the escape squares concept"
+  ],
+  "plans": [
+    "Target the back rank - line up rook or queen with the enemy king",
+    "Often need to remove or block the defender in front of the king",
+    "The side being mated often has no escape squares"
+  ],
+  "commonMistakes": [
+    "Don't forget about the king's escape squares - especially g7/f7 or b7/c7",
+    "Often need to eliminate the defending piece first",
+    "A pawn move can sometimes defend the back rank"
+  ],
+  "completionTitle": "Classic checkmate pattern mastered",
+  "completionSummary": "You've learned to recognize and execute back rank mates, a fundamental tactical pattern.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Open the game",
+      "instruction": "Play e4 to control the center.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4 to open lines.",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black exchanges",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "Qxd4",
+      "title": "Queen captures",
+      "instruction": "Capture with the queen, developing with check.",
+      "hint": "Capture on d4 with the queen.",
+      "arrows": [{ "from": "d1", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight to c6."
+    },
+    {
+      "actor": "player",
+      "san": "Qe5",
+      "title": "Queen to e5",
+      "instruction": "Move the queen to e5, attacking f7.",
+      "hint": "Move the queen to e5.",
+      "arrows": [{ "from": "d4", "to": "e5", "color": "#38bdf8" }],
+      "focusSquares": ["e5", "f7"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Be7",
+      "title": "Black defends",
+      "instruction": "Black develops the bishop to e7."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight to f6."
+    },
+    {
+      "actor": "player",
+      "san": "Rd1",
+      "title": "Rook to d1",
+      "instruction": "Move the rook to d1, connecting the rooks.",
+      "hint": "Move the rook to d1.",
+      "arrows": [{ "from": "a1", "to": "d1", "color": "#38bdf8" }],
+      "focusSquares": ["d1"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Now Black's king is on g8. The rooks are connected but the king is somewhat exposed."
+    },
+    {
+      "actor": "player",
+      "san": "Rd8",
+      "title": "Rook to d8",
+      "instruction": "Move the rook to d8, pressuring the d-file.",
+      "hint": "Move the rook to d8.",
+      "arrows": [{ "from": "d1", "to": "d8", "color": "#38bdf8" }],
+      "focusSquares": ["d8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Re8",
+      "title": "Black defends",
+      "instruction": "Black moves the rook to e8, defending the back rank.",
+      "coaching": "The rook on e8 blocks the back rank temporarily. But we can change that..."
+    },
+    {
+      "actor": "player",
+      "san": "Rxd8",
+      "title": "Capture on d8",
+      "instruction": "Capture on d8! This removes Black's defending rook.",
+      "coaching": "The queen on e5 attacks d8. The rook captures, winning the rook and clearing the d-file.",
+      "hint": "Capture on d8 with the rook!",
+      "arrows": [{ "from": "d8", "to": "d8", "color": "#22c55e" }],
+      "focusSquares": ["d8", "e8"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qxd8",
+      "title": "Queen recaptures",
+      "instruction": "Black's queen captures on d8.",
+      "coaching": "Now the queen is on d8. But look at Black's back rank..."
+    },
+    {
+      "actor": "player",
+      "san": "Rd1",
+      "title": "The back rank mate",
+      "instruction": "Play Rd1#! The queen cannot capture (the king is in check from e5), and the back rank is exposed!",
+      "coaching": "CHECKMATE! The king cannot move (f8 is blocked by the pawn on f7), cannot capture the rook, and cannot block. Classic back rank mate!",
+      "hint": "Play Rd1# - checkmate!",
+      "arrows": [{ "from": "d8", "to": "d1", "color": "#22c55e" }],
+      "focusSquares": ["d1", "e8"]
+    }
+  ]
+}

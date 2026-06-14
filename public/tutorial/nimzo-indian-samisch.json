@@ -1,0 +1,160 @@
+{
+  "id": "nimzo-indian-samisch",
+  "kind": "tutorial",
+  "slug": "nimzo-indian-samisch",
+  "title": "Nimzo-Indian Defense: Sämisch Variation",
+  "eco": "E24",
+  "category": "closed",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Master the Sämisch where White allows the pin and accepts doubled pawns for central control.",
+  "description": "The Sämisch Variation is one of White's most aggressive tries against the Nimzo-Indian. By playing f3, White allows Black to double the f-pawns but gains central control and king safety. This tutorial covers the main line and typical plans.",
+  "line": "1.d4 Nf6 2.c4 e6 3.Nc3 Bb4 4.a3 Bxc3+ 5.bxc3 c5 6.e3",
+  "variations": {
+    "mainLine": "6.e3 - The classical Sämisch with e3",
+    "modern": "6.f3 - The Sämisch with early f3, allowing ...Nxe4",
+    "avoidance": "4.f3 - The Sämisch Gambit, avoiding the pin entirely"
+  },
+  "objectives": [
+    "Understand the Sämisch structure: doubled f-pawns but central control",
+    "Learn why White allows the pin: development and king safety",
+    "Master typical plans: e4 break for White, ...d5 for Black",
+    "Recognize the typical endgame positions"
+  ],
+  "plans": [
+    "White's plan: Push e4 to attack, use the space advantage",
+    "Black's plan: Play ...d5, ...cxd4, and activate the pieces",
+    "The move ...cxd4 is a key exchange, opening the position",
+    "White should avoid exchanges - keep pieces for the attack"
+  ],
+  "commonMistakes": [
+    "Do not think doubled pawns are always bad - they can be a strength",
+    "Avoid playing too passively - White has the initiative",
+    "Do not underestimate Black's activity - the bishop on b4 is powerful",
+    "White should push e4 at the right moment to open the position"
+  ],
+  "completionTitle": "Complex position with chances for both",
+  "completionSummary": "The Sämisch Variation is a dynamic line. You've learned the main ideas and can play both sides.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Claim central space",
+      "instruction": "Play d4 to control the center.",
+      "coaching": "The Nimzo-Indian is one of Black's most strategic defenses.",
+      "hint": "Push the queen pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops the knight",
+      "instruction": "The knight develops to f6.",
+      "coaching": "Black attacks d4 and prepares the Nimzo-Indian."
+    },
+    {
+      "actor": "player",
+      "san": "c4",
+      "title": "Challenge the center",
+      "instruction": "Play c4 to challenge d5.",
+      "coaching": "This is the standard setup against the Nimzo-Indian.",
+      "hint": "Push the c-pawn two squares.",
+      "arrows": [{ "from": "c2", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e6",
+      "title": "Black plays e6",
+      "instruction": "Black plays e6, preparing the Nimzo-Indian.",
+      "coaching": "Black is setting up the Nimzo-Indian structure."
+    },
+    {
+      "actor": "player",
+      "san": "Nc3",
+      "title": "Develop the knight",
+      "instruction": "Move Nc3, developing toward the center.",
+      "coaching": "White develops the knight, controlling d5 and e4.",
+      "hint": "Develop the knight to c3.",
+      "arrows": [{ "from": "b1", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb4",
+      "title": "The Nimzowitsch pin",
+      "instruction": "The bishop pins the knight on c3.",
+      "coaching": "This is the Nimzo-Indian! Black pins and threatens ...Nxc3."
+    },
+    {
+      "actor": "player",
+      "san": "a3",
+      "title": "The Sämisch move",
+      "instruction": "Play a3 to force the bishop to move.",
+      "coaching": "This is the Sämisch! White forces the bishop to capture.",
+      "hint": "Push the a-pawn one square.",
+      "arrows": [{ "from": "a2", "to": "a3", "color": "#38bdf8" }],
+      "focusSquares": ["a3", "b4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bxc3+",
+      "title": "Black captures",
+      "instruction": "Black captures on c3, doubling White's pawns.",
+      "coaching": "Black accepts the Sämisch, doubling White's f-pawns."
+    },
+    {
+      "actor": "player",
+      "san": "bxc3",
+      "title": "White recaptures",
+      "instruction": "Take back with the c-pawn.",
+      "coaching": "White accepts the doubled pawns but gains central control.",
+      "hint": "Capture on c3 with the c-pawn.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "c5",
+      "title": "Black challenges the center",
+      "instruction": "Black pushes c5, attacking d4.",
+      "coaching": "This is Black's typical break against the Sämisch."
+    },
+    {
+      "actor": "player",
+      "san": "e3",
+      "title": "Support the center",
+      "instruction": "Play e3 to support d4 and prepare development.",
+      "coaching": "White strengthens the center and prepares development.",
+      "hint": "Push the e-pawn one square.",
+      "arrows": [{ "from": "e2", "to": "e3", "color": "#38bdf8" }],
+      "focusSquares": ["e3", "d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "O-O",
+      "title": "Black castles",
+      "instruction": "Black castles kingside.",
+      "coaching": "Black gets the king to safety and prepares piece development."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3, completing development.",
+      "coaching": "White develops the knight, controlling e5.",
+      "hint": "Move the knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3", "e5"]
+    },
+    {
+      "actor": "opponent",
+      "san": "b6",
+      "title": "Black prepares development",
+      "instruction": "Black plays b6, preparing the bishop development.",
+      "coaching": "Black is setting up the Queen's Indian structure."
+    }
+  ]
+}

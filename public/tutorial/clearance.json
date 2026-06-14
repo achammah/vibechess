@@ -1,0 +1,165 @@
+{
+  "id": "clearance",
+  "kind": "tutorial",
+  "slug": "clearance",
+  "title": "Tactics: Clearance",
+  "eco": "",
+  "category": "tactics",
+  "side": "white",
+  "difficulty": "intermediate",
+  "summary": "Clear the path for your pieces to attack.",
+  "description": "A clearance move is when you move a piece or pawn to clear a line, rank, or diagonal for an attack. Often the clearance move itself threatens something, forcing the opponent to allow the clearance. This is a fundamental tactical pattern.",
+  "line": "1.e4 e5 2.Nf3 Nc6 3.Bc4 Bc5 4.c3 Nf6 5.d4",
+  "objectives": [
+    "Recognize when a line needs to be cleared",
+    "Learn to create clearance moves",
+    "Understand how clearance enables attacks",
+    "Master combining clearance with other themes"
+  ],
+  "plans": [
+    "Look for blocked lines that could be opened",
+    "Often a pawn move clears a diagonal or rank",
+    "The clearance move often gives check"
+  ],
+  "commonMistakes": [
+    "Don't clear a line if the opponent can defend",
+    "Make sure your attack is strong enough after the clearance",
+    "Sometimes you need to move a key piece to clear the line"
+  ],
+  "completionTitle": "Opening lines for attack",
+  "completionSummary": "You've learned to use clearance moves to open lines for devastating attacks.",
+  "defaultOrientation": "white",
+  "steps": [
+    {
+      "actor": "player",
+      "san": "e4",
+      "title": "Control the center",
+      "instruction": "Play e4.",
+      "hint": "Push the king pawn two squares.",
+      "arrows": [{ "from": "e2", "to": "e4", "color": "#38bdf8" }],
+      "focusSquares": ["e4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "e5",
+      "title": "Black responds",
+      "instruction": "Black plays e5."
+    },
+    {
+      "actor": "player",
+      "san": "Nf3",
+      "title": "Develop the knight",
+      "instruction": "Move Nf3.",
+      "hint": "Knight to f3.",
+      "arrows": [{ "from": "g1", "to": "f3", "color": "#38bdf8" }],
+      "focusSquares": ["f3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nc6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "Bc4",
+      "title": "Bishop to c4",
+      "instruction": "Move Bc4.",
+      "hint": "Bishop to c4.",
+      "arrows": [{ "from": "f1", "to": "c4", "color": "#38bdf8" }],
+      "focusSquares": ["c4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bc5",
+      "title": "Black develops",
+      "instruction": "Black develops the bishop."
+    },
+    {
+      "actor": "player",
+      "san": "c3",
+      "title": "Prepare d4",
+      "instruction": "Play c3.",
+      "hint": "Push the c-pawn one square.",
+      "arrows": [{ "from": "c2", "to": "c3", "color": "#38bdf8" }],
+      "focusSquares": ["c3"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Nf6",
+      "title": "Black develops",
+      "instruction": "Black develops the knight."
+    },
+    {
+      "actor": "player",
+      "san": "d4",
+      "title": "Open the center",
+      "instruction": "Play d4!",
+      "hint": "Push the d-pawn two squares.",
+      "arrows": [{ "from": "d2", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "exd4",
+      "title": "Black captures",
+      "instruction": "Black captures on d4."
+    },
+    {
+      "actor": "player",
+      "san": "cxd4",
+      "title": "Recapture",
+      "instruction": "Recapture with the pawn.",
+      "hint": "Capture on d4 with the c-pawn.",
+      "arrows": [{ "from": "c3", "to": "d4", "color": "#38bdf8" }],
+      "focusSquares": ["d4"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Bb6",
+      "title": "Black develops",
+      "instruction": "Black moves the bishop to b6."
+    },
+    {
+      "actor": "player",
+      "san": "Bg5",
+      "title": "Pin the knight",
+      "instruction": "Play Bg5, pinning the knight.",
+      "hint": "Move the bishop to g5.",
+      "arrows": [{ "from": "c4", "to": "g5", "color": "#38bdf8" }],
+      "focusSquares": ["g5", "f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "h6",
+      "title": "Black defends",
+      "instruction": "Black plays h6."
+    },
+    {
+      "actor": "player",
+      "san": "Bxf6",
+      "title": "Capture on f6",
+      "instruction": "Capture on f6!",
+      "hint": "Capture the knight on f6.",
+      "arrows": [{ "from": "g5", "to": "f6", "color": "#38bdf8" }],
+      "focusSquares": ["f6"]
+    },
+    {
+      "actor": "opponent",
+      "san": "Qxf6",
+      "title": "Queen captures",
+      "instruction": "Black's queen captures.",
+      "coaching": "Now look at the d-file - we want to open it for our rook!"
+    },
+    {
+      "actor": "player",
+      "san": "e5",
+      "title": "The clearance!",
+      "instruction": "Play e5! This clears the d-file for the queen!",
+      "coaching": "The pawn move e5 attacks the queen and clears the d1-d5 diagonal for our queen!",
+      "hint": "Push the e-pawn to e5 - clearance!",
+      "arrows": [{ "from": "e4", "to": "e5", "color": "#22c55e" }],
+      "focusSquares": ["e5", "d1"]
+    }
+  ]
+}
