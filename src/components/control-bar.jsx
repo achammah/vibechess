@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
+import AuthControls from "@/components/auth-controls";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 
@@ -133,7 +134,7 @@ const ControlBar = ({
     {/* Left — branding */}
     <div className="flex items-center gap-2 shrink-0">
       <span className="text-base font-bold tracking-tight text-primary">
-        ♟ Chess King
+        ♟ vibechess
       </span>
     </div>
 
@@ -228,6 +229,7 @@ const ControlBar = ({
       <Button variant="ghost" size="icon" onClick={onOpenSettings}>
         <Settings className="h-4 w-4" />
       </Button>
+      <AuthControls />
     </div>
   </div>
 );

@@ -9,7 +9,10 @@
 import { createClient } from "@supabase/supabase-js";
 
 const url = import.meta.env.VITE_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Supports both the new publishable key (sb_publishable_…) and the legacy anon JWT.
+const anonKey =
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ||
+  import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 /** True when Supabase env is present and cloud sync is available. */
 export const isSupabaseConfigured = Boolean(url && anonKey);
