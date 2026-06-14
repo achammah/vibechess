@@ -7,12 +7,10 @@
 // Idempotent: re-running upserts by primary key. The service-role key bypasses
 // RLS, which is why this must run server-side only.
 
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
-
 import { createClient } from "@supabase/supabase-js";
 import { Chess } from "chess.js";
 
+import { fetchServiceRoleKey, loadEnv } from "../_env.js";
 import { buildOpeningTree, epdOf, hashId, parseTsv } from "./buildTree.js";
 
 // Pinned to master; bump deliberately when refreshing the named-line backbone.
@@ -20,19 +18,6 @@ const BASE =
   "https://raw.githubusercontent.com/lichess-org/chess-openings/master";
 const FILES = ["a.tsv", "b.tsv", "c.tsv", "d.tsv", "e.tsv"];
 const CHUNK = 500;
-
-// Allow a local .env.local to provide credentials.
-const loadEnv = () => {
-  try {
-    const text = readFileSync(resolve(process.cwd(), ".env.local"), "utf8");
-    for (const line of text.split("\n")) {
-      const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
-      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^["']|["']$/g, "");
-    }
-  } catch {
-    /* no .env.local — rely on the shell environment */
-  }
-};
 
 const chunked = async (rows, fn) => {
   for (let i = 0; i < rows.length; i += CHUNK) {
@@ -56,13 +41,12 @@ const terminalId = (pgn) => {
 const main = async () => {
   loadEnv();
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
-    console.error(
-      "Missing SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY (env or .env.local).",
-    );
+  if (!url) {
+    console.error("Missing SUPABASE_URL / VITE_SUPABASE_URL (env or .env.local).");
     process.exit(1);
   }
+  // Use a provided service-role key, or reveal it via the Personal Access Token.
+  const key = await fetchServiceRoleKey();
   const supabase = createClient(url, key, { auth: { persistSession: false } });
 
   console.log("Downloading Lichess chess-openings TSVs…");

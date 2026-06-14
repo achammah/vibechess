@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "db:migrate": "node scripts/db/migrate.js",
+    "db:ingest-openings": "node scripts/ingest-openings/run.js",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
