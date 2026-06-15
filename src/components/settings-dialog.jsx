@@ -10,7 +10,9 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { GEMINI_MODELS } from "@/lib/google-ai";
+import { voiceSupported } from "@/lib/voice";
 
 const OPENAI_MODELS = [
   { id: "gpt-4o-mini", label: "GPT-4o Mini" },
@@ -29,6 +31,7 @@ const SettingsDialog = ({ open, onOpenChange }) => {
   const [openaiApiKey, setOpenaiApiKey] = useState("");
   const [openaiModel, setOpenaiModel] = useState("gpt-4o-mini");
   const [elo, setElo] = useState("1000");
+  const [voiceCoach, setVoiceCoach] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -40,6 +43,7 @@ const SettingsDialog = ({ open, onOpenChange }) => {
     setOpenaiApiKey(localStorage.getItem("chess-coach-api-key") || "");
     setOpenaiModel(localStorage.getItem("chess-coach-model") || "gpt-4o-mini");
     setElo(localStorage.getItem("chess-coach-elo") || "1000");
+    setVoiceCoach(localStorage.getItem("chess-voice-coach") === "on");
   }, [open]);
 
   /**
@@ -53,6 +57,7 @@ const SettingsDialog = ({ open, onOpenChange }) => {
     localStorage.setItem("chess-coach-api-key", openaiApiKey);
     localStorage.setItem("chess-coach-model", openaiModel);
     localStorage.setItem("chess-coach-elo", String(parsedElo));
+    localStorage.setItem("chess-voice-coach", voiceCoach ? "on" : "off");
     onOpenChange(false);
   };
 
@@ -87,6 +92,19 @@ const SettingsDialog = ({ open, onOpenChange }) => {
               Used to tailor coaching depth and vocabulary to your level.
             </p>
           </div>
+
+          {/* Voice coach */}
+          {voiceSupported() && (
+            <div className="flex items-center justify-between">
+              <div>
+                <label className="text-sm font-medium">Voice coach</label>
+                <p className="text-xs text-muted-foreground">
+                  Read grounded explanations aloud.
+                </p>
+              </div>
+              <Switch checked={voiceCoach} onCheckedChange={setVoiceCoach} />
+            </div>
+          )}
 
           {/* AI Provider */}
           <div className="space-y-2">

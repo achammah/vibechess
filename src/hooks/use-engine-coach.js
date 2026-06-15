@@ -22,6 +22,7 @@ import { buildEvidence } from "@/lib/evidence";
 import { explainGrounded } from "@/lib/google-ai";
 import { buildMyMoveCard, buildThreatCard } from "@/lib/intelligence";
 import { getStockfishEngine } from "@/lib/stockfish";
+import { speak, voiceEnabled } from "@/lib/voice";
 
 /** Gemini key from Settings, with an optional dev fallback from the env. */
 const getGoogleKey = () =>
@@ -485,6 +486,7 @@ const useEngineCoach = ({
           ...previous,
           { role: "assistant", content: prose || reply, type: "engine" },
         ]);
+        if (voiceEnabled()) speak(prose || reply);
       } else {
         // No LLM key — fall back to a grounded engine summary.
         setMessages((previous) => [
