@@ -619,15 +619,29 @@ const App = () => {
   }, [triggerAIMove]);
 
   // ── Player color change ──────────────────────────────────────────────────
-  const handlePlayerColorChange = useCallback(
-    (color) => {
-      if (moveHistory.length > 0) return;
-      setPlayerColor(color);
-      setBoardOrientation(color);
-      // The engine no longer moves on color choice — it waits for Start.
-    },
-    [moveHistory.length],
-  );
+  const handlePlayerColorChange = useCallback((color) => {
+    // Sides are locked only WHILE a game is running. When idle (before Start or
+    // after Stop) you can switch as much as you like; the engine waits for Start.
+    if (gameStartedReference.current) return;
+    setPlayerColor(color);
+    setBoardOrientation(color);
+    // Switching sides during setup starts from a clean board (a stopped game may
+    // have left moves on it).
+    if (gameReference.current.history().length > 0) {
+      clearTimeout(aiTimeoutReference.current);
+      destroyStockfishEngine();
+      gameReference.current = new Chess();
+      setFen(gameReference.current.fen());
+      setMoveHistory([]);
+      setMoveQuality(null);
+      setLastMoveSquares(null);
+      setBestMoveArrows([]);
+      setEvalScore(null);
+      setMessages([]);
+      setPremove(null);
+      premoveReference.current = null;
+    }
+  }, []);
 
   // ── Review navigation ────────────────────────────────────────────────────
   const handleJumpToMove = useCallback((index) => setViewIndex(index), []);
@@ -1128,7 +1142,7 @@ const App = () => {
             premove={premove}
             playerColor={playerColor}
             onPlayerColorChange={handlePlayerColorChange}
-            isGameInProgress={moveHistory.length > 0}
+            isGameInProgress={gameStarted}
             onCancelPremove={() => {
               setPremove(null);
               premoveReference.current = null;
