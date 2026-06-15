@@ -15,9 +15,9 @@ const LogoMark = ({ className = "h-5 w-auto" }) => (
     role="img"
     aria-label="vibechess"
   >
-    <path d={KNIGHT_PATH} fill="currentColor" />
-    <path d={BRANCH_PATH} fill="currentColor" />
-    <circle cx="367" cy="744" r="19" fill="#FF6600" />
+    <path d={KNIGHT_PATH} fill="currentColor" stroke="currentColor" strokeWidth="11" strokeLinejoin="round" strokeLinecap="round" />
+    <path d={BRANCH_PATH} fill="currentColor" stroke="currentColor" strokeWidth="11" strokeLinejoin="round" strokeLinecap="round" />
+    <circle cx="367" cy="744" r="26" fill="#FF6600" />
   </svg>
 );
 
