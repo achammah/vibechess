@@ -9,6 +9,8 @@
     "db:migrate": "node scripts/db/migrate.js",
     "db:ingest-openings": "node scripts/ingest-openings/run.js",
     "db:expand-openings": "node scripts/ingest-openings/expand.js",
+    "db:expand-engine": "node scripts/ingest-openings/expand-engine.js",
+    "db:name-lines": "node scripts/ingest-openings/name-lines.js",
     "db:ingest-puzzles": "node scripts/ingest-puzzles/run.js",
     "lint": "eslint .",
     "preview": "vite preview",
