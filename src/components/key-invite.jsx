@@ -10,13 +10,25 @@ import {
 } from "@/components/ui/dialog";
 import { Callout, EditorialButton } from "@/components/ui/editorial";
 
-// True when an LLM key is available from any supported source. Used by App to
-// decide whether to invite the (signed-in) user to add their free Gemini key.
+// True when an LLM key is available from any source, INCLUDING the build-time
+// VITE_GOOGLE_API_KEY. Use this to decide whether the coach can physically run.
 export const hasLlmKey = () =>
   Boolean(
     localStorage.getItem("chess-google-api-key") ||
       localStorage.getItem("chess-coach-api-key") ||
       import.meta.env.VITE_GOOGLE_API_KEY,
+  );
+
+// True only when the USER has supplied their own key (stored in this browser).
+// This is what the UI signals on, and what the "add key" prompts react to: a
+// shared build-time key is rate limited and not the user's to manage, so its
+// presence must NOT suppress the prompt. A user key also wins at call time
+// (getGoogleKey reads localStorage first), so adding one fixes a throttled
+// shared key.
+export const hasUserLlmKey = () =>
+  Boolean(
+    localStorage.getItem("chess-google-api-key") ||
+      localStorage.getItem("chess-coach-api-key"),
   );
 
 // One-time invite: prompts the user to add a free Gemini API key so the AI

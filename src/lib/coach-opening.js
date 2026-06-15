@@ -415,7 +415,11 @@ Output ONLY the paragraph.`;
 
 const FOLLOWUP_DEPTH = 14; // quick analyze for grounding the chat answer
 
-const NO_KEY_NOTE = "Add your Gemini key in Settings to chat with the coach.";
+const NO_KEY_NOTE =
+  "**Add an AI key to chat with the coach.** Open Settings (or the “Add AI key” button up top) and paste a free Google Gemini key. It is stored only in your browser.";
+
+const COACH_FAILED_NOTE =
+  "I could not reach the coach just now. Your AI key may be missing, invalid, or rate limited. Try again, or add your own free key in Settings so requests use it.";
 
 /**
  * Conversational follow-up after an opening explanation. Grounds the answer with
@@ -487,8 +491,8 @@ export const coachFollowup = async ({
       LLM_TIMEOUT_MS,
     );
     const answer = cleanProse(raw);
-    return answer || NO_KEY_NOTE;
+    return answer || COACH_FAILED_NOTE;
   } catch {
-    return "Something went wrong reaching the coach. Please try again.";
+    return COACH_FAILED_NOTE;
   }
 };

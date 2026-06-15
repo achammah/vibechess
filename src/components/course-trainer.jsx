@@ -11,6 +11,7 @@ import {
   Send,
   Loader2,
   Play,
+  KeyRound,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chessboard } from "react-chessboard";
@@ -244,7 +245,7 @@ const CourseList = ({ onPick }) => {
 };
 
 // ── Trainer ──────────────────────────────────────────────────────────────────
-const Trainer = ({ course, onExit }) => {
+const Trainer = ({ course, onExit, onAddKey }) => {
   const [lines, setLines] = useState(null);
   const [side] = useState("w"); // courses default to White; flip support can follow
   const [mode, setMode] = useState("learn");
@@ -953,11 +954,17 @@ const Trainer = ({ course, onExit }) => {
                   )}
 
                   {/* Templated (keyless) coaching still ships real arrows + a real
-                      engine line; nudge toward a key for deeper prose. */}
+                      engine line; nudge toward a key for deeper, AI-written prose
+                      and per-move reasons. The nudge is an actionable button. */}
                   {!m.pending && m.aiGenerated === false && (
-                    <p className="mt-3 font-mono text-[10px] leading-relaxed tracking-[0.04em] text-muted-foreground">
-                      Add a Gemini key in Settings for deeper coaching.
-                    </p>
+                    <button
+                      type="button"
+                      onClick={onAddKey}
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-[2px] border border-primary/40 bg-primary/[0.07] px-2 py-1 font-mono text-[10px] uppercase tracking-[0.1em] text-primary transition-colors duration-150 hover:bg-primary/[0.13]"
+                    >
+                      <KeyRound className="h-3 w-3" />
+                      Add AI key for deeper coaching
+                    </button>
                   )}
                 </div>
               </div>
@@ -1031,7 +1038,7 @@ const Trainer = ({ course, onExit }) => {
 // backward-compatible mounting (render null when false; the parent mounts it only
 // when active). `onExitToPlay` gives a "Back to play" affordance from the catalog;
 // `onClose` is accepted as a fallback for that same intent.
-const CourseTrainer = ({ open = true, onExitToPlay, onClose }) => {
+const CourseTrainer = ({ open = true, onExitToPlay, onClose, onAddKey }) => {
   const [course, setCourse] = useState(null);
   useEffect(() => {
     if (!open) setCourse(null);
@@ -1043,7 +1050,7 @@ const CourseTrainer = ({ open = true, onExitToPlay, onClose }) => {
   return (
     <div className="flex h-full w-full min-h-0 flex-col bg-background">
       {course ? (
-        <Trainer course={course} onExit={() => setCourse(null)} />
+        <Trainer course={course} onExit={() => setCourse(null)} onAddKey={onAddKey} />
       ) : (
         <>
           {exitToPlay && (

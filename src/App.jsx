@@ -7,7 +7,7 @@ import BoardPanel, { playSound } from "@/components/board-panel";
 import ChatPanel from "@/components/chat-panel";
 import ControlBar from "@/components/control-bar";
 import CourseTrainer from "@/components/course-trainer";
-import KeyInvite, { hasLlmKey } from "@/components/key-invite";
+import KeyInvite, { hasUserLlmKey } from "@/components/key-invite";
 import EndgameMode from "@/components/endgame-mode";
 import GameReportDialog from "@/components/game-report-dialog";
 import MoveHistorySidebar from "@/components/move-history-sidebar";
@@ -65,11 +65,20 @@ const App = () => {
   const [moveQuality, setMoveQuality] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [keyInviteOpen, setKeyInviteOpen] = useState(false);
+  // Whether the user has supplied their OWN AI key (localStorage). Drives the
+  // TopNav indicator and the in-context "add key" prompts. Re-read whenever the
+  // Settings or invite dialog closes (the user may have just saved a key).
+  const [hasUserKey, setHasUserKey] = useState(() => hasUserLlmKey());
+  const refreshKeyStatus = useCallback(() => setHasUserKey(hasUserLlmKey()), []);
 
-  // Invite signed-in users without an AI key to add one (unlocks the coach,
-  // opening explanations + chat, etc.). Shown once until dismissed.
+  // Invite users without their own AI key to add one (unlocks the coach,
+  // opening explanations + chat, etc.). Shown once until dismissed. Gated on the
+  // user's own key so a shared build-time key does not hide the prompt.
   useEffect(() => {
-    if (!hasLlmKey() && localStorage.getItem("vibechess-key-invite-dismissed") !== "1") {
+    if (
+      !hasUserLlmKey() &&
+      localStorage.getItem("vibechess-key-invite-dismissed") !== "1"
+    ) {
       setKeyInviteOpen(true);
     }
   }, []);
@@ -996,6 +1005,8 @@ const App = () => {
         onOpenSettings={() => setSettingsOpen(true)}
         isDarkMode={isDarkMode}
         onToggleDarkMode={toggleDarkMode}
+        hasApiKey={hasUserKey}
+        onAddKey={() => setKeyInviteOpen(true)}
       />
 
       {/* ── Persistent content region ──────────────────────────────────────
@@ -1004,7 +1015,11 @@ const App = () => {
           double-scrolls. */}
       <div className="flex min-h-0 flex-1 flex-col">
         {activeMode === "openings" && (
-          <CourseTrainer onExitToPlay={() => setActiveMode("play")} />
+          <CourseTrainer
+            onExitToPlay={() => setActiveMode("play")}
+            hasApiKey={hasUserKey}
+            onAddKey={() => setKeyInviteOpen(true)}
+          />
         )}
 
         {/* PuzzleMode renders as its own fixed overlay (lib component we don't
@@ -1120,6 +1135,8 @@ const App = () => {
               onAskAI={handleAskAI}
               onLearnWithAI={handleLearnWithAI}
               tokenStats={tokenStats}
+              hasApiKey={hasUserKey}
+              onAddKey={() => setKeyInviteOpen(true)}
             />
           )}
             </div>
@@ -1129,12 +1146,21 @@ const App = () => {
       </div>
 
       {/* Dialogs & Overlays */}
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <SettingsDialog
+        open={settingsOpen}
+        onOpenChange={(v) => {
+          setSettingsOpen(v);
+          if (!v) refreshKeyStatus();
+        }}
+      />
       <KeyInvite
         open={keyInviteOpen}
         onOpenChange={(v) => {
           setKeyInviteOpen(v);
-          if (!v) localStorage.setItem("vibechess-key-invite-dismissed", "1");
+          if (!v) {
+            localStorage.setItem("vibechess-key-invite-dismissed", "1");
+            refreshKeyStatus();
+          }
         }}
         onAddKey={() => {
           setKeyInviteOpen(false);

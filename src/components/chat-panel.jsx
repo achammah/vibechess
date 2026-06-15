@@ -19,6 +19,7 @@ import {
   TrendingDown,
   Minus,
   Crown,
+  KeyRound,
 } from "lucide-react";
 import { useState, useRef, useEffect, createElement } from "react";
 import ReactMarkdown from "react-markdown";
@@ -1114,6 +1115,8 @@ const ChatPanel = ({
   onAskAI,
   onLearnWithAI,
   tokenStats,
+  hasApiKey = false,
+  onAddKey,
 }) => {
   const [input, setInput] = useState("");
   const messagesEndReference = useRef(null);
@@ -1355,6 +1358,19 @@ const ChatPanel = ({
         </div>
       ) : (
         <div className="p-3 border-t border-border">
+          {/* No user key → prompt to add one (the coach needs an AI key). */}
+          {!hasApiKey && (
+            <button
+              type="button"
+              onClick={onAddKey}
+              className="mb-2.5 flex w-full items-center gap-2 rounded-[2px] border border-primary/40 bg-primary/[0.07] px-2.5 py-2 text-left transition-colors duration-150 hover:bg-primary/[0.13]"
+            >
+              <KeyRound className="h-3.5 w-3.5 shrink-0 text-primary" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-primary">
+                Add a free AI key to chat with the coach
+              </span>
+            </button>
+          )}
           <div className="mb-2.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
             <div className="flex items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-border bg-foreground/[0.03] px-2 py-0.5">

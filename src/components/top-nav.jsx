@@ -5,6 +5,7 @@ import {
   Swords,
   GraduationCap,
   Puzzle,
+  KeyRound,
 } from "lucide-react";
 
 import AuthControls from "@/components/auth-controls";
@@ -37,6 +38,8 @@ const TopNav = ({
   onOpenSettings,
   isDarkMode,
   onToggleDarkMode,
+  hasApiKey = false,
+  onAddKey,
 }) => (
   <header className="sticky top-0 z-[60] flex items-center justify-between gap-4 border-b border-border bg-background/70 px-4 py-2.5 backdrop-blur-md">
     {/* Left — wordmark */}
@@ -81,8 +84,32 @@ const TopNav = ({
       })}
     </nav>
 
-    {/* Right — dark mode + settings + auth */}
+    {/* Right — AI key status + dark mode + settings + auth */}
     <div className="flex shrink-0 items-center gap-1">
+      {/* AI key indicator. Active (your key) → subtle confirmation that opens
+          Settings to manage it. No key → a prominent prompt that opens the
+          add-key flow. Reflects the user's OWN key, not a shared build key. */}
+      {hasApiKey ? (
+        <button
+          type="button"
+          onClick={onOpenSettings}
+          title="AI coaching active with your key. Click to manage."
+          className="hidden items-center gap-1.5 rounded-[2px] border border-border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground transition-colors duration-150 hover:text-foreground sm:flex"
+        >
+          <span className="size-1.5 rounded-full bg-emerald-500" />
+          AI on
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={onAddKey}
+          title="Add a free AI key to unlock the coach everywhere"
+          className="flex items-center gap-1.5 rounded-[2px] border border-primary/40 bg-primary/[0.08] px-2.5 py-1 font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-primary transition-colors duration-150 hover:bg-primary/[0.14]"
+        >
+          <KeyRound className="h-3 w-3" />
+          Add AI key
+        </button>
+      )}
       <Button
         variant="ghost"
         size="icon"
