@@ -38,6 +38,15 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 // ── Local helpers ─────────────────────────────────────────────────────────────
 const getApiKey = () => localStorage.getItem("chess-coach-api-key") || "";
 
+// Back-compat: older saves stored a coarse difficulty tier instead of ELO.
+const DIFFICULTY_TO_ELO = { easy: 800, medium: 1200, hard: 1800 };
+const savedToElo = (saved) => {
+  if (Number.isFinite(saved?.elo)) {
+    return Math.min(2800, Math.max(600, Math.round(saved.elo)));
+  }
+  return DIFFICULTY_TO_ELO[saved?.difficulty] ?? null;
+};
+
 // ─────────────────────────────────────────────────────────────────────────────
 const App = () => {
   const gameReference = useRef(new Chess());
@@ -63,7 +72,22 @@ const App = () => {
   const [boardOrientation, setBoardOrientation] = useState("white");
 
   const [opponent, setOpponent] = useState("engine");
-  const [difficulty, setDifficulty] = useState("medium");
+  // Exact opponent strength in ELO (Chess Engine uses it directly; the AI
+  // minimax opponent maps it to its coarse easy/medium/hard tiers).
+  const [elo, setElo] = useState(() => {
+    const stored = Number.parseInt(
+      localStorage.getItem("chess-engine-elo") || "1200",
+      10,
+    );
+    return Number.isFinite(stored)
+      ? Math.min(2800, Math.max(600, stored))
+      : 1200;
+  });
+  useEffect(() => {
+    localStorage.setItem("chess-engine-elo", String(elo));
+  }, [elo]);
+  // Coarse tier derived from ELO, consumed only by the AI minimax opponent.
+  const difficulty = elo < 1000 ? "easy" : elo < 1600 ? "medium" : "hard";
   const [playerColor, setPlayerColor] = useState("white");
   const playerColorReference = useRef(playerColor);
   useEffect(() => {
@@ -311,8 +335,9 @@ const App = () => {
           if (saved.opponent) {
             setOpponent(saved.opponent);
           }
-          if (saved.difficulty) {
-            setDifficulty(saved.difficulty);
+          {
+            const restoredElo = savedToElo(saved);
+            if (restoredElo !== null) setElo(restoredElo);
           }
           if (saved.playerColor) {
             setPlayerColor(saved.playerColor);
@@ -348,6 +373,7 @@ const App = () => {
         pgn: gameReference.current.pgn(),
         moveHistory,
         opponent,
+        elo,
         difficulty,
         boardOrientation,
         playerColor,
@@ -382,7 +408,10 @@ const App = () => {
         setAnnotations({});
         if (saved.boardOrientation) setBoardOrientation(saved.boardOrientation);
         if (saved.opponent) setOpponent(saved.opponent);
-        if (saved.difficulty) setDifficulty(saved.difficulty);
+        {
+          const restoredElo = savedToElo(saved);
+          if (restoredElo !== null) setElo(restoredElo);
+        }
         if (saved.playerColor) setPlayerColor(saved.playerColor);
         const hist = game.history({ verbose: true });
         if (hist.length > 0) {
@@ -412,11 +441,12 @@ const App = () => {
       pgn: gameReference.current.pgn(),
       moveHistory,
       opponent,
+      elo,
       difficulty,
       boardOrientation,
       playerColor,
     }),
-    [moveHistory, opponent, difficulty, boardOrientation, playerColor],
+    [moveHistory, opponent, elo, difficulty, boardOrientation, playerColor],
   );
 
   // ── Trigger AI/engine opponent move ──────────────────────────────────────
@@ -434,7 +464,7 @@ const App = () => {
 
           if (opponent === "engine") {
             const sf = getStockfishEngine();
-            const uciMove = await sf.getMove(currentFen, difficulty);
+            const uciMove = await sf.getMove(currentFen, elo);
             if (!uciMove) return;
             const parsed = StockfishEngine.uciToMove(uciMove);
             if (!parsed) return;
@@ -544,6 +574,7 @@ const App = () => {
     },
 
     [
+      elo,
       difficulty,
       opponent,
       triggerPostGameAnalysis,
@@ -990,8 +1021,8 @@ const App = () => {
               onOpenOpenings={() => setOpeningsOpen(true)}
               opponent={opponent}
               onOpponentChange={setOpponent}
-              difficulty={difficulty}
-              onDifficultyChange={setDifficulty}
+              elo={elo}
+              onEloChange={setElo}
               clockEnabled={clockEnabled}
               onToggleClock={() => setClockEnabled((enabled) => !enabled)}
             />

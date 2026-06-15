@@ -62,78 +62,78 @@ const BOARD_STYLE = {
   lightSquareStyle: { backgroundColor: "#edeed1" },
 };
 
-// ── Lightweight static board thumbnail ──────────────────────────────────────
-// A non-interactive 8×8 CSS grid with Unicode glyphs — cheap enough to render
-// one per card without mounting a full <Chessboard>. Same square palette as the
-// trainer board so the catalog reads as "the same chess world".
-const PIECE_GLYPH = {
-  K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙", // white
-  k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟", // black
-};
+// ── Crisp board thumbnail ────────────────────────────────────────────────────
+// A real, non-interactive <Chessboard> preview (crisp SVG pieces) showing the
+// course's representative position, with an orange arrow marking the opening's
+// defining move. Two performance guards keep a 60-card catalog smooth:
+//   1. Lazy mount — each thumbnail is a plain two-tone placeholder until its card
+//      scrolls into view (IntersectionObserver), THEN the Chessboard mounts.
+//   2. The catalog itself is capped (see CourseList) so we never mount hundreds.
+const THUMB_DARK = "#779952";
+const THUMB_LIGHT = "#edeed1";
 
-/** Parse a FEN's piece-placement field into 64 cells (rank 8 → rank 1). */
-const fenToCells = (fen) => {
-  const placement = (fen || "").split(" ")[0];
-  if (!placement) return null;
-  const cells = [];
-  for (const rank of placement.split("/")) {
-    for (const ch of rank) {
-      if (/\d/.test(ch)) for (let i = 0; i < Number(ch); i += 1) cells.push(null);
-      else cells.push(ch);
-    }
-  }
-  return cells.length === 64 ? cells : null;
-};
+/** Static checker placeholder shown before the real board mounts. */
+const ThumbPlaceholder = ({ className }) => (
+  <div
+    aria-hidden
+    className={`grid aspect-square w-full grid-cols-8 overflow-hidden rounded-[3px] ${className || ""}`}
+  >
+    {Array.from({ length: 64 }, (_, i) => {
+      const dark = ((i + Math.floor(i / 8)) % 2) === 1;
+      return <div key={i} style={{ backgroundColor: dark ? THUMB_DARK : THUMB_LIGHT }} />;
+    })}
+  </div>
+);
 
-const BoardThumbnail = ({ fen, className }) => {
-  const cells = useMemo(() => fenToCells(fen), [fen]);
-  if (!cells) {
-    // Graceful fallback: an empty board so the card still reads as a course.
-    return (
-      <div
-        aria-hidden
-        className={`grid aspect-square w-full grid-cols-8 overflow-hidden rounded-[3px] ${className || ""}`}
-      >
-        {Array.from({ length: 64 }, (_, i) => {
-          const dark = ((i + Math.floor(i / 8)) % 2) === 1;
-          return <div key={i} style={{ backgroundColor: dark ? "#779952" : "#edeed1" }} />;
-        })}
-      </div>
+const BoardThumbnail = ({ course, className }) => {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || inView) return undefined;
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setInView(true);
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { rootMargin: "200px 0px", threshold: 0.01 },
     );
-  }
+    io.observe(el);
+    return () => io.disconnect();
+  }, [inView]);
+
   return (
-    <div
-      aria-hidden
-      className={`grid aspect-square w-full grid-cols-8 overflow-hidden rounded-[3px] ${className || ""}`}
-    >
-      {cells.map((piece, i) => {
-        const dark = ((i + Math.floor(i / 8)) % 2) === 1;
-        const glyph = piece ? PIECE_GLYPH[piece] : "";
-        const white = piece && piece === piece.toUpperCase();
-        return (
-          <div
-            key={i}
-            className="flex items-center justify-center"
-            style={{ backgroundColor: dark ? "#779952" : "#edeed1" }}
-          >
-            {glyph && (
-              <span
-                className="leading-none"
-                style={{
-                  fontSize: "min(2.6vw, 1.05rem)",
-                  color: white ? "#f8f8f2" : "#202020",
-                  textShadow: white ? "0 0 1px rgba(0,0,0,0.55)" : "0 0 1px rgba(255,255,255,0.35)",
-                }}
-              >
-                {glyph}
-              </span>
-            )}
-          </div>
-        );
-      })}
+    <div ref={ref} className={`aspect-square w-full overflow-hidden rounded-[3px] ${className || ""}`}>
+      {inView && course.fen ? (
+        <Chessboard
+          options={{
+            id: `thumb-${course.slug}`,
+            position: course.fen,
+            allowDragging: false,
+            showNotation: false,
+            darkSquareStyle: { backgroundColor: THUMB_DARK },
+            lightSquareStyle: { backgroundColor: THUMB_LIGHT },
+            boardStyle: { borderRadius: "3px" },
+            arrows: course.arrow
+              ? [{ startSquare: course.arrow.from, endSquare: course.arrow.to, color: "#ff6600" }]
+              : [],
+          }}
+        />
+      ) : (
+        <ThumbPlaceholder />
+      )}
     </div>
   );
 };
+
+// Cap how many course cards mount real boards at once. Search still filters the
+// FULL list (see CourseList) — this only trims the default catalog view.
+const CATALOG_CAP = 60;
 
 // ── Course list ────────────────────────────────────────────────────────────
 const CourseList = ({ onPick }) => {
@@ -147,7 +147,12 @@ const CourseList = ({ onPick }) => {
   const filtered = useMemo(() => {
     if (!courses) return [];
     const q = query.trim().toLowerCase();
-    return q ? courses.filter((c) => c.family.toLowerCase().includes(q)) : courses;
+    // Search spans the FULL catalog; the default (unsearched) view is capped so
+    // we never mount hundreds of boards at once. `courses` is already sorted by
+    // lineCount desc in courses-db, so the cap keeps the richest courses.
+    return q
+      ? courses.filter((c) => c.family.toLowerCase().includes(q))
+      : courses.slice(0, CATALOG_CAP);
   }, [courses, query]);
 
   return (
@@ -192,7 +197,7 @@ const CourseList = ({ onPick }) => {
                 className="group flex flex-col overflow-hidden rounded-md border border-border bg-card text-left transition-colors hover:border-foreground/30"
               >
                 <div className="border-b border-border bg-background/40 p-3">
-                  <BoardThumbnail fen={c.fen} className="border border-border" />
+                  <BoardThumbnail course={c} className="border border-border" />
                 </div>
                 <div className="flex flex-1 flex-col p-4">
                   <div className="flex items-baseline justify-between gap-2">
@@ -234,7 +239,11 @@ const Trainer = ({ course, onExit }) => {
   const [fen, setFen] = useState(gameRef.current.fen());
   const [lineIdx, setLineIdx] = useState(0);
   const [plyIdx, setPlyIdx] = useState(0);
-  const [coach, setCoach] = useState("");
+  const [coach, setCoach] = useState(""); // prominent explanation (markdown string)
+  // Structured extras from the grounded coach: deeper reasoning paragraph + an
+  // engine-anchored line the student can replay on the board. Set ONLY by
+  // runExplain; cleared by every rule-based coach update and on each new move.
+  const [coachExtra, setCoachExtra] = useState(null); // { reasoning, line, lineFromFen } | null
   const [feedback, setFeedback] = useState("idle"); // idle | wrong | lineDone
   const [arrows, setArrows] = useState([]);
   const [squareStyles, setSquareStyles] = useState({});
@@ -245,6 +254,29 @@ const Trainer = ({ course, onExit }) => {
   const replyTimer = useRef(null);
   const aiSeq = useRef(0);
 
+  // ── Line-demo playback ──────────────────────────────────────────────────────
+  // Plays the coach's engine-anchored line on the board step by step, then
+  // restores the real decision position so training continues. demoTimer drives
+  // the steps; demoActive guards against overlapping demos; restoreRef holds the
+  // fen to snap back to (the position before the demo started).
+  const demoTimer = useRef(null);
+  const [demoActive, setDemoActive] = useState(false);
+  const restoreRef = useRef(null);
+
+  // Cancel any in-flight line demo and snap the board back to the real decision
+  // position (restoreRef). Safe to call when no demo is running.
+  const stopDemo = useCallback(() => {
+    clearTimeout(demoTimer.current);
+    demoTimer.current = null;
+    setDemoActive(false);
+    if (restoreRef.current) {
+      gameRef.current = new Chess(restoreRef.current);
+      setFen(restoreRef.current);
+      setSquareStyles({});
+      restoreRef.current = null;
+    }
+  }, []);
+
   // Grounded AI explanation for the current decision (book move, or an error).
   // Always passes the full line context so the coach can ground its answer:
   // family, lineName, side, and the SAN of every ply played so far.
@@ -253,6 +285,9 @@ const Trainer = ({ course, onExit }) => {
       const l = lines?.[lineIdx];
       const expected = l?.plies[plyIdx];
       if (!expected) return;
+      // A fresh explanation invalidates any running demo and prior extras.
+      stopDemo();
+      setCoachExtra(null);
       const seq = ++aiSeq.current;
       setAiBusy(true);
       try {
@@ -267,23 +302,77 @@ const Trainer = ({ course, onExit }) => {
         });
         // Ignore stale responses (a newer move/line started before this resolved).
         if (res && seq === aiSeq.current) {
-          if (res.prose) setCoach(res.prose);
-          // Coach arrows: green = book move, red = mistake (colors come from the
-          // coach response). Replaces the instant correction's red highlight.
+          // New structured shape: { explanation, reasoning, line, lineFromFen,
+          // arrows }. Tolerate the legacy { prose } shape too.
+          const explanation = res.explanation ?? res.prose;
+          if (explanation) setCoach(explanation);
+          // Coach arrows: green = book move, red = mistake (deterministic, from
+          // the coach response). Replaces the instant correction's red highlight.
           if (res.arrows?.length) setArrows(toBoardArrows(res.arrows));
+          // Deeper reasoning + a replayable engine-anchored line, if provided.
+          const hasLine = Array.isArray(res.line) && res.line.length > 0 && res.lineFromFen;
+          if (res.reasoning || hasLine) {
+            setCoachExtra({
+              reasoning: res.reasoning || "",
+              line: hasLine ? res.line : null,
+              lineFromFen: hasLine ? res.lineFromFen : null,
+            });
+          }
         }
       } finally {
         if (seq === aiSeq.current) setAiBusy(false);
       }
     },
-    [lines, lineIdx, plyIdx, course.family, side],
+    [lines, lineIdx, plyIdx, course.family, side, stopDemo],
   );
+
+  // Replay the coach's engine-anchored line on the board, step by step (~750ms
+  // between moves), highlighting each move so the student SEES the refutation or
+  // plan. Restores the real decision position when done (or via stopDemo).
+  const playDemo = useCallback(() => {
+    const extra = coachExtra;
+    if (!extra?.line?.length || !extra.lineFromFen) return;
+    if (demoActive) return; // guard against overlapping demos
+    clearTimeout(demoTimer.current);
+    // Remember where to return to (the actual current decision position).
+    restoreRef.current = gameRef.current.fen();
+    setDemoActive(true);
+    const g = new Chess(extra.lineFromFen);
+    setFen(g.fen());
+    setSquareStyles({});
+    let i = 0;
+    const step = () => {
+      if (i >= extra.line.length) {
+        // Demo finished — restore the real position so play continues.
+        stopDemo();
+        return;
+      }
+      const mv = extra.line[i];
+      try {
+        g.move({ from: mv.from, to: mv.to, promotion: "q" });
+      } catch {
+        stopDemo();
+        return;
+      }
+      setFen(g.fen());
+      setSquareStyles({
+        [mv.from]: { background: "rgba(255,102,0,0.18)" },
+        [mv.to]: { background: "rgba(255,102,0,0.30)" },
+      });
+      i += 1;
+      demoTimer.current = setTimeout(step, 750);
+    };
+    demoTimer.current = setTimeout(step, 400);
+  }, [coachExtra, demoActive, stopDemo]);
 
   const line = lines?.[lineIdx] ?? null;
 
   useEffect(() => {
     getCourseLines(course.family).then(setLines).catch(() => setLines([]));
-    return () => clearTimeout(replyTimer.current);
+    return () => {
+      clearTimeout(replyTimer.current);
+      clearTimeout(demoTimer.current);
+    };
   }, [course.family]);
 
   // Pick the next line index for the current mode.
@@ -311,6 +400,9 @@ const Trainer = ({ course, onExit }) => {
       const l = list?.[idx];
       if (!l) return;
       clearTimeout(replyTimer.current);
+      stopDemo();
+      setCoachExtra(null);
+      aiSeq.current += 1; // invalidate any in-flight explanation for the old position
       const g = new Chess();
       let p = 0;
       // auto-play leading opponent plies
@@ -335,7 +427,7 @@ const Trainer = ({ course, onExit }) => {
           : `${l.name} — play your line.`,
       );
     },
-    [lines, side, mode],
+    [lines, side, mode, stopDemo],
   );
 
   // (re)start when lines arrive or mode changes
@@ -347,6 +439,7 @@ const Trainer = ({ course, onExit }) => {
   const completeLine = useCallback(() => {
     setFeedback("lineDone");
     setArrows([]);
+    setCoachExtra(null);
     if (mode === "learn") {
       const next = new Set(learned);
       next.add(line.id);
@@ -375,9 +468,10 @@ const Trainer = ({ course, onExit }) => {
         }
         const ply = l.plies[p];
         if (ply.color === side) {
-          // back to the user — clear any prior coach arrows so the next
-          // grounded explanation can draw fresh ones for this decision.
+          // back to the user — clear any prior coach arrows and structured
+          // extras so the next grounded explanation is for THIS decision.
           setArrows([]);
+          setCoachExtra(null);
           setPlyIdx(p);
           if (mode === "learn") setCoach(`${describeMove(ply)}`);
           return;
@@ -399,7 +493,7 @@ const Trainer = ({ course, onExit }) => {
 
   const handleDrop = useCallback(
     ({ sourceSquare, targetSquare }) => {
-      if (feedback === "lineDone") return false;
+      if (feedback === "lineDone" || demoActive) return false;
       const l = lines?.[lineIdx];
       const expected = l?.plies[plyIdx];
       if (!expected || expected.color !== side) return false;
@@ -432,7 +526,7 @@ const Trainer = ({ course, onExit }) => {
       replyTimer.current = setTimeout(() => autoPlayReplies(g, nextPly), 350);
       return true;
     },
-    [feedback, lines, lineIdx, plyIdx, side, mode, autoPlayReplies, runExplain],
+    [feedback, demoActive, lines, lineIdx, plyIdx, side, mode, autoPlayReplies, runExplain],
   );
 
   // Learn mode: automatically ground the "why this move" explanation whenever
@@ -489,7 +583,7 @@ const Trainer = ({ course, onExit }) => {
               animationDurationInMs: 200,
               arrows,
               squareStyles,
-              allowDragging: feedback !== "lineDone",
+              allowDragging: feedback !== "lineDone" && !demoActive,
               ...BOARD_STYLE,
               boardStyle: { borderRadius: "4px" },
             }}
@@ -566,7 +660,42 @@ const Trainer = ({ course, onExit }) => {
                 {aiBusy ? "Coach analyzing…" : feedback === "wrong" ? "Correction" : "Coach"}
               </Callout>
             </div>
-            <CoachText>{coach}</CoachText>
+
+            {/* Prominent short explanation. */}
+            <div className="text-[15px]">
+              <CoachText>{coach}</CoachText>
+            </div>
+
+            {/* Deeper reasoning, slightly muted, under a small mono WHY label. */}
+            {coachExtra?.reasoning && (
+              <div className="mt-4 border-t border-border pt-3">
+                <Callout className="text-[10px]">Why</Callout>
+                <div className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+                  <CoachText>{coachExtra.reasoning}</CoachText>
+                </div>
+              </div>
+            )}
+
+            {/* Replay the engine-anchored line ON the board so the student SEES
+                the refutation (mistake) or plan (good move). */}
+            {coachExtra?.line && (
+              <div className="mt-4 flex items-center gap-2">
+                {demoActive ? (
+                  <EditorialButton variant="outline" onClick={stopDemo}>
+                    <RotateCcw className="h-3.5 w-3.5" /> Reset
+                  </EditorialButton>
+                ) : (
+                  <EditorialButton variant="primary" onClick={playDemo}>
+                    ▶ Show the line
+                  </EditorialButton>
+                )}
+                {demoActive && (
+                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">
+                    Playing…
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {line && (

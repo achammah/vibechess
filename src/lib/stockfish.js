@@ -2,19 +2,50 @@
  * Stockfish 18 UCI wrapper.
  * Loads the lite single-threaded WASM build from the app base path.
  *
- * Difficulty → Skill Level + movetime mapping:
- * easy   → Skill Level  3,  movetime  150 ms
- * medium → Skill Level 12,  movetime  800 ms
- * hard   → Skill Level 20,  movetime 2000 ms
+ * Opponent strength → exact ELO mapping (getMove):
+ * - ELO >= 1320 → UCI_LimitStrength true + UCI_Elo <elo> (native engine cap).
+ * - ELO <  1320 → UCI_LimitStrength false + Skill Level (0-20) for weak play,
+ *                 since Stockfish only honours UCI_Elo down to ~1320.
+ * Movetime scales gently with strength so weak levels still feel responsive.
  *
- * Analysis (full strength, depth-based, multi-PV).
+ * Analysis (full strength, depth-based, multi-PV) is UNCHANGED.
  */
 
 import { withBaseUrl } from "./base-url.js";
 
-const SKILL = { easy: 3, medium: 12, hard: 20 };
-const MOVETIME = { easy: 150, medium: 800, hard: 2000 };
 const INIT_TIMEOUT_MS = 90_000;
+
+// Stockfish UCI_Elo is only meaningful in roughly this range.
+const ELO_MIN = 1320;
+const ELO_MAX = 3190;
+
+/**
+ * Map an exact ELO to the UCI options + movetime used for an opponent move.
+ * @param {number} elo target playing strength
+ * @returns {{ limitStrength: boolean, uciElo: number|null, skill: number|null, movetime: number }} engine config
+ */
+const eloToConfig = (elo) => {
+  const e = Number.isFinite(elo) ? Math.round(elo) : 1200;
+
+  if (e >= ELO_MIN) {
+    const uciElo = Math.min(ELO_MAX, e);
+    // 1320 → ~400ms, 3190 → ~2000ms.
+    const movetime = Math.round(
+      400 + ((uciElo - ELO_MIN) / (ELO_MAX - ELO_MIN)) * 1600,
+    );
+    return { limitStrength: true, uciElo, skill: null, movetime };
+  }
+
+  // Below the engine's ELO floor: fall back to Skill Level for weak play.
+  // Map 600..1320 → Skill 0..7, with a short movetime.
+  const clamped = Math.max(600, e);
+  const skill = Math.max(
+    0,
+    Math.min(20, Math.round(((clamped - 600) / (ELO_MIN - 600)) * 7)),
+  );
+  const movetime = 150 + skill * 30;
+  return { limitStrength: false, uciElo: null, skill, movetime };
+};
 
 export class StockfishEngine {
   constructor() {
@@ -160,21 +191,32 @@ export class StockfishEngine {
 
   // ── Get best move (game mode) ─────────────────────────────────────────────
   /**
+   * Request an opponent move at an exact target ELO. Uses the engine's native
+   * UCI_LimitStrength/UCI_Elo for >=1320 and a Skill Level fallback below that.
    * @param {string} fen fen string representing the position
-   * @param {'easy'|'medium'|'hard'} difficulty controls skill level and movetime
+   * @param {number} elo target playing strength (clamped internally)
    * @returns {Promise<string|null>} UCI move like "e2e4"
    */
-  async getMove(fen, difficulty = "medium") {
+  async getMove(fen, elo = 1200) {
     await this.init();
     await this._abort();
 
-    const skill = SKILL[difficulty] ?? 12;
-    const movetime = MOVETIME[difficulty] ?? 800;
+    const { limitStrength, uciElo, skill, movetime } = eloToConfig(elo);
 
     return new Promise((resolve, reject) => {
       this._pending = { type: "move", resolve, reject };
       this._worker.postMessage("setoption name MultiPV value 1");
-      this._worker.postMessage(`setoption name Skill Level value ${skill}`);
+      if (limitStrength) {
+        this._worker.postMessage("setoption name UCI_LimitStrength value true");
+        this._worker.postMessage(`setoption name UCI_Elo value ${uciElo}`);
+        // Restore full skill so UCI_Elo is the sole strength limiter.
+        this._worker.postMessage("setoption name Skill Level value 20");
+      } else {
+        this._worker.postMessage(
+          "setoption name UCI_LimitStrength value false",
+        );
+        this._worker.postMessage(`setoption name Skill Level value ${skill}`);
+      }
       this._worker.postMessage(`position fen ${fen}`);
       this._worker.postMessage(`go movetime ${movetime}`);
     });
@@ -194,7 +236,9 @@ export class StockfishEngine {
     return new Promise((resolve, reject) => {
       this._pending = { type: "analyze", resolve, reject, infoLines: {} };
       this._worker.postMessage(`setoption name MultiPV value ${multiPV}`);
-      this._worker.postMessage("setoption name Skill Level value 20"); // full strength for analysis
+      // Full strength for analysis — clear any ELO cap left by getMove().
+      this._worker.postMessage("setoption name UCI_LimitStrength value false");
+      this._worker.postMessage("setoption name Skill Level value 20");
       this._worker.postMessage(`position fen ${fen}`);
       this._worker.postMessage(`go depth ${depth}`);
     });

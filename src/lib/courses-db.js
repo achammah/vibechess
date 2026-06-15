@@ -28,9 +28,30 @@ const finalFenOf = (pgn) => {
 };
 
 /**
+ * The opening's defining move: the LAST verbose move of the representative line,
+ * as {from, to}. Drawn as an orange arrow on the card thumbnail. null on failure
+ * or an empty line so the thumbnail simply omits the arrow.
+ */
+const arrowOf = (pgn) => {
+  if (!pgn) return null;
+  try {
+    const g = new Chess();
+    g.loadPgn(pgn);
+    const verbose = g.history({ verbose: true });
+    const last = verbose[verbose.length - 1];
+    return last ? { from: last.from, to: last.to } : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
  * List courses (opening families) with line counts and a representative board
  * position. Cached in-memory.
- * Returns [{ slug, family, eco, lineCount, fen }] sorted by lineCount desc.
+ * Returns [{ slug, family, eco, lineCount, fen, arrow }] sorted by lineCount desc.
+ * `arrow` = {from, to} of the representative line's LAST move (the opening's
+ * defining move), drawn as an orange arrow on the card thumbnail. null when the
+ * representative line has no moves.
  *
  * The representative position is computed ONCE per family from a single chosen
  * PGN: prefer the line whose name === family (the "bare" family entry), else the
@@ -85,7 +106,11 @@ export const listCourses = async ({ min = 4 } = {}) => {
   _courseCache = [...fams.values()]
     .filter((c) => c.lineCount >= min)
     .sort((a, b) => b.lineCount - a.lineCount)
-    .map(({ _repPgn, _repScore, ...c }) => ({ ...c, fen: finalFenOf(_repPgn) }));
+    .map(({ _repPgn, _repScore, ...c }) => ({
+      ...c,
+      fen: finalFenOf(_repPgn),
+      arrow: arrowOf(_repPgn),
+    }));
   return _courseCache;
 };
 
