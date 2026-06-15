@@ -22,9 +22,28 @@ import { createClient } from "@supabase/supabase-js";
 import { Chess } from "chess.js";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { ProxyAgent, setGlobalDispatcher } from "undici";
 
 import { fetchServiceRoleKey, loadEnv } from "../_env.js";
 import { createEngine } from "./engine.js";
+
+// Route global fetch through a residential proxy when configured, so the Lichess
+// opening explorer (which 401s datacenter/proxy IPs) is reachable. Set any of
+// BRIGHTDATA_PROXY_URL / HTTPS_PROXY / EXPLORER_PROXY_URL to a full proxy URL
+// like http://USER:PASS@brd.superproxy.io:22225 . rejectUnauthorized:false lets
+// Bright Data's TLS-intercepting residential gateway work.
+const PROXY_URL =
+  process.env.BRIGHTDATA_PROXY_URL ||
+  process.env.EXPLORER_PROXY_URL ||
+  process.env.HTTPS_PROXY ||
+  "";
+const usingProxy = Boolean(PROXY_URL);
+if (usingProxy) {
+  setGlobalDispatcher(
+    new ProxyAgent({ uri: PROXY_URL, requestTls: { rejectUnauthorized: false } }),
+  );
+  console.log(`Routing explorer fetches through proxy: ${PROXY_URL.replace(/\/\/[^@]*@/, "//***@")}`);
+}
 
 // ── Tunables ───────────────────────────────────────────────────────────────────
 const DEPTH = Number(process.env.STATS_DEPTH || 18);
@@ -159,7 +178,13 @@ const fetchExplorer = async (fen, db, cache, state) => {
         continue;
       }
       if (res.status === 401 || res.status === 403) {
-        state.dead = true; // endpoint blocked from this network — give up on it
+        // Blocked. With a residential proxy this can be transient (rotate IP and
+        // retry); without one it's a hard network block, so give up immediately.
+        if (usingProxy) {
+          await sleep(1500 * (attempt + 1));
+          continue;
+        }
+        state.dead = true;
         return null;
       }
       if (!res.ok) {
