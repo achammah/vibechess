@@ -1,369 +1,174 @@
 <div align="center">
 
-# ♟️ Chess King
+# ♟ vibechess
 
-### AI-Powered Chess Coach in Your Browser
+### Your AI chess grandmaster, in the browser
 
-Train like a Grandmaster using **Stockfish 18 + AI coaching (Gemini & GPT-4o)**.  
-Analyze positions, solve puzzles, study openings, and get **human-like explanations** for every move.
+Most chess apps show you the **best move**.
+**vibechess explains *why* it is best**, draws the idea on the board, and walks you through the opponent's plan one move at a time.
 
-No installation. No servers required. Runs entirely in your browser.
-
-⭐ **If you like this project, please consider starring the repository.**
-
----
+A grounded Stockfish coach plus a spaced repetition openings trainer, running entirely client side. No engine server, ever.
 
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=white)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-6-646CFF?logo=vite&logoColor=white)](https://vite.dev)
-[![Stockfish](https://img.shields.io/badge/Stockfish-18-008000?logo=chess&logoColor=white)](https://stockfishchess.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Vite](https://img.shields.io/badge/Vite-7-646CFF?logo=vite&logoColor=white)](https://vite.dev)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![Stockfish](https://img.shields.io/badge/Stockfish-18_WASM-008000?logo=lichess&logoColor=white)](https://stockfishchess.org)
+[![Gemini](https://img.shields.io/badge/Gemini-3.x-8E75B2?logo=googlegemini&logoColor=white)](https://ai.google.dev)
+[![OpenAI](https://img.shields.io/badge/OpenAI-GPT--5.x-412991?logo=openai&logoColor=white)](https://platform.openai.com)
 
 </div>
 
 ---
 
-# ♟️ Chess King
-
-**Chess King** is an AI-powered chess training platform designed to help players understand chess deeply rather than just memorize moves.
-
-Most chess apps show the **best move**.
-
-**Chess King explains *why* it is the best move.**
-
-By combining **Stockfish engine analysis** with **large language models**, the system behaves like a **real chess coach**, helping players improve their thinking process.
-
-The application runs **entirely in the browser**, using WebAssembly for engine analysis and modern AI models for natural explanations.
+<div align="center">
+  <img src="docs/screenshots/openings.png" alt="Openings course catalog with board thumbnails, strategy arrows and ECO codes" width="100%"/>
+  <br/><sub><b>Opening courses built from real Lichess lines, each card a characteristic position with its plan drawn on.</b></sub>
+</div>
 
 ---
 
-# 🚀 Key Highlights
+## What makes it different
 
-- ♟ **Stockfish 18 running entirely in-browser (WASM)**
-- 🤖 **AI chess coach powered by Gemini + GPT-4o**
-- 📊 **Real-time engine evaluation bar**
-- 🧠 **Human-like explanations for positions**
-- 🎯 **Puzzle, opening, and endgame training**
-- 📈 **Full game analysis with move classification**
-- ⚡ **No backend required — fully browser based**
+The coach never guesses. Every explanation is **grounded in the engine**: vibechess runs Stockfish on the position, takes the real principal variation, and only then asks the language model to put that evidence into a grandmaster's words. The model annotates moves; it never invents them. Turn the key off and you still get a full engine grounded explanation from built in templates.
+
+| | |
+|---|---|
+| 🧠 **Grounded coaching** | Stockfish supplies the truth (best line, evaluation, tactics). The AI verbalizes it. Moves shown on the board are always the engine's, never hallucinated. |
+| 💬 **One chat, like a real lesson** | Explanations, wrong move corrections, and your follow up questions all live in a single conversation. Ask anything about the position and the coach answers, grounded in the current board. |
+| 👣 **Walk the line, move by move** | Step manually through the book line with Prev and Next. Each move carries a one sentence reason, including what the **opponent** is trying to do, generated for the whole line in a single call. |
+| 🔁 **Spaced repetition openings** | A chessreps style trainer over a real move tree, scheduled with FSRS so you review each line exactly when you are about to forget it. |
+| ♟ **100% in the browser** | Stockfish 18 runs as WebAssembly on your machine. Maia gives human like sparring. No backend computes a single move. |
+| 🔑 **Bring your own key** | Add a Gemini or OpenAI key in Settings for AI coaching. It is stored only in your browser and never touches a server. The app is fully usable without one. |
 
 ---
 
-# 📸 Screenshots
+## Screenshots
 
 <table>
   <tr>
-    <td align="center">
-      <img src="pics/s1.png" alt="Live Game with AI Coach" width="100%"/>
-      <br/><sub><b>Live Game with AI Coach Panel</b></sub>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/coach.png" alt="Grounded coach explaining a move with a Why section" width="100%"/>
+      <br/><sub><b>The grounded coach</b><br/>A clear idea, a deeper "why", and a button to walk the line.</sub>
+    </td>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/walk.png" alt="Step by step walk through a line with per move explanations" width="100%"/>
+      <br/><sub><b>Walk the line</b><br/>Manual step through, each move explained, the opponent's plan included.</sub>
     </td>
   </tr>
   <tr>
-    <td align="center">
-      <img src="pics/s2.png" alt="Training Mode" width="100%"/>
-      <br/><sub><b>Training Mode — Puzzles, Openings & Endgames</b></sub>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/play.png" alt="Live game against the engine with move log, evaluation bar and training panel" width="100%"/>
+      <br/><sub><b>Play and analyze</b><br/>Live game, move log, evaluation bar, and the coach on the side.</sub>
     </td>
-  </tr>
-  <tr>
-    <td align="center">
-      <img src="pics/s3.png" alt="Engine Analysis Panel" width="100%"/>
-      <br/><sub><b>Deep Engine Analysis with Best Move, Hints & Position Analysis</b></sub>
+    <td width="50%" align="center">
+      <img src="docs/screenshots/puzzles.png" alt="Puzzle trainer rated by difficulty with motifs and hints" width="100%"/>
+      <br/><sub><b>Puzzle trainer</b><br/>Rated tactics with motifs, hints, and a solution walkthrough.</sub>
     </td>
   </tr>
 </table>
 
 ---
 
-# 🤖 AI Coaching Engine
+## How the coach stays honest
 
-Chess King includes a conversational AI coach designed to guide players through positions like a human trainer.
-
-Features include:
-
-- **Real-time AI explanations**
-- **Conversational chess analysis**
-- **Skill-level adaptive coaching**
-- **Move suggestions with reasoning**
-
-The coach explains:
-
-- Candidate moves
-- Tactical ideas
-- Strategic plans
-- Calculation trees
-
-Instead of simply telling the best move, it teaches **how strong players think**.
-
----
-
-# ♟️ Stockfish 18 Integration
-
-The project integrates **Stockfish 18 compiled to WebAssembly**, allowing deep engine analysis directly inside the browser.
-
-Capabilities include:
-
-- **Multi-PV analysis**
-- **Evaluation bar**
-- **Best move suggestions**
-- **Threat detection**
-- **Position evaluation**
-
-All analysis runs **locally in your browser** without server calls.
-
----
-
-# 🎓 Training Modules
-
-The platform includes multiple training systems designed to improve chess skills.
-
-### Tactical Puzzles
-Improve calculation and pattern recognition.
-
-- 44 curated puzzles
-- Tactical motif detection
-- Guided hints
-
-### Opening Drill
-
-Practice opening theory.
-
-- 54 opening lines
-- Move-by-move explanations
-- ECO opening recognition
-
-### Endgame Training
-
-Learn fundamental endgame techniques.
-
-- 21 classic endgame scenarios
-- Position-based training
-- Engine verification
-
-### Blunder Review Mode
-
-Review mistakes from previous games.
-
-- Blunder detection
-- Tactical explanation
-- Improvement suggestions
-
----
-
-# 📊 Game Analysis
-
-Chess King analyzes entire games and provides detailed insights.
-
-Analysis includes:
-
-- Move quality classification
-- Accuracy percentage
-- Tactical pattern detection
-- Opening recognition
-
-Each move is categorized as:
-
-- Excellent
-- Good
-- Inaccuracy
-- Mistake
-- Blunder
-
-This helps players understand **where and why mistakes happen**.
-
----
-
-# 🛠 Board & Gameplay Features
-
-The application includes a full interactive chess board system.
-
-Features include:
-
-- Drag-and-drop move input
-- Legal move highlighting
-- Arrow annotations
-- Move history with PGN
-- Position setup via FEN
-- Save/load games using IndexedDB
-- Board flipping
-- Dark mode support
-
-You can also play against a **custom minimax chess engine** with multiple difficulty levels.
-
----
-
-# ⚙️ Getting Started
-
-## Prerequisites
-
-- Node.js 18+
-- npm or yarn
-
----
-
-## Installation
-
-Clone the repository:
-
-```bash
-git clone https://github.com/Iamsdt/chess.git
-cd chess
-````
-
-Install dependencies:
-
-```bash
-npm install
+```
+position  ─▶  Stockfish 18 (WASM)  ─▶  evidence: best line, eval phrase, tactics
+                                          │
+                                          ▼
+                              one LLM call (Gemini / GPT)
+                                          │
+            ┌─────────────────────────────┼─────────────────────────────┐
+            ▼                             ▼                             ▼
+      explanation                    why paragraph              steps: [{move, note}]
+   (the single big idea)         (cites the real line)     (one reason per engine move)
+            │                             │                             │
+            └─────────────────────────────┴─────────────────────────────┘
+                                          ▼
+                       board arrows + highlights computed in code
+                  (green = book move, red = your mistake, never the model)
 ```
 
-Start the development server:
+If there is no key, or the model is rate limited or slow, vibechess falls back to a built in, engine grounded explanation within a couple of seconds. The board arrows and the demonstration line are computed in code regardless, so the position is never left unexplained.
+
+---
+
+## Tech stack
+
+- **Frontend:** Vite 7, React 19, plain JSX, Tailwind CSS 4 (editorial design system, semantic tokens only)
+- **Engine:** Stockfish 18 lite, single threaded WebAssembly, in browser. Maia via Zerofish for human like play
+- **Chess core:** `chess.js` for rules and SAN, `react-chessboard` for the board
+- **AI coach:** Google Gemini (`gemini-3.5-flash` default) and OpenAI (`gpt-5.4-mini` default), called directly with the user's own key
+- **Auth + data:** Clerk for accounts, Supabase (Postgres + RLS) for cross device sync. Without them the app runs anonymously on IndexedDB
+- **Openings trainer:** `ts-fsrs` scheduler over a move tree ingested from Lichess CC0 opening data
+- **Tests:** Vitest
+
+---
+
+## Getting started
 
 ```bash
+git clone https://github.com/achammah/vibechess.git
+cd vibechess
+npm install
 npm run dev
 ```
 
-Open:
+Open http://localhost:5173. That is it. **The app runs out of the box, anonymously, with the engine and the trainer fully working.**
 
-```
-http://localhost:5173
-```
+To enable AI coaching, open **Settings** in the app and paste a Google Gemini key (free at [aistudio.google.com](https://aistudio.google.com/apikey)) or an OpenAI key. The key lives only in your browser.
 
----
+### Optional: accounts and cloud sync
 
-# 🔑 Environment Variables
-
-To enable AI coaching features, create a `.env` file:
-
-```env
-VITE_GOOGLE_AI_API_KEY=your_google_gemini_api_key
-VITE_OPENAI_API_KEY=your_openai_api_key
-```
-
-Note:
-
-The project still works **fully offline for chess analysis and training** without API keys.
-
----
-
-# 🏗 Build for Production
+Copy `.env.example` to `.env.local` and fill in the values to turn on Clerk accounts and Supabase sync:
 
 ```bash
-npm run build
-npm run preview
+cp .env.example .env.local
 ```
 
-The production build is configured for GitHub Pages at `/chess/`, so the generated `dist` folder is ready to publish from this repository without extra path fixes.
+| Variable | Purpose |
+|---|---|
+| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk auth (Dashboard → API Keys) |
+| `VITE_SUPABASE_URL` | Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase publishable / anon key |
 
-## GitHub Pages Deployment
+Every client variable must be prefixed `VITE_`. Server only keys (for ingestion and migrations) are never prefixed.
 
-This repository includes a GitHub Actions workflow at [.github/workflows/deploy.yml](.github/workflows/deploy.yml) that deploys every push to `main`.
+### Optional: load the data sets
 
-To enable it in GitHub:
+With Supabase configured, populate the openings move tree and puzzles:
 
-1. Open repository settings.
-2. Go to Pages.
-3. Set the source to GitHub Actions.
-
-After the workflow finishes, the site will be published at your repository Pages URL.
-
----
-
-# 🧠 Tech Stack
-
-| Layer            | Technology                   |
-| ---------------- | ---------------------------- |
-| Frontend         | React 19 + Vite 6            |
-| Styling          | Tailwind CSS + Radix UI      |
-| Chess Logic      | chess.js                     |
-| Chess Board      | react-chessboard             |
-| Engine           | Stockfish 18 (WASM)          |
-| AI Models        | Gemini + GPT-4o              |
-| State Management | Zustand                      |
-| Storage          | IndexedDB (idb)              |
-| Custom Engine    | Minimax + Alpha-Beta pruning |
-
----
-
-# 📂 Project Structure
-
-```
-src/
-├── components/
-│   ├── board-panel.jsx
-│   ├── chat-panel.jsx
-│   ├── training-panel.jsx
-│   ├── puzzle-mode.jsx
-│   ├── opening-drill-mode.jsx
-│   ├── endgame-mode.jsx
-│   └── blunder-review-mode.jsx
-│
-├── hooks/
-│   ├── use-engine-coach.js
-│   ├── use-ai-chat.js
-│   └── use-chess-clock.js
-│
-├── lib/
-│   ├── engine.js
-│   ├── stockfish.js
-│   ├── intelligence.js
-│   ├── analyzer.js
-│   └── openings.js
-│
-├── store/
-│   └── use-game-store.js
-│
-└── data/
-    ├── puzzles.js
-    └── endgames.js
+```bash
+npm run db:migrate            # apply the schema
+npm run db:ingest-openings    # Lichess CC0 opening lines into the move tree
+npm run db:ingest-puzzles     # Lichess CC0 rated puzzles
 ```
 
 ---
 
-# 🗺 Roadmap
+## Scripts
 
-Planned improvements:
-
-* Online multiplayer
-* Chess database
-* Opening explorer
-* Game import from Lichess / Chess.com
-* ELO rating system
-* AI game commentary
-* Advanced training modules
-
----
-
-# 🤝 Contributing
-
-Contributions are welcome!
-
-If you'd like to improve the project:
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Submit a pull request
-
-Ideas for contributions:
-
-* Add more puzzles
-* Expand opening database
-* Improve UI/UX
-* Add new training modes
+| Command | Does |
+|---|---|
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview the production build |
+| `npm test` | Run the test suite (Vitest) |
+| `npm run lint` | Lint with ESLint |
+| `npm run format` | Format with Prettier |
 
 ---
 
-# 📜 License
+## Credits
 
-MIT License
+vibechess began as a fork of [**Iamsdt/chess**](https://github.com/Iamsdt/chess) and was extended with the grounded coach, the single chat trainer, the FSRS openings tree, Clerk and Supabase, and the editorial redesign. It stands on:
 
-© Shudipto Trafder
+- [Stockfish](https://stockfishchess.org) for engine analysis
+- [Lichess](https://database.lichess.org) for CC0 opening and puzzle data
+- [Maia Chess](https://maiachess.com) for human like play
+- [chess.js](https://github.com/jhlywa/chess.js) and [react-chessboard](https://github.com/Clariity/react-chessboard)
 
 ---
 
 <div align="center">
-
-Built with ♟️, AI, and a lot of ☕
-
-**Stop memorizing moves. Start understanding chess.**
-
+<sub>Built with Stockfish, a little AI, and a lot of respect for the game.</sub>
 </div>

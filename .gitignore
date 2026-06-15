@@ -10,3 +10,5 @@ dist/index.html
 
 vibe-*.png
 *.png
+# README / docs assets are intentionally tracked.
+!docs/screenshots/*.png
