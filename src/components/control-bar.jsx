@@ -137,8 +137,8 @@ const ControlBar = ({
   <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card gap-2 flex-wrap">
     {/* Left — branding */}
     <div className="flex items-center gap-2 shrink-0">
-      <span className="text-base font-bold tracking-tight text-primary">
-        ♟ vibechess
+      <span className="font-display text-lg font-semibold tracking-tight text-foreground">
+        <span className="text-primary">♟</span> vibechess
       </span>
     </div>
 

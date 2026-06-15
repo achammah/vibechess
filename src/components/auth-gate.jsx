@@ -20,8 +20,10 @@ const clerkEnabled = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 const Landing = () => (
   <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 text-center">
     <div className="max-w-md">
-      <div className="text-4xl font-bold tracking-tight text-primary">♟ vibechess</div>
-      <h1 className="mt-4 text-2xl font-semibold text-foreground">
+      <div className="font-display text-3xl font-semibold tracking-tight text-foreground">
+        <span className="text-primary">♟</span> vibechess
+      </div>
+      <h1 className="font-display mt-5 text-4xl font-semibold leading-tight tracking-tight text-foreground">
         Your AI chess grandmaster
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">
