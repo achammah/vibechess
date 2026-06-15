@@ -10,6 +10,8 @@ import {
   Clock,
   Gauge,
   MoreHorizontal,
+  Play,
+  Square,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -280,6 +282,9 @@ const MoreMenu = ({ items }) => {
 const ControlBar = ({
   isLiveMode,
   onToggleLiveMode,
+  gameStarted,
+  onStart,
+  onStop,
   onNewGame,
   onOpenSavedGames,
   onOpenOpenings,
@@ -344,6 +349,33 @@ const ControlBar = ({
       </span>
       <Switch checked={clockEnabled} onCheckedChange={onToggleClock} />
     </div>
+
+    <div className="mx-1 h-5 w-px shrink-0 bg-border" />
+
+    {/* Start / Stop — a game does not begin until you press Start */}
+    {gameStarted ? (
+      <EditorialButton
+        variant="outline"
+        onClick={onStop}
+        title="Stop game"
+        aria-label="Stop game"
+        className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-destructive"
+      >
+        <Square className="h-3.5 w-3.5 shrink-0 fill-current" />
+        <span className="hidden lg:inline">Stop</span>
+      </EditorialButton>
+    ) : (
+      <EditorialButton
+        variant="primary"
+        onClick={onStart}
+        title="Start game"
+        aria-label="Start game"
+        className="shrink-0 text-[10px] uppercase tracking-[0.12em]"
+      >
+        <Play className="h-3.5 w-3.5 shrink-0 fill-current" />
+        <span className="hidden lg:inline">Start</span>
+      </EditorialButton>
+    )}
 
     <EditorialButton
       variant="ghost"

@@ -118,6 +118,14 @@ const App = () => {
   }, [opponent]);
   const triggerAIMoveReference = useRef(null);
   const [isAIThinking, setIsAIThinking] = useState(false);
+  // Explicit game lifecycle: a game does not auto-start (so the engine never
+  // moves first the instant you pick Black). The player presses Start to begin
+  // and Stop to end. A restored in-progress save counts as already started.
+  const [gameStarted, setGameStarted] = useState(false);
+  const gameStartedReference = useRef(false);
+  useEffect(() => {
+    gameStartedReference.current = gameStarted;
+  }, [gameStarted]);
 
   // ── Dark mode ────────────────────────────────────────────────────────────
   const { isDarkMode, toggleDarkMode } = useDarkMode();
@@ -348,6 +356,7 @@ const App = () => {
           gameReference.current = game;
           setFen(game.fen());
           setMoveHistory(migrateMoveHistory(saved.moveHistory));
+          setGameStarted(true); // a restored game is already in progress
           if (saved.boardOrientation) {
             setBoardOrientation(saved.boardOrientation);
           }
@@ -413,6 +422,7 @@ const App = () => {
         gameReference.current = game;
         setFen(game.fen());
         setMoveHistory(migrateMoveHistory(saved.moveHistory || []));
+        setGameStarted(true); // loaded game is in progress
         setMoveQuality(null);
         setMessages([]);
         setIsAIThinking(false);
@@ -614,11 +624,9 @@ const App = () => {
       if (moveHistory.length > 0) return;
       setPlayerColor(color);
       setBoardOrientation(color);
-      if (color === "black" && opponent !== "manual") {
-        setTimeout(() => triggerAIMove(gameReference.current.fen(), []), 150);
-      }
+      // The engine no longer moves on color choice — it waits for Start.
     },
-    [moveHistory.length, opponent, triggerAIMove],
+    [moveHistory.length],
   );
 
   // ── Review navigation ────────────────────────────────────────────────────
@@ -704,6 +712,9 @@ const App = () => {
           trainingHandlerReference.current(sourceSquare, targetSquare),
         );
       }
+
+      // No play until the game is started (Start button gates the board).
+      if (!gameStartedReference.current) return false;
 
       const game = gameReference.current;
       const preFen = game.fen();
@@ -893,10 +904,29 @@ const App = () => {
     setPremove(null);
     premoveReference.current = null;
     setAnnotations({});
-    if (playerColorReference.current === "black" && opponent !== "manual") {
+    setGameStarted(false); // back to setup — press Start to begin the new game
+  }, [isAnalyzingRef]);
+
+  // ── Start / Stop a game ──────────────────────────────────────────────────
+  const handleStart = useCallback(() => {
+    setGameStarted(true);
+    // The engine makes the first move only when the human is Black.
+    if (
+      playerColorReference.current === "black" &&
+      opponentReference.current !== "manual" &&
+      !gameReference.current.isGameOver()
+    ) {
       setTimeout(() => triggerAIMove(gameReference.current.fen(), []), 150);
     }
-  }, [opponent, triggerAIMove, isAnalyzingRef]);
+  }, [triggerAIMove]);
+
+  const handleStop = useCallback(() => {
+    clearTimeout(aiTimeoutReference.current);
+    setIsAIThinking(false);
+    setPremove(null);
+    premoveReference.current = null;
+    setGameStarted(false);
+  }, []);
 
   // ── Load position from FEN/PGN ───────────────────────────────────────────
   const handleLoadPosition = useCallback(
@@ -1041,6 +1071,9 @@ const App = () => {
             <ControlBar
               isLiveMode={isLiveMode}
               onToggleLiveMode={setIsLiveMode}
+              gameStarted={gameStarted}
+              onStart={handleStart}
+              onStop={handleStop}
               onNewGame={handleNewGame}
               onOpenSavedGames={() => setSavedGamesOpen(true)}
               onOpenOpenings={() => setOpeningsOpen(true)}
