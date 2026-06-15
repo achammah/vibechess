@@ -9,7 +9,11 @@ import {
 import { useState, useMemo } from "react";
 import { Chessboard } from "react-chessboard";
 
-import { Button } from "@/components/ui/button";
+import {
+  Callout,
+  FadeInUp,
+  EditorialButton,
+} from "@/components/ui/editorial";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 /**
@@ -163,24 +167,22 @@ const BlunderReviewMode = ({ blunders = [], onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-3 sm:p-5 animate-in fade-in duration-200">
-      <div className="bg-card border border-border rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-200 flex flex-col lg:flex-row w-full max-w-245 max-h-[95vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/85 backdrop-blur-sm p-3 sm:p-5 animate-in fade-in duration-200">
+      <div className="bg-card border border-border rounded-[2px] animate-in fade-in zoom-in-95 duration-200 flex flex-col lg:flex-row w-full max-w-245 max-h-[95vh] overflow-hidden">
         {/* ── Board section ────────────────────────────────────────────────── */}
-        <div className="lg:shrink-0 lg:w-130 flex flex-col items-center justify-center p-3 sm:p-5 bg-black/30">
+        <div className="lg:shrink-0 lg:w-130 flex flex-col items-center justify-center p-3 sm:p-5 bg-background/40 border-b border-border lg:border-b-0 lg:border-r">
           {/* Board header */}
-          <div className="w-full mb-2 flex items-center justify-between">
-            <span className="text-xs text-muted-foreground font-medium">
+          <div className="w-full mb-2 flex items-center justify-between gap-3">
+            <span className="font-mono text-[11px] uppercase tracking-[0.12em]">
               {answered ? (
-                <span className="text-green-400 font-semibold">
-                  Best move shown ↓
-                </span>
+                <span className="text-primary">Best move shown ↓</span>
               ) : (
-                <span className="text-red-400 font-semibold">
-                  ← Blunder: {blunder.qualityEmoji} {blunder.san}
+                <span className="text-destructive">
+                  ← Blunder {blunder.qualityEmoji} {blunder.san}
                 </span>
               )}
             </span>
-            <span className="text-[10px] text-muted-foreground/60 uppercase tracking-wider">
+            <span className="font-mono text-[10px] text-muted-foreground uppercase tracking-[0.12em]">
               {whoPlayed} to move
             </span>
           </div>
@@ -216,39 +218,37 @@ const BlunderReviewMode = ({ blunders = [], onClose }) => {
           {/* Header */}
           <div className="flex items-start justify-between gap-2">
             <div>
-              <div className="flex items-center gap-1.5 mb-0.5">
+              <Callout>
                 <Target className="w-3.5 h-3.5 text-primary" />
-                <p className="text-[11px] uppercase tracking-widest text-primary font-semibold">
-                  Blunder Review
-                </p>
-              </div>
-              <p className="text-xs text-muted-foreground">
+                Blunder Review
+              </Callout>
+              <p className="mt-2 font-mono text-xs text-muted-foreground tabular-nums">
                 Error {index + 1} of {totalErrors}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-md hover:bg-secondary"
+              className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-[2px] border border-transparent hover:border-border"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
 
           {/* Blunder info card */}
-          <div className="border border-red-500/20 rounded-xl p-3.5 bg-red-500/5">
-            <p className="text-[10px] uppercase tracking-widest text-red-400/80 font-semibold mb-1.5">
+          <div className="border border-border rounded-[2px] p-3.5 bg-background/40">
+            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-destructive mb-2">
               {whoPlayed} — Move {blunder.moveNum}
             </p>
-            <div className="flex items-baseline gap-2">
-              <span className="text-red-400 font-bold text-lg">
+            <div className="flex items-baseline gap-2.5">
+              <span className="font-mono text-lg font-semibold text-destructive tabular-nums">
                 {blunder.qualityEmoji} {blunder.san}
               </span>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="font-mono text-[11px] text-muted-foreground tabular-nums">
                 {blunder.quality}
                 {blunder.cpLost ? ` (−${blunder.cpLost} cp)` : ""}
               </span>
             </div>
-            <p className="text-[11px] text-muted-foreground mt-1.5">
+            <p className="text-[11px] text-muted-foreground mt-2 font-sans">
               The red arrow on the board shows this move.
             </p>
           </div>
@@ -257,65 +257,56 @@ const BlunderReviewMode = ({ blunders = [], onClose }) => {
           {!answered ? (
             <div className="flex-1 flex flex-col justify-center gap-4">
               <div className="text-center">
-                <p className="text-[15px] font-semibold text-foreground mb-1.5">
+                <p className="font-display text-xl font-semibold tracking-[-0.01em] text-foreground mb-1.5">
                   What should {whoPlayed} have played instead?
                 </p>
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed font-sans">
                   Drag a piece on the board to show the better move.
                 </p>
               </div>
-              <Button
+              <EditorialButton
                 variant="ghost"
-                size="sm"
                 onClick={handleSkip}
-                className="self-center text-muted-foreground text-xs gap-1.5"
+                className="self-center inline-flex items-center gap-1.5"
               >
                 <SkipForward className="w-3.5 h-3.5" />
                 Show answer
-              </Button>
+              </EditorialButton>
             </div>
           ) : (
             <div className="flex-1 flex flex-col gap-3">
               {/* Result badge */}
               {playerMoveSan ? (
-                <div
-                  className={`rounded-xl p-3.5 border ${
-                    isCorrect
-                      ? "border-green-500/30 bg-green-500/10"
-                      : "border-orange-500/30 bg-orange-500/8"
-                  }`}
-                >
+                <div className="rounded-[2px] p-3.5 border border-border bg-background/40">
                   <p
-                    className={`text-sm font-bold mb-1 ${isCorrect ? "text-green-400" : "text-orange-400"}`}
+                    className={`font-mono text-[10px] uppercase tracking-[0.12em] mb-2 ${isCorrect ? "text-primary" : "text-destructive"}`}
                   >
-                    {isCorrect ? "✓ Correct!" : "✗ Not quite"}
+                    {isCorrect ? "✓ Correct" : "✗ Not quite"}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground font-sans">
                     You played:{" "}
                     <strong
-                      className={`${isCorrect ? "text-green-300" : "text-orange-300"}`}
+                      className={`font-mono tabular-nums ${isCorrect ? "text-primary" : "text-destructive"}`}
                     >
                       {playerMoveSan}
                     </strong>
                   </p>
                 </div>
               ) : (
-                <div className="rounded-xl p-3.5 border border-border bg-secondary/20">
-                  <p className="text-xs text-muted-foreground">
+                <div className="rounded-[2px] p-3.5 border border-border bg-background/40">
+                  <p className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
                     Answer revealed
                   </p>
                 </div>
               )}
 
               {/* Best move */}
-              <div className="rounded-xl border border-green-500/25 p-3.5 bg-green-500/5">
-                <p className="text-[10px] uppercase tracking-widest text-green-400/80 font-semibold mb-1.5">
-                  Best Move
-                </p>
-                <p className="text-2xl font-bold text-green-300 tracking-wide">
+              <div className="rounded-[2px] border border-border p-3.5 bg-background/40">
+                <Callout>Best Move</Callout>
+                <p className="mt-2 font-mono text-2xl font-semibold text-primary tracking-[-0.01em] tabular-nums">
                   {blunder.bestSan}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1.5">
+                <p className="text-xs text-muted-foreground mt-2 font-sans">
                   The green arrow on the board shows the correct move.
                 </p>
               </div>
@@ -324,7 +315,7 @@ const BlunderReviewMode = ({ blunders = [], onClose }) => {
 
           {/* Progress dots */}
           {totalErrors > 1 && (
-            <div className="flex flex-wrap gap-1.5 justify-center py-1">
+            <FadeInUp className="flex flex-wrap gap-1.5 justify-center py-1">
               {blunders.map((b, index_) => (
                 <button
                   key={b.id}
@@ -334,37 +325,35 @@ const BlunderReviewMode = ({ blunders = [], onClose }) => {
                     index_ === index
                       ? "ring-2 ring-primary ring-offset-1 ring-offset-card bg-primary scale-110"
                       : b.quality === "Blunder"
-                        ? "bg-red-500/50 hover:bg-red-500/80"
-                        : "bg-orange-500/50 hover:bg-orange-500/80"
+                        ? "bg-destructive/60 hover:bg-destructive"
+                        : "bg-destructive/30 hover:bg-destructive/60"
                   }`}
                 />
               ))}
-            </div>
+            </FadeInUp>
           )}
 
           {/* Navigation */}
           <div className="flex items-center justify-between pt-3 border-t border-border">
-            <Button
+            <EditorialButton
               variant="ghost"
-              size="sm"
               onClick={handlePrevious}
               disabled={index === 0}
-              className="text-muted-foreground gap-1"
+              className="inline-flex items-center gap-1"
             >
               <ChevronLeft className="w-4 h-4" />
               Prev
-            </Button>
+            </EditorialButton>
 
-            <Button
-              variant={answered ? "default" : "ghost"}
-              size="sm"
+            <EditorialButton
+              variant={answered ? "primary" : "outline"}
               onClick={handleNext}
               disabled={!answered && !isLastItem}
-              className={`gap-1 ${!answered ? "text-muted-foreground" : ""}`}
+              className="inline-flex items-center gap-1"
             >
               {isLastItem ? "Finish" : "Next"}
               {!isLastItem && <ChevronRight className="w-4 h-4" />}
-            </Button>
+            </EditorialButton>
           </div>
         </div>
       </div>

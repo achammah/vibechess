@@ -16,7 +16,12 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import {
+  Callout,
+  Chip,
+  EditorialButton,
+  FadeInUp,
+} from "@/components/ui/editorial";
 import { TYPE_QUIZ } from "@/lib/progress";
 import { loadQuizByFile, loadQuizCatalog } from "@/lib/puzzle-quizzes";
 import useProgressStore from "@/store/use-progress-store";
@@ -61,14 +66,14 @@ const THEME_GUIDE = {
 };
 
 const DIFF_STYLE = {
-  easy: "text-green-400 bg-green-500/10 border-green-500/20",
-  medium: "text-yellow-400 bg-yellow-500/10 border-yellow-500/20",
-  hard: "text-red-400 bg-red-500/10 border-red-500/20",
+  easy: "text-muted-foreground border-border",
+  medium: "text-foreground border-foreground",
+  hard: "text-destructive border-destructive",
 };
 
 const Badge = ({ label, className }) => (
   <span
-    className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded border ${className}`}
+    className={`font-mono text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[2px] border ${className}`}
   >
     {label}
   </span>
@@ -426,7 +431,7 @@ const TrainingPuzzleQuizPanel = ({
   if (phase === "list") {
     return (
       <div className="flex flex-col h-full animate-in fade-in duration-150">
-        <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border shrink-0">
+        <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-border shrink-0">
           <button
             onClick={onBack}
             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -434,8 +439,10 @@ const TrainingPuzzleQuizPanel = ({
             <ChevronLeft className="h-4 w-4" />
           </button>
           <Puzzle className="h-4 w-4 text-primary" />
-          <span className="text-sm font-semibold">Tactical Quizzes</span>
-          <span className="ml-auto text-xs text-muted-foreground">
+          <span className="font-display text-base font-semibold text-foreground">
+            Tactical Quizzes
+          </span>
+          <span className="ml-auto font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground tabular-nums">
             {catalog.length} quizzes
           </span>
         </div>
@@ -445,50 +452,41 @@ const TrainingPuzzleQuizPanel = ({
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search quizzes..."
-            className="w-full bg-muted/50 border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition-colors"
+            className="w-full bg-card border border-border rounded-[2px] px-2.5 py-1.5 font-sans text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-foreground transition-colors"
           />
           <div className="flex gap-1.5 overflow-x-auto">
             {["all", "easy", "medium", "hard"].map((difficulty) => (
-              <button
+              <Chip
                 key={difficulty}
+                active={difficultyFilter === difficulty}
                 onClick={() => setDifficultyFilter(difficulty)}
-                className={`px-2 py-0.5 rounded text-[11px] font-medium capitalize transition-colors border whitespace-nowrap ${
-                  difficultyFilter === difficulty
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border/50 text-muted-foreground hover:bg-muted/50"
-                }`}
+                className="whitespace-nowrap"
               >
                 {difficulty}
-              </button>
+              </Chip>
             ))}
           </div>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               Quizzes are loaded from `/public/quiz/*.json` so you can add new
               tactical sets without touching the React code.
             </p>
-            <div className="flex gap-1 shrink-0">
+            <div className="flex gap-1.5 shrink-0">
               {[
                 { key: "all", label: "All" },
                 { key: "unsolved", label: "To Solve" },
                 { key: "solved", label: "Done" },
               ].map(({ key, label }) => (
-                <button
+                <Chip
                   key={key}
+                  active={solveFilter === key}
                   onClick={() => setSolveFilter(key)}
-                  className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors border ${
-                    solveFilter === key
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border/50 text-muted-foreground hover:bg-muted/50"
-                  }`}
                 >
                   {label}
                   {key === "solved" && solvedCount > 0 && (
-                    <span className="ml-1 text-primary/60">
-                      ({solvedCount})
-                    </span>
+                    <span className="ml-1 tabular-nums">({solvedCount})</span>
                   )}
-                </button>
+                </Chip>
               ))}
             </div>
           </div>
@@ -496,50 +494,52 @@ const TrainingPuzzleQuizPanel = ({
 
         <div className="overflow-y-auto flex-1 px-2 py-2 space-y-1.5">
           {catalogState === "loading" && (
-            <div className="rounded-xl border border-border bg-muted/20 p-3 text-xs text-muted-foreground">
+            <div className="rounded-[2px] border border-border bg-card p-3 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
               Loading quiz library...
             </div>
           )}
 
           {catalogState === "error" && (
-            <div className="rounded-xl border border-red-500/30 bg-red-950/20 p-3 text-xs text-red-300">
+            <div className="rounded-[2px] border border-destructive bg-card p-3 font-sans text-xs text-destructive">
               {catalogError}
             </div>
           )}
 
           {quizError && (
-            <div className="rounded-xl border border-red-500/30 bg-red-950/20 p-3 text-xs text-red-300">
+            <div className="rounded-[2px] border border-destructive bg-card p-3 font-sans text-xs text-destructive">
               {quizError}
             </div>
           )}
 
-          {displayed.map((entry) => {
+          {displayed.map((entry, index) => {
             const solved = isSolved(entry.id, TYPE_QUIZ);
             return (
-              <button
+              <FadeInUp
                 key={entry.id}
+                stagger={(index % 5) + 1}
+                as="button"
                 onClick={() => openQuiz(entry)}
-                className="w-full text-left p-3 rounded-lg border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+                className="w-full text-left p-3 rounded-[2px] border border-border hover:border-foreground hover:-translate-y-px transition-all group"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 space-y-1">
-                    <p className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                  <div className="min-w-0 space-y-1.5">
+                    <p className="font-display text-sm font-semibold text-foreground truncate">
                       {entry.title}
                       {solved && (
-                        <Check className="h-3 w-3 text-green-500 inline ml-1" />
+                        <Check className="h-3 w-3 text-primary inline ml-1" />
                       )}
                     </p>
-                    <p className="text-[11px] text-muted-foreground line-clamp-2">
+                    <p className="font-sans text-[11px] text-muted-foreground line-clamp-2">
                       {entry.description}
                     </p>
-                    <div className="flex items-center gap-1.5 flex-wrap text-[10px] text-muted-foreground">
-                      <span className="rounded border border-border px-1.5 py-0.5 capitalize">
+                    <div className="flex items-center gap-1.5 flex-wrap font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                      <span className="rounded-[2px] border border-border px-1.5 py-0.5">
                         {entry.turn} to move
                       </span>
-                      <span className="rounded border border-border px-1.5 py-0.5">
+                      <span className="rounded-[2px] border border-border px-1.5 py-0.5 tabular-nums">
                         {entry.moveCount} ply
                       </span>
-                      <span className="rounded border border-border px-1.5 py-0.5 capitalize">
+                      <span className="rounded-[2px] border border-border px-1.5 py-0.5">
                         {entry.theme}
                       </span>
                     </div>
@@ -549,7 +549,7 @@ const TrainingPuzzleQuizPanel = ({
                     className={DIFF_STYLE[entry.difficulty]}
                   />
                 </div>
-              </button>
+              </FadeInUp>
             );
           })}
         </div>
@@ -562,7 +562,7 @@ const TrainingPuzzleQuizPanel = ({
 
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-2 duration-200">
-      <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border shrink-0">
+      <div className="flex items-center gap-2.5 px-3 py-2.5 border-b border-border shrink-0">
         <button
           onClick={handleBackToList}
           className="text-muted-foreground hover:text-foreground"
@@ -571,10 +571,10 @@ const TrainingPuzzleQuizPanel = ({
         </button>
         <Puzzle className="h-4 w-4 text-primary shrink-0" />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold truncate">
+          <p className="font-display text-sm font-semibold text-foreground truncate">
             {selectedQuiz?.title}
           </p>
-          <p className="text-[10px] text-muted-foreground capitalize">
+          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
             {selectedQuiz?.theme} · {selectedEntry?.turn} to move
           </p>
         </div>
@@ -585,15 +585,15 @@ const TrainingPuzzleQuizPanel = ({
       </div>
 
       <div className="px-3 py-2 border-b border-border shrink-0">
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1.5">
+        <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground mb-1.5 tabular-nums">
           <span>
             Move {solutionStep} of {totalMoves}
           </span>
-          <span className="text-primary font-medium">{progressPct}%</span>
+          <span className="text-primary">{progressPct}%</span>
         </div>
-        <div className="h-1 rounded-full bg-muted/50 overflow-hidden">
+        <div className="h-1 rounded-[2px] bg-card border border-border overflow-hidden">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-300"
+            className="h-full bg-primary transition-all duration-300"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -602,51 +602,47 @@ const TrainingPuzzleQuizPanel = ({
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
         {feedback && (
           <div
-            className={`rounded-xl p-3 text-xs leading-relaxed border ${
+            className={`rounded-[2px] p-3 font-sans text-xs leading-relaxed border bg-card ${
               feedback.type === "success"
-                ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
+                ? "border-primary text-foreground"
                 : feedback.type === "error"
-                  ? "bg-red-950/40 border-red-500/40 text-red-300"
-                  : "bg-muted/40 border-border text-foreground/80"
+                  ? "border-destructive text-destructive"
+                  : "border-border text-muted-foreground"
             }`}
           >
             {feedback.type === "success" && (
-              <CheckCircle2 className="h-3.5 w-3.5 inline mr-1.5 shrink-0" />
+              <CheckCircle2 className="h-3.5 w-3.5 inline mr-1.5 shrink-0 text-primary" />
             )}
             {feedback.type === "error" && (
-              <XCircle className="h-3.5 w-3.5 inline mr-1.5 shrink-0" />
+              <XCircle className="h-3.5 w-3.5 inline mr-1.5 shrink-0 text-destructive" />
             )}
             {feedback.type === "info" && (
-              <Info className="h-3.5 w-3.5 inline mr-1.5 shrink-0" />
+              <Info className="h-3.5 w-3.5 inline mr-1.5 shrink-0 text-muted-foreground" />
             )}
             {feedback.text}
           </div>
         )}
 
-        <div className="rounded-xl p-3 bg-muted/30 border border-border space-y-1.5">
-          <div className="flex items-center gap-1.5">
+        <div className="rounded-[2px] p-3 bg-card border border-border space-y-2">
+          <Callout>
             <Target className="h-3.5 w-3.5 text-primary" />
-            <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">
-              Quiz Prompt
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+            Quiz Prompt
+          </Callout>
+          <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
             {selectedQuiz?.description}
           </p>
         </div>
 
-        <div className="rounded-xl p-3 bg-muted/30 border border-border space-y-1.5">
-          <div className="flex items-center gap-1.5">
-            <Brain className="h-3.5 w-3.5 text-cyan-400" />
-            <span className="text-[11px] font-semibold text-cyan-400">
-              What to look for
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+        <div className="rounded-[2px] p-3 bg-card border border-border space-y-2">
+          <Callout>
+            <Brain className="h-3.5 w-3.5 text-muted-foreground" />
+            What to look for
+          </Callout>
+          <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
             {guide.intro || "Find the strongest forcing move in the position."}
           </p>
           {guide.hint && (
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               {guide.hint}
             </p>
           )}
@@ -654,18 +650,16 @@ const TrainingPuzzleQuizPanel = ({
 
         {(status === "revealed" || status === "solved") &&
           selectedQuiz?.solution && (
-            <div className="rounded-xl p-3 bg-muted/30 border border-border space-y-1.5">
-              <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
-                Solution Line
-              </p>
+            <div className="rounded-[2px] p-3 bg-card border border-border space-y-2">
+              <Callout>Solution Line</Callout>
               <div className="flex flex-wrap gap-1">
                 {selectedQuiz.solution.map((uci, index) => (
                   <span
                     key={`${uci}-${index}`}
-                    className={`text-[11px] font-mono px-1.5 py-0.5 rounded border ${
+                    className={`font-mono text-[11px] px-1.5 py-0.5 rounded-[2px] border tabular-nums ${
                       index % 2 === 0
-                        ? "bg-primary/10 border-primary/30 text-primary"
-                        : "bg-red-500/10 border-red-500/30 text-red-400"
+                        ? "border-primary text-primary"
+                        : "border-destructive text-destructive"
                     }`}
                   >
                     {uci.slice(0, 2).toUpperCase()}→
@@ -677,14 +671,12 @@ const TrainingPuzzleQuizPanel = ({
           )}
 
         {status === "solved" && (
-          <div className="rounded-xl p-3 bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
-            <div className="flex items-center gap-1.5">
-              <Trophy className="h-3.5 w-3.5 text-yellow-400" />
-              <span className="text-[11px] font-semibold text-yellow-400">
-                Quiz Solved
-              </span>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+          <div className="rounded-[2px] p-3 bg-card border border-primary space-y-2">
+            <Callout>
+              <Trophy className="h-3.5 w-3.5 text-primary" />
+              Quiz Solved
+            </Callout>
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               You completed the full {selectedQuiz?.theme} sequence correctly.
             </p>
           </div>
@@ -694,44 +686,41 @@ const TrainingPuzzleQuizPanel = ({
       <div className="px-3 py-2.5 border-t border-border shrink-0 space-y-2">
         {status !== "solved" && status !== "revealed" && (
           <div className="flex gap-2">
-            <Button
+            <EditorialButton
               variant="outline"
-              size="sm"
-              className="flex-1 text-xs h-7"
+              className="flex-1 inline-flex items-center justify-center"
               onClick={handleHint}
             >
               <Lightbulb className="h-3 w-3 mr-1" />
               Hint
-            </Button>
-            <Button
+            </EditorialButton>
+            <EditorialButton
               variant="outline"
-              size="sm"
-              className="flex-1 text-xs h-7"
+              className="flex-1 inline-flex items-center justify-center"
               onClick={handleReveal}
             >
               <SkipForward className="h-3 w-3 mr-1" />
               Reveal
-            </Button>
+            </EditorialButton>
           </div>
         )}
         <div className="flex gap-2">
-          <Button
+          <EditorialButton
             variant="outline"
-            size="sm"
-            className="flex-1 text-xs h-7"
+            className="flex-1 inline-flex items-center justify-center"
             onClick={handleRetry}
           >
             <RotateCcw className="h-3 w-3 mr-1" />
             Retry
-          </Button>
-          <Button
-            size="sm"
-            className="flex-1 text-xs h-7"
+          </EditorialButton>
+          <EditorialButton
+            variant="primary"
+            className="flex-1 inline-flex items-center justify-center"
             onClick={handleNextQuiz}
           >
             Next
             <ChevronRight className="h-3 w-3 ml-1" />
-          </Button>
+          </EditorialButton>
         </div>
       </div>
     </div>

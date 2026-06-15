@@ -1,7 +1,6 @@
 import { Key } from "lucide-react";
 import { useState, useEffect } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +8,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Callout, Chip, EditorialButton } from "@/components/ui/editorial";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { GEMINI_MODELS } from "@/lib/google-ai";
 import { voiceSupported } from "@/lib/voice";
+
+const FIELD_LABEL =
+  "font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground";
+const SELECT_CLS =
+  "flex h-9 w-full rounded-[3px] border border-border bg-transparent px-3 py-1 text-sm font-sans text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
 
 const OPENAI_MODELS = [
   { id: "gpt-4o-mini", label: "GPT-4o Mini" },
@@ -67,8 +72,8 @@ const SettingsDialog = ({ open, onOpenChange }) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Key className="h-4 w-4" />
+          <DialogTitle className="flex items-center gap-2 font-display">
+            <Key className="h-4 w-4 text-primary" />
             Settings
           </DialogTitle>
           <DialogDescription>
@@ -76,137 +81,147 @@ const SettingsDialog = ({ open, onOpenChange }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
-          {/* ELO Rating */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Your ELO Rating</label>
-            <Input
-              type="number"
-              placeholder="1000"
-              min={100}
-              max={3000}
-              value={elo}
-              onChange={(e) => setElo(e.target.value)}
-            />
-            <p className="text-xs text-muted-foreground">
-              Used to tailor coaching depth and vocabulary to your level.
-            </p>
-          </div>
+        <div className="space-y-6">
+          {/* Player */}
+          <section className="space-y-4">
+            <Callout>Player</Callout>
 
-          {/* Voice coach */}
-          {voiceSupported() && (
-            <div className="flex items-center justify-between">
-              <div>
-                <label className="text-sm font-medium">Voice coach</label>
-                <p className="text-xs text-muted-foreground">
-                  Read grounded explanations aloud.
-                </p>
-              </div>
-              <Switch checked={voiceCoach} onCheckedChange={setVoiceCoach} />
+            <div className="space-y-2">
+              <label className={FIELD_LABEL}>Your ELO rating</label>
+              <Input
+                type="number"
+                placeholder="1000"
+                min={100}
+                max={3000}
+                value={elo}
+                onChange={(e) => setElo(e.target.value)}
+                className="font-mono tabular-nums"
+              />
+              <p className="text-xs text-muted-foreground">
+                Used to tailor coaching depth and vocabulary to your level.
+              </p>
             </div>
-          )}
+
+            {/* Voice coach */}
+            {voiceSupported() && (
+              <div className="flex items-center justify-between border-t border-border pt-4">
+                <div>
+                  <label className={FIELD_LABEL}>Voice coach</label>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Read grounded explanations aloud.
+                  </p>
+                </div>
+                <Switch checked={voiceCoach} onCheckedChange={setVoiceCoach} />
+              </div>
+            )}
+          </section>
 
           {/* AI Provider */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium">AI Provider</label>
-            <div className="grid grid-cols-2 gap-2">
-              <button
-                type="button"
+          <section className="space-y-4 border-t border-border pt-5">
+            <Callout>AI provider</Callout>
+
+            <div className="flex flex-wrap gap-2">
+              <Chip
+                active={isGoogle}
                 onClick={() => setProvider("google")}
-                className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-                  isGoogle
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-transparent hover:bg-accent"
-                }`}
               >
                 Google Gemini
-              </button>
-              <button
-                type="button"
+              </Chip>
+              <Chip
+                active={!isGoogle}
                 onClick={() => setProvider("openai")}
-                className={`rounded-md border px-3 py-2 text-sm font-medium transition-colors ${
-                  !isGoogle
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-input bg-transparent hover:bg-accent"
-                }`}
               >
                 OpenAI
-              </button>
+              </Chip>
             </div>
-          </div>
 
-          {/* Google Gemini fields */}
-          {isGoogle && (
-            <>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Google API Key</label>
-                <Input
-                  type="password"
-                  placeholder="AIza..."
-                  value={googleApiKey}
-                  onChange={(e) => setGoogleApiKey(e.target.value)}
-                />
-                <p className="text-xs text-muted-foreground">
-                  Get your key at{" "}
-                  <span className="font-mono">aistudio.google.com</span>
-                </p>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Gemini Model</label>
-                <select
-                  value={googleModel}
-                  onChange={(e) => setGoogleModel(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  {GEMINI_MODELS.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.label} — {m.description}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-muted-foreground">
-                  Gemini models support agentic board control — the AI can move
-                  pieces and set positions while teaching.
-                </p>
-              </div>
-            </>
-          )}
+            {/* Google Gemini fields */}
+            {isGoogle && (
+              <>
+                <div className="space-y-2">
+                  <label className={FIELD_LABEL}>Google API key</label>
+                  <Input
+                    type="password"
+                    placeholder="AIza..."
+                    value={googleApiKey}
+                    onChange={(e) => setGoogleApiKey(e.target.value)}
+                    className="font-mono"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Get your key at{" "}
+                    <span className="font-mono text-foreground">
+                      aistudio.google.com
+                    </span>
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <label className={FIELD_LABEL}>Gemini model</label>
+                  <select
+                    value={googleModel}
+                    onChange={(e) => setGoogleModel(e.target.value)}
+                    className={SELECT_CLS}
+                  >
+                    {GEMINI_MODELS.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.label} — {m.description}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground">
+                    Gemini models support agentic board control — the AI can
+                    move pieces and set positions while teaching.
+                  </p>
+                </div>
+              </>
+            )}
 
-          {/* OpenAI fields */}
-          {!isGoogle && (
-            <>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">OpenAI API Key</label>
-                <Input
-                  type="password"
-                  placeholder="sk-..."
-                  value={openaiApiKey}
-                  onChange={(e) => setOpenaiApiKey(e.target.value)}
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Model</label>
-                <select
-                  value={openaiModel}
-                  onChange={(e) => setOpenaiModel(e.target.value)}
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                >
-                  {OPENAI_MODELS.map((m) => (
-                    <option key={m.id} value={m.id}>
-                      {m.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </>
-          )}
+            {/* OpenAI fields */}
+            {!isGoogle && (
+              <>
+                <div className="space-y-2">
+                  <label className={FIELD_LABEL}>OpenAI API key</label>
+                  <Input
+                    type="password"
+                    placeholder="sk-..."
+                    value={openaiApiKey}
+                    onChange={(e) => setOpenaiApiKey(e.target.value)}
+                    className="font-mono"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className={FIELD_LABEL}>Model</label>
+                  <select
+                    value={openaiModel}
+                    onChange={(e) => setOpenaiModel(e.target.value)}
+                    className={SELECT_CLS}
+                  >
+                    {OPENAI_MODELS.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
+          </section>
 
           {/* Actions */}
-          <div className="flex justify-end gap-2 pt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <div className="flex justify-end gap-2 pt-2 border-t border-border">
+            <EditorialButton
+              variant="ghost"
+              className="mt-4"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
-            </Button>
-            <Button onClick={handleSave}>Save</Button>
+            </EditorialButton>
+            <EditorialButton
+              variant="primary"
+              className="mt-4"
+              onClick={handleSave}
+            >
+              Save
+            </EditorialButton>
           </div>
         </div>
       </DialogContent>

@@ -13,7 +13,12 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { Button } from "@/components/ui/button";
+import {
+  Callout,
+  Chip,
+  EditorialButton,
+  FadeInUp,
+} from "@/components/ui/editorial";
 import {
   loadTutorialByFile,
   loadTutorialCatalog,
@@ -22,16 +27,9 @@ import {
 import { TYPE_TUTORIAL } from "@/lib/progress";
 import useProgressStore from "@/store/use-progress-store";
 
-const CAT_STYLE = {
-  open: "text-blue-400 bg-blue-500/10 border-blue-500/20",
-  "semi-open": "text-yellow-400 bg-yellow-500/10 border-yellow-500/20",
-  closed: "text-purple-400 bg-purple-500/10 border-purple-500/20",
-  flank: "text-green-400 bg-green-500/10 border-green-500/20",
-};
-
 const Badge = ({ label, className }) => (
   <span
-    className={`text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded border ${className}`}
+    className={`font-mono text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[2px] border border-border text-muted-foreground ${className ?? ""}`}
   >
     {label}
   </span>
@@ -368,13 +366,15 @@ const TrainingOpeningTutorialPanel = ({
         <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border shrink-0">
           <button
             onClick={onBack}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground transition-colors"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
-          <BookOpen className="h-4 w-4 text-primary" />
-          <span className="text-sm font-semibold">Opening Tutorials</span>
-          <span className="ml-auto text-xs text-muted-foreground">
+          <BookOpen className="h-4 w-4 text-foreground" />
+          <span className="font-display text-sm font-semibold tracking-[-0.01em]">
+            Opening Tutorials
+          </span>
+          <span className="ml-auto font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
             {catalog.length} tutorials
           </span>
         </div>
@@ -384,10 +384,10 @@ const TrainingOpeningTutorialPanel = ({
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
             placeholder="Search tutorials..."
-            className="w-full bg-muted/50 border border-border rounded-md px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-primary/50 transition-colors"
+            className="w-full bg-card border border-border rounded-[2px] px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:border-foreground transition-colors"
           />
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               The library is loaded from `/public/tutorial/*.json` so you can
               keep adding curated lessons.
             </p>
@@ -397,22 +397,16 @@ const TrainingOpeningTutorialPanel = ({
                 { key: "unsolved", label: "To Learn" },
                 { key: "solved", label: "Done" },
               ].map(({ key, label }) => (
-                <button
+                <Chip
                   key={key}
+                  active={solveFilter === key}
                   onClick={() => setSolveFilter(key)}
-                  className={`px-2 py-0.5 rounded text-[10px] font-medium transition-colors border ${
-                    solveFilter === key
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border/50 text-muted-foreground hover:bg-muted/50"
-                  }`}
                 >
                   {label}
                   {key === "solved" && solvedCount > 0 && (
-                    <span className="ml-1 text-primary/60">
-                      ({solvedCount})
-                    </span>
+                    <span className="ml-1">({solvedCount})</span>
                   )}
-                </button>
+                </Chip>
               ))}
             </div>
           </div>
@@ -420,68 +414,64 @@ const TrainingOpeningTutorialPanel = ({
 
         <div className="overflow-y-auto flex-1 px-2 py-2 space-y-1.5">
           {catalogState === "loading" && (
-            <div className="rounded-xl border border-border bg-muted/20 p-3 text-xs text-muted-foreground">
+            <div className="rounded-[2px] border border-border bg-card p-3 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
               Loading tutorial library...
             </div>
           )}
 
           {catalogState === "error" && (
-            <div className="rounded-xl border border-red-500/30 bg-red-950/20 p-3 text-xs text-red-300">
+            <div className="rounded-[2px] border border-destructive/40 bg-card p-3 text-xs text-destructive">
               {catalogError}
             </div>
           )}
 
           {tutorialError && (
-            <div className="rounded-xl border border-red-500/30 bg-red-950/20 p-3 text-xs text-red-300">
+            <div className="rounded-[2px] border border-destructive/40 bg-card p-3 text-xs text-destructive">
               {tutorialError}
             </div>
           )}
 
-          {displayed.map((entry) => {
+          {displayed.map((entry, index) => {
             const solved = isSolved(entry.id, TYPE_TUTORIAL);
             return (
-              <button
+              <FadeInUp
                 key={entry.id}
+                stagger={(index % 5) + 1}
+                as="button"
                 onClick={() => openTutorial(entry)}
-                className="w-full text-left p-3 rounded-lg border border-border/50 hover:border-primary/40 hover:bg-primary/5 transition-all group"
+                className="w-full text-left p-3 rounded-[2px] border border-border bg-card hover:border-foreground transition-all duration-150 hover:-translate-y-px group"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0 space-y-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-[10px] font-mono text-primary/60">
+                      <span className="font-mono text-[10px] tracking-[0.08em] text-muted-foreground">
                         {entry.eco}
                       </span>
-                      <p className="text-xs font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                      <p className="font-display text-sm font-semibold tracking-[-0.01em] text-foreground truncate">
                         {entry.title}
                       </p>
                       {solved && (
-                        <Check className="h-3 w-3 text-green-500 shrink-0" />
+                        <Check className="h-3 w-3 text-primary shrink-0" />
                       )}
                     </div>
-                    <p className="text-[11px] text-muted-foreground line-clamp-2">
+                    <p className="font-sans text-[11px] text-muted-foreground line-clamp-2">
                       {entry.summary}
                     </p>
-                    <div className="flex items-center gap-1.5 flex-wrap text-[10px] text-muted-foreground">
-                      <span className="rounded border border-border px-1.5 py-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                      <span className="rounded-[2px] border border-border px-1.5 py-0.5">
                         Play as {entry.side}
                       </span>
-                      <span className="rounded border border-border px-1.5 py-0.5">
+                      <span className="rounded-[2px] border border-border px-1.5 py-0.5">
                         {entry.stepCount} steps
                       </span>
-                      <span className="rounded border border-border px-1.5 py-0.5 capitalize">
+                      <span className="rounded-[2px] border border-border px-1.5 py-0.5">
                         {entry.difficulty}
                       </span>
                     </div>
                   </div>
-                  <Badge
-                    label={entry.category}
-                    className={
-                      CAT_STYLE[entry.category] ||
-                      "text-muted-foreground bg-muted/30 border-border"
-                    }
-                  />
+                  <Badge label={entry.category} />
                 </div>
-              </button>
+              </FadeInUp>
             );
           })}
         </div>
@@ -500,16 +490,16 @@ const TrainingOpeningTutorialPanel = ({
       <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border shrink-0">
         <button
           onClick={handleBackToList}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
         </button>
-        <BookOpen className="h-4 w-4 text-primary shrink-0" />
+        <BookOpen className="h-4 w-4 text-foreground shrink-0" />
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-semibold truncate">
+          <p className="font-display text-sm font-semibold tracking-[-0.01em] truncate">
             {selectedTutorial?.title}
           </p>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
             {selectedTutorial?.eco} · Play as {selectedTutorial?.side}
           </p>
         </div>
@@ -520,7 +510,7 @@ const TrainingOpeningTutorialPanel = ({
             setBoardOrientation(nextOrientation);
             pushBoardState([], nextOrientation);
           }}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground transition-colors"
           title="Flip board"
         >
           <ArrowLeftRight className="h-4 w-4" />
@@ -528,16 +518,16 @@ const TrainingOpeningTutorialPanel = ({
       </div>
 
       <div className="px-3 py-2 border-b border-border shrink-0">
-        <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-1.5">
+        <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground mb-1.5 tabular-nums">
           <span>
             Step {Math.min(currentStepIndex + 1, totalSteps || 1)} of{" "}
             {totalSteps}
           </span>
-          <span className="text-primary font-medium">{progressPct}%</span>
+          <span className="text-foreground">{progressPct}%</span>
         </div>
-        <div className="h-1 rounded-full bg-muted/50 overflow-hidden">
+        <div className="h-1 rounded-[2px] bg-border overflow-hidden">
           <div
-            className="h-full rounded-full bg-primary transition-all duration-300"
+            className="h-full rounded-[2px] bg-primary transition-all duration-300"
             style={{ width: `${progressPct}%` }}
           />
         </div>
@@ -546,71 +536,67 @@ const TrainingOpeningTutorialPanel = ({
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
         {feedback && (
           <div
-            className={`rounded-xl p-3 text-xs leading-relaxed border ${
+            className={`rounded-[2px] p-3 font-sans text-xs leading-relaxed border bg-card ${
               feedback.type === "success"
-                ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
+                ? "border-primary/40 text-foreground"
                 : feedback.type === "error"
-                  ? "bg-red-950/40 border-red-500/40 text-red-300"
-                  : "bg-muted/40 border-border text-foreground/80"
+                  ? "border-destructive/40 text-destructive"
+                  : "border-border text-muted-foreground"
             }`}
           >
             {feedback.type === "success" && (
-              <CheckCircle2 className="h-3.5 w-3.5 inline mr-1.5" />
+              <CheckCircle2 className="h-3.5 w-3.5 inline mr-1.5 text-primary" />
             )}
             {feedback.type === "error" && (
-              <XCircle className="h-3.5 w-3.5 inline mr-1.5" />
+              <XCircle className="h-3.5 w-3.5 inline mr-1.5 text-destructive" />
             )}
             {feedback.type === "info" && (
-              <Info className="h-3.5 w-3.5 inline mr-1.5" />
+              <Info className="h-3.5 w-3.5 inline mr-1.5 text-muted-foreground" />
             )}
             {feedback.text}
           </div>
         )}
 
-        <div className="rounded-xl p-3 bg-muted/30 border border-border space-y-1.5">
-          <div className="flex items-center gap-1.5">
-            <Brain className="h-3.5 w-3.5 text-cyan-400" />
-            <span className="text-[11px] font-semibold text-cyan-400">
-              Tutorial Overview
-            </span>
-          </div>
-          <p className="text-[11px] text-muted-foreground leading-relaxed">
+        <div className="rounded-[2px] p-3 bg-card border border-border space-y-1.5">
+          <Callout>
+            <Brain className="h-3.5 w-3.5" />
+            Tutorial Overview
+          </Callout>
+          <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
             {selectedTutorial?.description}
           </p>
         </div>
 
         {currentStep && status !== "complete" && (
-          <div className="rounded-xl p-3 bg-muted/30 border border-border space-y-1.5">
+          <div className="rounded-[2px] p-3 bg-card border border-border space-y-1.5">
             <div className="flex items-center justify-between gap-2">
-              <span className="text-[11px] font-semibold text-primary uppercase tracking-wide">
+              <Callout>
                 {currentStep.actor === "player" ? "Your move" : "Coach move"}
-              </span>
-              <span className="text-[10px] font-mono text-muted-foreground">
+              </Callout>
+              <span className="font-mono text-[11px] tracking-[0.06em] text-foreground tabular-nums">
                 {currentStep.san}
               </span>
             </div>
-            <p className="text-[11px] text-foreground/90 leading-relaxed">
+            <p className="font-display text-sm font-semibold tracking-[-0.01em] text-foreground leading-snug">
               {currentStep.title}
             </p>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               {currentStep.coaching || currentStep.instruction}
             </p>
           </div>
         )}
 
         {progressMoves.length > 0 && (
-          <div className="rounded-xl p-3 bg-muted/20 border border-border space-y-1.5">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
-              Script progress
-            </p>
+          <div className="rounded-[2px] p-3 bg-card border border-border space-y-1.5">
+            <Callout>Script progress</Callout>
             <div className="flex flex-wrap gap-1">
               {progressMoves.map((step, index) => (
                 <span
                   key={`${index}-${step.actor}-${step.san}`}
-                  className={`text-[11px] font-mono px-1.5 py-0.5 rounded border ${
+                  className={`font-mono text-[11px] tabular-nums px-1.5 py-0.5 rounded-[2px] border ${
                     step.actor === "player"
-                      ? "bg-primary/10 border-primary/30 text-primary"
-                      : "bg-muted/40 border-border text-muted-foreground"
+                      ? "border-foreground text-foreground"
+                      : "border-border text-muted-foreground"
                   }`}
                 >
                   {Math.floor(index / 2) + 1}
@@ -623,61 +609,58 @@ const TrainingOpeningTutorialPanel = ({
         )}
 
         {previousStep && status !== "complete" && (
-          <div className="rounded-xl p-3 bg-muted/20 border border-border space-y-1.5">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
-              Last move explained
+          <div className="rounded-[2px] p-3 bg-card border border-border space-y-1.5">
+            <Callout>Last move explained</Callout>
+            <p className="font-sans text-[11px] text-foreground leading-relaxed">
+              {previousStep.title} ·{" "}
+              <span className="font-mono tabular-nums">{previousStep.san}</span>
             </p>
-            <p className="text-[11px] text-foreground/90 leading-relaxed">
-              {previousStep.title} · {previousStep.san}
-            </p>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               {previousStep.coaching || previousStep.instruction}
             </p>
           </div>
         )}
 
         {status === "complete" && (
-          <div className="rounded-xl p-3 bg-emerald-950/30 border border-emerald-500/30 space-y-1.5">
-            <div className="flex items-center gap-1.5">
-              <Star className="h-3.5 w-3.5 text-yellow-400" />
-              <span className="text-[11px] font-semibold text-yellow-400">
-                {selectedTutorial?.completionTitle || "Tutorial complete"}
-              </span>
-            </div>
-            <p className="text-[11px] text-muted-foreground leading-relaxed">
+          <div className="rounded-[2px] p-3 bg-card border border-primary/40 space-y-1.5">
+            <Callout>
+              <Star className="h-3.5 w-3.5 text-primary" />
+              {selectedTutorial?.completionTitle || "Tutorial complete"}
+            </Callout>
+            <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
               {selectedTutorial?.completionSummary}
             </p>
           </div>
         )}
 
         {selectedTutorial?.objectives?.length > 0 && (
-          <div className="rounded-xl p-3 bg-muted/20 border border-border space-y-1.5">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
-              Objectives
-            </p>
-            {selectedTutorial.objectives.map((objective) => (
-              <p
+          <div className="rounded-[2px] p-3 bg-card border border-border space-y-1.5">
+            <Callout>Objectives</Callout>
+            {selectedTutorial.objectives.map((objective, index) => (
+              <FadeInUp
+                as="p"
+                stagger={(index % 5) + 1}
                 key={objective}
-                className="text-[11px] text-muted-foreground leading-relaxed"
+                className="font-sans text-[11px] text-muted-foreground leading-relaxed"
               >
                 {objective}
-              </p>
+              </FadeInUp>
             ))}
           </div>
         )}
 
         {selectedTutorial?.plans?.length > 0 && (
-          <div className="rounded-xl p-3 bg-muted/20 border border-border space-y-1.5">
-            <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
-              Core plans
-            </p>
-            {selectedTutorial.plans.map((plan) => (
-              <p
+          <div className="rounded-[2px] p-3 bg-card border border-border space-y-1.5">
+            <Callout>Core plans</Callout>
+            {selectedTutorial.plans.map((plan, index) => (
+              <FadeInUp
+                as="p"
+                stagger={(index % 5) + 1}
                 key={plan}
-                className="text-[11px] text-muted-foreground leading-relaxed"
+                className="font-sans text-[11px] text-muted-foreground leading-relaxed"
               >
                 {plan}
-              </p>
+              </FadeInUp>
             ))}
           </div>
         )}
@@ -685,23 +668,22 @@ const TrainingOpeningTutorialPanel = ({
 
       <div className="px-3 py-2.5 border-t border-border shrink-0 space-y-2">
         <div className="flex gap-2">
-          <Button
+          <EditorialButton
             variant="outline"
-            size="sm"
-            className="flex-1 text-xs h-7"
+            className="flex-1 inline-flex items-center justify-center"
             onClick={() => selectedTutorial && resetTutorial(selectedTutorial)}
           >
-            <RotateCcw className="h-3 w-3 mr-1" />
+            <RotateCcw className="h-3 w-3 mr-1.5" />
             Restart
-          </Button>
-          <Button
-            size="sm"
-            className="flex-1 text-xs h-7"
+          </EditorialButton>
+          <EditorialButton
+            variant="primary"
+            className="flex-1 inline-flex items-center justify-center"
             onClick={handleBackToList}
           >
-            <BookOpen className="h-3 w-3 mr-1" />
+            <BookOpen className="h-3 w-3 mr-1.5" />
             Tutorial Library
-          </Button>
+          </EditorialButton>
         </div>
       </div>
     </div>

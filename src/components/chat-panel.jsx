@@ -23,40 +23,48 @@ import {
 import { useState, useRef, useEffect, createElement } from "react";
 import ReactMarkdown from "react-markdown";
 
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Callout,
+  SectionHeader,
+  EditorialButton,
+  FadeInUp,
+} from "@/components/ui/editorial";
 
 // ── Quality colour map ────────────────────────────────────────────────────
+// Harmonised, hairline-bordered set. Distinguishable via a tight palette of
+// semantic tokens — primary (orange) for the strongest play, foreground/muted
+// for solid-to-neutral, destructive for errors — never ad-hoc accent colours.
 const QUALITY_STYLES = {
   Brilliant: {
-    border: "border-cyan-500/60",
-    bg: "bg-cyan-950/50",
-    badge: "bg-cyan-500/20 text-cyan-300 border-cyan-500/40",
+    border: "border-primary/50",
+    bg: "bg-primary/[0.07]",
+    badge: "bg-primary/12 text-primary border-primary/30",
   },
   Excellent: {
-    border: "border-emerald-500/60",
-    bg: "bg-emerald-950/40",
-    badge: "bg-emerald-500/20 text-emerald-300 border-emerald-500/40",
+    border: "border-primary/30",
+    bg: "bg-primary/[0.04]",
+    badge: "bg-primary/[0.08] text-primary border-primary/20",
   },
   Good: {
-    border: "border-green-600/50",
-    bg: "bg-green-950/30",
-    badge: "bg-green-500/20 text-green-300 border-green-500/40",
+    border: "border-border",
+    bg: "bg-foreground/[0.02]",
+    badge: "bg-foreground/[0.06] text-foreground border-border",
   },
   Inaccuracy: {
-    border: "border-yellow-500/50",
-    bg: "bg-yellow-950/30",
-    badge: "bg-yellow-500/20 text-yellow-300 border-yellow-500/40",
+    border: "border-border",
+    bg: "bg-muted/40",
+    badge: "bg-muted text-muted-foreground border-border",
   },
   Mistake: {
-    border: "border-orange-500/60",
-    bg: "bg-orange-950/40",
-    badge: "bg-orange-500/20 text-orange-300 border-orange-500/40",
+    border: "border-destructive/30",
+    bg: "bg-destructive/[0.04]",
+    badge: "bg-destructive/[0.08] text-destructive border-destructive/25",
   },
   Blunder: {
-    border: "border-red-500/70",
-    bg: "bg-red-950/50",
-    badge: "bg-red-500/20 text-red-300 border-red-500/40",
+    border: "border-destructive/55",
+    bg: "bg-destructive/[0.07]",
+    badge: "bg-destructive/12 text-destructive border-destructive/40",
   },
 };
 
@@ -73,7 +81,7 @@ const AI_MARKDOWN_COMPONENTS = {
   ),
   h3: ({ children, ...properties }) => (
     <h3
-      className="mt-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
+      className="mt-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground"
       {...properties}
     >
       {children}
@@ -102,14 +110,14 @@ const AI_MARKDOWN_COMPONENTS = {
   code: ({ inline, className, children, ...properties }) =>
     inline ? (
       <code
-        className="rounded bg-black/15 px-1 py-0.5 font-mono text-[0.92em]"
+        className="rounded-[2px] border border-border bg-foreground/[0.05] px-1 py-0.5 font-mono text-[0.92em]"
         {...properties}
       >
         {children}
       </code>
     ) : (
       <code
-        className={`block overflow-x-auto rounded-md bg-black/20 p-3 font-mono text-xs ${className || ""}`}
+        className={`block overflow-x-auto rounded-[2px] border border-border bg-foreground/[0.04] p-3 font-mono text-xs ${className || ""}`}
         {...properties}
       >
         {children}
@@ -122,7 +130,7 @@ const AI_MARKDOWN_COMPONENTS = {
   ),
   a: ({ children, ...properties }) => (
     <a
-      className="text-cyan-300 underline underline-offset-2"
+      className="text-primary underline underline-offset-2 transition-colors duration-150 hover:text-foreground"
       rel="noreferrer"
       target="_blank"
       {...properties}
@@ -132,31 +140,33 @@ const AI_MARKDOWN_COMPONENTS = {
   ),
 };
 
+// Severity → editorial hue. Highest severities lean destructive, lower ones
+// settle into muted; emphasis (orange) is reserved for the "high" tier only.
 const SEVERITY_STYLES = {
   critical: {
-    border: "border-red-500/70",
-    bg: "bg-red-950/50",
-    icon: "text-red-400",
+    border: "border-destructive/55",
+    bg: "bg-destructive/[0.07]",
+    icon: "text-destructive",
   },
   high: {
-    border: "border-orange-500/60",
-    bg: "bg-orange-950/40",
-    icon: "text-orange-400",
+    border: "border-destructive/30",
+    bg: "bg-destructive/[0.04]",
+    icon: "text-destructive",
   },
   medium: {
-    border: "border-yellow-500/50",
-    bg: "bg-yellow-950/30",
-    icon: "text-yellow-400",
+    border: "border-primary/30",
+    bg: "bg-primary/[0.04]",
+    icon: "text-primary",
   },
   low: {
-    border: "border-blue-500/40",
-    bg: "bg-blue-950/30",
-    icon: "text-blue-400",
+    border: "border-border",
+    bg: "bg-muted/40",
+    icon: "text-muted-foreground",
   },
   info: {
-    border: "border-teal-500/50",
-    bg: "bg-teal-950/30",
-    icon: "text-teal-400",
+    border: "border-border",
+    bg: "bg-foreground/[0.02]",
+    icon: "text-muted-foreground",
   },
 };
 
@@ -174,10 +184,10 @@ const formatCompactTokens = (value) => {
  */
 const evalColor = (wScore) => {
   if (wScore === null) return "text-muted-foreground";
-  if (wScore > 1.5) return "text-emerald-400";
-  if (wScore > 0.3) return "text-green-400";
-  if (wScore < -1.5) return "text-red-400";
-  if (wScore < -0.3) return "text-orange-400";
+  if (wScore > 1.5) return "text-primary";
+  if (wScore > 0.3) return "text-primary/70";
+  if (wScore < -1.5) return "text-destructive";
+  if (wScore < -0.3) return "text-destructive/70";
   return "text-muted-foreground";
 };
 /**
@@ -202,25 +212,24 @@ const MoveChip = ({ move, idx }) => {
   const isCastle = move.startsWith("O-O");
   const isPromotion = move.includes("=");
 
-  let cls = "bg-white/[0.06] text-foreground/80 border-white/10";
-  if (isMate) cls = "bg-red-500/20 text-red-300 border-red-500/30";
-  else if (isCheck) {
-    cls = "bg-yellow-500/15 text-yellow-300 border-yellow-500/25";
-  } else if (isCapture) {
-    cls = "bg-orange-500/15 text-orange-300 border-orange-500/25";
-  } else if (isCastle) cls = "bg-blue-500/15 text-blue-300 border-blue-500/25";
-  else if (isPromotion) {
-    cls = "bg-purple-500/15 text-purple-300 border-purple-500/25";
+  // Harmonised SAN pill: neutral by default, destructive for mate, orange
+  // emphasis for checks/captures/castles/promotions — all on a hairline.
+  let cls = "bg-foreground/[0.04] text-foreground border-border";
+  if (isMate) cls = "bg-destructive/12 text-destructive border-destructive/30";
+  else if (isCheck) cls = "bg-primary/[0.08] text-primary border-primary/25";
+  else if (isCapture) cls = "bg-primary/[0.06] text-primary/80 border-primary/20";
+  else if (isCastle) {
+    cls = "bg-foreground/[0.06] text-foreground border-border";
+  } else if (isPromotion) {
+    cls = "bg-primary/[0.06] text-primary/80 border-primary/20";
   }
 
   return (
     <span
-      className={`inline-flex items-center gap-0.5 text-[11px] font-mono font-medium px-1.5 py-0.5 rounded border ${cls}`}
+      className={`inline-flex items-center gap-0.5 text-[11px] font-mono font-medium px-1.5 py-0.5 rounded-[2px] border ${cls}`}
     >
       {idx !== undefined && (
-        <span className="text-[9px] text-muted-foreground/60 mr-0.5">
-          {idx}.
-        </span>
+        <span className="text-[9px] text-muted-foreground mr-0.5">{idx}.</span>
       )}
       {move}
     </span>
@@ -252,14 +261,14 @@ const MyMoveCard = ({ card }) => {
 
   return (
     <div
-      className={`rounded-xl border ${qs.border} ${qs.bg} p-3 text-sm space-y-2 w-full`}
+      className={`rounded-[3px] border ${qs.border} ${qs.bg} p-3.5 text-sm space-y-2.5 w-full`}
     >
       {/* Header row */}
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-base">{card.qualityEmoji}</span>
+          <span className="text-base leading-none">{card.qualityEmoji}</span>
           <span
-            className={`text-xs font-semibold px-2 py-0.5 rounded-full border ${qs.badge}`}
+            className={`font-mono text-[10px] font-medium uppercase tracking-[0.12em] px-2 py-0.5 rounded-[2px] border ${qs.badge}`}
           >
             {card.quality}
           </span>
@@ -275,36 +284,33 @@ const MyMoveCard = ({ card }) => {
       </div>
 
       {/* Varied message */}
-      <p className="text-xs text-foreground/80 leading-relaxed">
+      <p className="font-sans text-xs text-foreground/90 leading-relaxed">
         {card.message}
       </p>
 
       {/* cp lost hint */}
       {card.cpLost !== null && card.cpLost > 20 && (
-        <p className="text-[11px] text-muted-foreground">
+        <p className="font-mono text-[11px] tabular-nums text-muted-foreground">
           −{card.cpLost} cp vs engine best
         </p>
       )}
 
       {/* Alternative suggestion */}
       {hasSuggestion && (
-        <div className="mt-1 pt-2 border-t border-white/10 space-y-1.5">
-          <div className="flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3 text-cyan-400 shrink-0" />
-            <span className="text-[11px] font-semibold text-cyan-300">
-              Better:
-            </span>
+        <div className="mt-1 pt-2.5 border-t border-border space-y-1.5">
+          <div className="flex items-center gap-2">
+            <Callout className="text-[10px]">Better</Callout>
             <MoveChip move={card.suggestion.bestMove} />
           </div>
           {card.suggestion.line.length > 0 && (
-            <div className="pl-5">
+            <div className="pl-[18px]">
               <MoveLine
                 moves={card.suggestion.line.slice(0, 4)}
                 startMoveNum={2}
               />
             </div>
           )}
-          <p className="text-[11px] text-muted-foreground/70 pl-5 italic">
+          <p className="font-sans text-[11px] text-muted-foreground pl-[18px] italic">
             {card.suggestion.eloContext}
           </p>
         </div>
@@ -321,21 +327,18 @@ const BestMoveCard = ({ card }) => {
   const eColor = evalColor(card.wScore);
 
   return (
-    <div className="rounded-xl border border-cyan-600/50 bg-cyan-950/40 p-3 text-sm space-y-2.5 w-full">
+    <div className="rounded-[3px] border border-primary/40 bg-primary/[0.05] p-3.5 text-sm space-y-3 w-full">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <Lightbulb className="h-3.5 w-3.5 text-cyan-400 shrink-0" />
-        <span className="text-xs font-semibold text-cyan-300">Best Move</span>
-      </div>
+      <Callout>Best Move</Callout>
 
       {/* Big move display */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <span className="text-lg font-bold font-mono text-foreground">
+          <span className="font-mono text-lg font-semibold tracking-[-0.01em] text-foreground">
             {card.moveSan}
           </span>
           {card.tacticalTag && (
-            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/[0.07] text-muted-foreground border border-white/10">
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-[2px] bg-foreground/[0.05] text-muted-foreground border border-border">
               {card.tacticalTag}
             </span>
           )}
@@ -352,10 +355,8 @@ const BestMoveCard = ({ card }) => {
 
       {/* Continuation line */}
       {card.line.length > 1 && (
-        <div className="space-y-1 pt-1 border-t border-white/10">
-          <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
-            Best continuation
-          </p>
+        <div className="space-y-1.5 pt-2.5 border-t border-border">
+          <Callout className="text-[10px]">Best continuation</Callout>
           <MoveLine moves={card.line.slice(0, 5)} startMoveNum={1} />
         </div>
       )}
@@ -380,13 +381,10 @@ const HintCard = ({ card }) => {
   const eColor = evalColor(card.wScore);
 
   return (
-    <div className="rounded-xl border border-violet-600/50 bg-violet-950/40 p-3 text-sm space-y-2.5 w-full">
+    <div className="rounded-[3px] border border-border bg-foreground/[0.02] p-3.5 text-sm space-y-3 w-full">
       {/* Header */}
       <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Crosshair className="h-3.5 w-3.5 text-violet-400 shrink-0" />
-          <span className="text-xs font-semibold text-violet-300">Hint</span>
-        </div>
+        <Callout>Hint</Callout>
         {card.evalStr && (
           <div
             className={`flex items-center gap-1 text-xs font-mono tabular-nums ${eColor}`}
@@ -400,24 +398,24 @@ const HintCard = ({ card }) => {
       </div>
 
       {/* General motivating message */}
-      <p className="text-xs text-foreground/85 leading-relaxed">
+      <p className="font-sans text-xs text-foreground/90 leading-relaxed">
         {card.generalMsg}
       </p>
 
       {/* Piece-specific hint */}
       {card.pieceName && (
-        <div className="flex items-start gap-2 pt-1 border-t border-white/10">
+        <div className="flex items-start gap-2 pt-2.5 border-t border-border">
           <span className="text-base leading-none mt-0.5">
             {PIECE_ICONS[card.pieceType] || "♟"}
           </span>
           <div className="space-y-0.5">
-            <p className="text-[11px] font-medium text-foreground/80">
+            <p className="font-sans text-[11px] font-medium text-foreground/90">
               Think about your{" "}
-              <span className="text-violet-300">{card.pieceName}</span>
+              <span className="font-mono text-primary">{card.pieceName}</span>
               {card.fromSquare ? ` on ${card.fromSquare}` : ""}.
             </p>
             {card.pieceContext && (
-              <p className="text-[11px] text-muted-foreground italic">
+              <p className="font-sans text-[11px] text-muted-foreground italic">
                 {card.pieceContext}
               </p>
             )}
@@ -439,7 +437,7 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
 
   return (
     <div
-      className={`rounded-xl border ${ss.border} ${ss.bg} p-3 text-sm space-y-2 w-full`}
+      className={`rounded-[3px] border ${ss.border} ${ss.bg} p-3.5 text-sm space-y-2.5 w-full`}
     >
       {/* Header */}
       <div className="flex items-center gap-2">
@@ -448,7 +446,7 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
         ) : (
           <AlertTriangle className={`h-4 w-4 shrink-0 ${ss.icon}`} />
         )}
-        <span className="text-xs font-semibold text-foreground/90">
+        <span className="font-display text-sm font-semibold text-foreground">
           {primary.name}
         </span>
         <div className="ml-auto">
@@ -457,21 +455,21 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
       </div>
 
       {/* Description */}
-      <p className="text-xs text-foreground/80 leading-relaxed">
+      <p className="font-sans text-xs text-foreground/90 leading-relaxed">
         {primary.description}
       </p>
 
       {/* Known opening / tactical pattern badge (only when there are also threats) */}
       {card.knownPattern && !isOpeningOnly && (
-        <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-teal-500/10 border border-teal-500/20">
-          <BookOpen className="h-3 w-3 text-teal-400 shrink-0" />
-          <span className="text-[11px] text-teal-300 font-medium">
+        <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-[2px] bg-foreground/[0.03] border border-border">
+          <BookOpen className="h-3 w-3 text-muted-foreground shrink-0" />
+          <span className="font-sans text-[11px] text-foreground font-medium">
             {card.knownPattern.type === "opening"
               ? `Opening Theory: ${card.knownPattern.name}`
               : card.knownPattern.name}
           </span>
           {card.knownPattern.eco && (
-            <span className="text-[10px] text-teal-400/60 font-mono ml-auto">
+            <span className="font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground ml-auto">
               {card.knownPattern.eco}
             </span>
           )}
@@ -480,7 +478,7 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
 
       {/* Opening idea one-liner */}
       {card.knownPattern?.idea && !isOpeningOnly && (
-        <p className="text-[11px] text-muted-foreground/70 italic pl-1">
+        <p className="font-sans text-[11px] text-muted-foreground italic pl-1">
           {card.knownPattern.idea}
         </p>
       )}
@@ -491,8 +489,8 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
           {card.allThreats.slice(1).map((t, index) => (
             <div key={index} className="flex items-start gap-1.5">
               <span className="text-xs">{t.icon}</span>
-              <p className="text-[11px] text-muted-foreground">
-                {t.name}: {t.description}
+              <p className="font-sans text-[11px] text-muted-foreground">
+                <span className="text-foreground/90">{t.name}</span>: {t.description}
               </p>
             </div>
           ))}
@@ -501,25 +499,25 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
 
       {/* Action buttons */}
       {(card.hasLearnButton || card.hasAiButton) && (
-        <div className="pt-1.5 border-t border-white/10 flex flex-col gap-1.5">
+        <div className="pt-2.5 border-t border-border flex flex-col gap-2">
           {/* ── Learn with AI — primary learning CTA ── */}
           {card.hasLearnButton && (
             <button
               onClick={() => onLearnWithAI?.(card)}
-              className="flex items-center gap-2 w-full px-2.5 py-1.5 rounded-lg bg-linear-to-r from-teal-500/20 to-cyan-500/15 border border-teal-500/30 hover:border-teal-400/50 hover:from-teal-500/30 hover:to-cyan-500/25 transition-all text-left group"
+              className="flex items-center gap-2.5 w-full px-2.5 py-2 rounded-[2px] border border-primary/30 bg-primary/[0.05] hover:bg-primary/[0.09] hover:border-primary/50 transition-colors duration-150 text-left group"
             >
-              <Sparkles className="h-3.5 w-3.5 text-teal-400 shrink-0 group-hover:text-teal-300" />
+              <span className="size-[7px] shrink-0 rounded-full bg-primary" />
               <div className="flex flex-col min-w-0">
-                <span className="text-[11px] font-semibold text-teal-300 group-hover:text-teal-200 leading-tight">
+                <span className="font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-primary leading-tight">
                   Learn with AI
                 </span>
-                <span className="text-[10px] text-teal-400/60 leading-tight">
+                <span className="font-sans text-[10px] text-muted-foreground leading-tight mt-0.5">
                   {card.knownPattern?.type === "opening"
                     ? `Understand the ${card.knownPattern.name}`
                     : "Understand this pattern"}
                 </span>
               </div>
-              <ChevronRight className="h-3 w-3 text-teal-400/60 ml-auto shrink-0 group-hover:text-teal-300" />
+              <ChevronRight className="h-3 w-3 text-muted-foreground ml-auto shrink-0 transition-colors duration-150 group-hover:text-primary" />
             </button>
           )}
 
@@ -527,7 +525,7 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
           {card.hasAiButton && (
             <button
               onClick={() => onAskAI?.(card)}
-              className="flex items-center gap-1.5 text-[11px] text-cyan-400 hover:text-cyan-300 transition-colors pl-0.5"
+              className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground transition-colors duration-150 pl-0.5"
             >
               <BrainCircuit className="h-3 w-3" />
               Ask AI to explain this threat
@@ -541,10 +539,10 @@ const ThreatCard = ({ card, onAskAI, onLearnWithAI }) => {
 
 // ── GM Thought Card — "Think Like a GM" feature ───────────────────────────
 const VERDICT_STYLES = {
-  best: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  good: "bg-blue-500/15 text-blue-300 border-blue-500/25",
-  risky: "bg-orange-500/15 text-orange-300 border-orange-500/25",
-  neutral: "bg-white/[0.06] text-foreground/70 border-white/10",
+  best: "bg-primary/12 text-primary border-primary/30",
+  good: "bg-foreground/[0.06] text-foreground border-border",
+  risky: "bg-destructive/[0.08] text-destructive border-destructive/25",
+  neutral: "bg-foreground/[0.04] text-muted-foreground border-border",
 };
 
 /**
@@ -560,24 +558,24 @@ const GMStepSection = ({
 }) => {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="rounded-lg border border-white/10 overflow-hidden">
+    <div className="rounded-[2px] border border-border overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-2 w-full px-3 py-2 bg-white/3 hover:bg-white/6 transition-colors text-left"
+        className="flex items-center gap-2 w-full px-3 py-2 bg-foreground/[0.02] hover:bg-foreground/[0.05] transition-colors duration-150 text-left"
       >
-        <span className="flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-bold shrink-0">
+        <span className="flex items-center justify-center w-5 h-5 rounded-[2px] border border-primary/30 bg-primary/[0.08] text-primary font-mono text-[10px] font-medium shrink-0">
           {stepNumber}
         </span>
         {Icon && <Icon className={`h-3.5 w-3.5 shrink-0 ${iconCls}`} />}
-        <span className="text-xs font-semibold text-foreground/90 flex-1">
+        <span className="font-display text-xs font-semibold text-foreground flex-1">
           {title}
         </span>
         <ChevronDown
-          className={`h-3.5 w-3.5 text-muted-foreground/60 transition-transform shrink-0 ${open ? "rotate-180" : ""}`}
+          className={`h-3.5 w-3.5 text-muted-foreground transition-transform duration-150 shrink-0 ${open ? "rotate-180" : ""}`}
         />
       </button>
       {open && (
-        <div className="px-3 py-2.5 space-y-1.5 border-t border-white/6">
+        <div className="px-3 py-2.5 space-y-1.5 border-t border-border">
           {children}
         </div>
       )}
@@ -602,16 +600,18 @@ const GMThoughtCard = ({ card }) => {
   } = card;
 
   return (
-    <div className="rounded-xl border border-amber-600/40 bg-amber-950/20 p-3 text-sm space-y-3 w-full">
+    <div className="rounded-[3px] border border-primary/40 bg-primary/[0.04] p-3.5 text-sm space-y-3 w-full">
       {/* Header */}
-      <div className="flex items-center gap-2">
-        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-amber-500/20 shrink-0">
-          <Crown className="h-3.5 w-3.5 text-amber-400" />
+      <div className="flex items-center gap-2.5">
+        <div className="flex items-center justify-center w-7 h-7 rounded-[2px] border border-primary/30 bg-primary/[0.08] shrink-0">
+          <Crown className="h-3.5 w-3.5 text-primary" />
         </div>
         <div>
-          <p className="text-xs font-bold text-amber-300">GM Thought Process</p>
+          <p className="font-display text-sm font-semibold text-foreground leading-tight">
+            GM Thought Process
+          </p>
           {positionLabel && (
-            <p className="text-[10px] text-amber-400/60 leading-tight">
+            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground leading-tight mt-0.5">
               {positionLabel}
             </p>
           )}
@@ -626,15 +626,15 @@ const GMThoughtCard = ({ card }) => {
             stepNumber={1}
             title={step1.title || "What's Happening?"}
             icon={Search}
-            iconCls="text-cyan-400"
+            iconCls="text-muted-foreground"
             defaultOpen
           >
             {(step1.points || []).map((point, index) => (
               <div key={index} className="flex items-start gap-1.5">
-                <span className="text-amber-400/70 text-[10px] mt-0.5 shrink-0">
+                <span className="text-primary text-[10px] mt-0.5 shrink-0">
                   →
                 </span>
-                <p className="text-[11px] text-foreground/80 leading-relaxed">
+                <p className="font-sans text-[11px] text-foreground/90 leading-relaxed">
                   {point}
                 </p>
               </div>
@@ -648,7 +648,7 @@ const GMThoughtCard = ({ card }) => {
             stepNumber={2}
             title={step2.title || "Candidate Moves"}
             icon={Lightbulb}
-            iconCls="text-yellow-400"
+            iconCls="text-muted-foreground"
             defaultOpen
           >
             {(step2.moves || []).map((m, index) => {
@@ -657,11 +657,11 @@ const GMThoughtCard = ({ card }) => {
               return (
                 <div key={index} className="flex items-start gap-2">
                   <span
-                    className={`inline-flex items-center text-[10px] font-mono font-bold px-1.5 py-0.5 rounded border shrink-0 mt-0.5 ${vStyle}`}
+                    className={`inline-flex items-center text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-[2px] border shrink-0 mt-0.5 ${vStyle}`}
                   >
                     {m.move}
                   </span>
-                  <p className="text-[11px] text-foreground/75 leading-relaxed">
+                  <p className="font-sans text-[11px] text-foreground/85 leading-relaxed">
                     {m.idea}
                   </p>
                 </div>
@@ -676,7 +676,7 @@ const GMThoughtCard = ({ card }) => {
             stepNumber={3}
             title={step3.title || "Calculation"}
             icon={BrainCircuit}
-            iconCls="text-violet-400"
+            iconCls="text-muted-foreground"
           >
             {(step3.lines || []).map((line, index) => (
               <div key={index} className="space-y-0.5">
@@ -684,19 +684,19 @@ const GMThoughtCard = ({ card }) => {
                   {(line.sequence || []).map((mv, index) => (
                     <span
                       key={index}
-                      className="text-[10px] font-mono px-1 py-0.5 rounded bg-white/6 border border-white/10 text-foreground/80"
+                      className="text-[10px] font-mono px-1 py-0.5 rounded-[2px] bg-foreground/[0.04] border border-border text-foreground"
                     >
                       {mv}
                     </span>
                   ))}
                   {line.eval && (
-                    <span className="text-[10px] font-mono text-emerald-400/80 ml-1">
+                    <span className="text-[10px] font-mono tabular-nums text-primary ml-1">
                       [{line.eval}]
                     </span>
                   )}
                 </div>
                 {line.verdict && (
-                  <p className="text-[10px] text-muted-foreground/60 italic pl-1">
+                  <p className="font-sans text-[10px] text-muted-foreground italic pl-1">
                     {line.verdict}
                   </p>
                 )}
@@ -711,29 +711,29 @@ const GMThoughtCard = ({ card }) => {
             stepNumber={4}
             title={step4.title || "The Plan"}
             icon={TrendingUp}
-            iconCls="text-emerald-400"
+            iconCls="text-muted-foreground"
           >
             {(step4.immediate || []).map((p, index) => (
               <div key={index} className="flex items-start gap-1.5">
-                <span className="text-emerald-400/70 text-[10px] mt-0.5 shrink-0">
+                <span className="text-primary text-[10px] mt-0.5 shrink-0">
                   →
                 </span>
-                <p className="text-[11px] text-foreground/80 leading-relaxed">
+                <p className="font-sans text-[11px] text-foreground/90 leading-relaxed">
                   {p}
                 </p>
               </div>
             ))}
             {step4.longTerm?.length > 0 && (
-              <div className="pt-1 border-t border-white/6 mt-1">
-                <p className="text-[10px] text-muted-foreground/50 uppercase tracking-wide mb-1">
+              <div className="pt-1.5 border-t border-border mt-1.5">
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground mb-1.5">
                   Long-term
                 </p>
                 {step4.longTerm.map((p, index) => (
                   <div key={index} className="flex items-start gap-1.5">
-                    <span className="text-blue-400/70 text-[10px] mt-0.5 shrink-0">
+                    <span className="text-muted-foreground text-[10px] mt-0.5 shrink-0">
                       →
                     </span>
-                    <p className="text-[11px] text-foreground/70 leading-relaxed">
+                    <p className="font-sans text-[11px] text-muted-foreground leading-relaxed">
                       {p}
                     </p>
                   </div>
@@ -746,16 +746,13 @@ const GMThoughtCard = ({ card }) => {
 
       {/* Best Move */}
       {bestMove && (
-        <div className="pt-2 border-t border-amber-500/20 flex items-center gap-2">
-          <Sparkles className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-          <span className="text-xs font-semibold text-amber-300">
-            Best Move:
-          </span>
-          <span className="font-mono font-bold text-base text-foreground">
+        <div className="pt-2.5 border-t border-primary/20 flex items-center gap-2">
+          <Callout className="text-[10px]">Best Move</Callout>
+          <span className="font-mono font-semibold text-base text-foreground">
             {bestMove}
           </span>
           {bestMoveReason && (
-            <p className="text-[11px] text-muted-foreground/70 leading-snug ml-auto text-right max-w-[55%]">
+            <p className="font-sans text-[11px] text-muted-foreground leading-snug ml-auto text-right max-w-[55%]">
               {bestMoveReason}
             </p>
           )}
@@ -920,40 +917,37 @@ const GLOSSARY_SECTIONS = [
 const GlossaryDialog = ({ open, onClose }) => {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/70 backdrop-blur-sm">
+      <div className="bg-card border border-border rounded-[3px] shadow-xl w-full max-w-lg max-h-[85vh] flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
-          <div className="flex items-center gap-2">
-            <BookOpen className="h-4 w-4 text-primary" />
-            <h2 className="text-sm font-semibold">Chess & Analysis Glossary</h2>
-          </div>
+          <Callout>Chess &amp; Analysis Glossary</Callout>
           <button
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground transition-colors duration-150"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="overflow-y-auto flex-1 px-5 py-4 space-y-6">
+        <div className="overflow-y-auto flex-1 px-5 py-5 space-y-7">
           {GLOSSARY_SECTIONS.map((section) => (
             <div key={section.title}>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+              <h3 className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground mb-3">
                 {section.title}
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {section.items.map((item) => (
                   <div key={item.label} className="flex items-start gap-3">
-                    <span className="shrink-0 w-10 text-center text-xs font-mono font-bold text-primary/80 bg-primary/10 border border-primary/20 rounded px-1 py-0.5 leading-tight mt-0.5">
+                    <span className="shrink-0 w-10 text-center text-xs font-mono font-medium text-primary bg-primary/[0.08] border border-primary/25 rounded-[2px] px-1 py-0.5 leading-tight mt-0.5">
                       {item.symbol}
                     </span>
                     <div>
-                      <span className="text-xs font-medium text-foreground/90">
+                      <span className="font-sans text-xs font-medium text-foreground">
                         {item.label}
                       </span>
-                      <span className="text-xs text-muted-foreground ml-2">
+                      <span className="font-sans text-xs text-muted-foreground ml-2">
                         {item.desc}
                       </span>
                     </div>
@@ -973,52 +967,59 @@ const GlossaryDialog = ({ open, onClose }) => {
  *
  */
 const MessageBubble = ({ msg, onAskAI, onLearnWithAI }) => {
+  // Shared avatar puck for assistant/engine structured cards — hairline, square.
+  const Avatar = ({ icon: Icon, accent }) => (
+    <div
+      className={`shrink-0 h-7 w-7 rounded-[2px] border flex items-center justify-center ${
+        accent
+          ? "border-primary/30 bg-primary/[0.08]"
+          : "border-border bg-foreground/[0.04]"
+      }`}
+    >
+      <Icon
+        className={`h-3.5 w-3.5 ${accent ? "text-primary" : "text-muted-foreground"}`}
+      />
+    </div>
+  );
+
   // Special structured cards
   if (msg.type === "my-move-analysis" && typeof msg.content === "object") {
     return (
-      <div className="flex gap-2.5 justify-start">
-        <div className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center bg-cyan-500/15">
-          <Cpu className="h-3.5 w-3.5 text-cyan-400" />
-        </div>
+      <FadeInUp className="flex gap-2.5 justify-start">
+        <Avatar icon={Cpu} />
         <div className="flex-1 min-w-0">
           <MyMoveCard card={msg.content} />
         </div>
-      </div>
+      </FadeInUp>
     );
   }
 
   if (msg.type === "best-move-card" && typeof msg.content === "object") {
     return (
-      <div className="flex gap-2.5 justify-start">
-        <div className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center bg-cyan-500/15">
-          <Cpu className="h-3.5 w-3.5 text-cyan-400" />
-        </div>
+      <FadeInUp className="flex gap-2.5 justify-start">
+        <Avatar icon={Lightbulb} accent />
         <div className="flex-1 min-w-0">
           <BestMoveCard card={msg.content} />
         </div>
-      </div>
+      </FadeInUp>
     );
   }
 
   if (msg.type === "hint-card" && typeof msg.content === "object") {
     return (
-      <div className="flex gap-2.5 justify-start">
-        <div className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center bg-violet-500/15">
-          <Crosshair className="h-3.5 w-3.5 text-violet-400" />
-        </div>
+      <FadeInUp className="flex gap-2.5 justify-start">
+        <Avatar icon={Crosshair} />
         <div className="flex-1 min-w-0">
           <HintCard card={msg.content} />
         </div>
-      </div>
+      </FadeInUp>
     );
   }
 
   if (msg.type === "threat-card" && typeof msg.content === "object") {
     return (
-      <div className="flex gap-2.5 justify-start">
-        <div className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center bg-orange-500/15">
-          <AlertTriangle className="h-3.5 w-3.5 text-orange-400" />
-        </div>
+      <FadeInUp className="flex gap-2.5 justify-start">
+        <Avatar icon={AlertTriangle} />
         <div className="flex-1 min-w-0">
           <ThreatCard
             card={msg.content}
@@ -1026,20 +1027,18 @@ const MessageBubble = ({ msg, onAskAI, onLearnWithAI }) => {
             onLearnWithAI={onLearnWithAI}
           />
         </div>
-      </div>
+      </FadeInUp>
     );
   }
 
   if (msg.type === "gm-thought" && typeof msg.content === "object") {
     return (
-      <div className="flex gap-2.5 justify-start">
-        <div className="shrink-0 h-7 w-7 rounded-full flex items-center justify-center bg-amber-500/15">
-          <Crown className="h-3.5 w-3.5 text-amber-400" />
-        </div>
+      <FadeInUp className="flex gap-2.5 justify-start">
+        <Avatar icon={Crown} accent />
         <div className="flex-1 min-w-0">
           <GMThoughtCard card={msg.content} />
         </div>
-      </div>
+      </FadeInUp>
     );
   }
 
@@ -1049,32 +1048,35 @@ const MessageBubble = ({ msg, onAskAI, onLearnWithAI }) => {
     !isUser && !isEngine && typeof msg.content === "string";
 
   return (
-    <div className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
+    <FadeInUp className={`flex gap-2.5 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
         <div
-          className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center
-          ${isEngine ? "bg-cyan-500/15" : "bg-primary/10"}`}
+          className={`shrink-0 h-7 w-7 rounded-[2px] border flex items-center justify-center ${
+            isEngine
+              ? "border-border bg-foreground/[0.04]"
+              : "border-primary/30 bg-primary/[0.08]"
+          }`}
         >
           {isEngine ? (
-            <Cpu className="h-3.5 w-3.5 text-cyan-400" />
+            <Cpu className="h-3.5 w-3.5 text-muted-foreground" />
           ) : (
             <Bot className="h-3.5 w-3.5 text-primary" />
           )}
         </div>
       )}
       <div
-        className={`max-w-[85%] rounded-lg px-3 py-2 text-sm leading-relaxed whitespace-pre-line ${
+        className={`max-w-[85%] rounded-[3px] px-3 py-2 text-sm leading-relaxed whitespace-pre-line ${
           isUser
             ? msg.type === "engine-query"
-              ? "bg-cyan-500/20 text-cyan-100 border border-cyan-500/30"
+              ? "border border-border bg-foreground/[0.05] text-foreground font-mono text-xs"
               : "bg-primary text-primary-foreground"
             : isEngine
-              ? "bg-cyan-950/60 text-cyan-50 border border-cyan-800/40 font-mono text-xs"
-              : "bg-secondary text-secondary-foreground"
+              ? "border border-border bg-foreground/[0.03] text-foreground font-mono text-xs"
+              : "border border-border bg-foreground/[0.02] text-foreground font-sans"
         }`}
       >
         {isMarkdownAssistantMessage ? (
-          <div className="prose prose-invert max-w-none prose-p:my-0 prose-headings:my-0 prose-li:my-0 text-sm">
+          <div className="prose prose-invert max-w-none prose-p:my-0 prose-headings:my-0 prose-li:my-0 text-sm font-sans">
             <ReactMarkdown components={AI_MARKDOWN_COMPONENTS} skipHtml>
               {msg.content}
             </ReactMarkdown>
@@ -1084,11 +1086,11 @@ const MessageBubble = ({ msg, onAskAI, onLearnWithAI }) => {
         )}
       </div>
       {isUser && (
-        <div className="shrink-0 h-7 w-7 rounded-full bg-muted flex items-center justify-center">
+        <div className="shrink-0 h-7 w-7 rounded-[2px] border border-border bg-foreground/[0.04] flex items-center justify-center">
           <User className="h-3.5 w-3.5 text-muted-foreground" />
         </div>
       )}
-    </div>
+    </FadeInUp>
   );
 };
 
@@ -1174,7 +1176,7 @@ const ChatPanel = ({
   });
 
   const tabs = [
-    { id: "engine", icon: Cpu, label: "Engine", iconCls: "text-cyan-400" },
+    { id: "engine", icon: Cpu, label: "Engine" },
     { id: "ai", icon: Bot, label: "AI Coach" },
   ];
 
@@ -1193,28 +1195,34 @@ const ChatPanel = ({
       {/* Tab bar */}
       <div className="flex items-center border-b border-border">
         <div className="flex flex-1">
-          {tabs.map(({ id, icon: Icon, label, iconCls }) => {
+          {tabs.map(({ id, icon: Icon, label }) => {
             const isActive = activeTab === id;
             return (
               <button
                 key={id}
                 onClick={() => handleTabClick(id)}
-                className={`flex items-center gap-1.5 px-3 py-3 text-sm font-medium transition-colors border-b-2 flex-1 justify-center ${
+                className={`relative flex items-center gap-1.5 px-3 py-3 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors duration-150 flex-1 justify-center ${
                   isActive
-                    ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
+                    ? "text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Icon
-                  className={`h-4 w-4 ${isActive && iconCls ? iconCls : ""}`}
+                  className={`h-3.5 w-3.5 ${isActive ? "text-primary" : ""}`}
                 />
                 <span>{label}</span>
                 {id === "engine" && isLiveMode && (
-                  <span className="ml-0.5 inline-flex items-center gap-0.5 text-[10px] bg-cyan-500/20 text-cyan-400 rounded-full px-1.5 py-0.5 leading-none">
+                  <span className="ml-0.5 inline-flex items-center gap-0.5 font-mono text-[9px] uppercase tracking-[0.1em] text-primary border border-primary/30 bg-primary/[0.08] rounded-[2px] px-1.5 py-0.5 leading-none">
                     <Zap className="h-2.5 w-2.5" />
                     Live
                   </span>
                 )}
+                {/* orange active underline */}
+                <span
+                  className={`absolute inset-x-0 bottom-0 h-0.5 transition-colors duration-150 ${
+                    isActive ? "bg-primary" : "bg-transparent"
+                  }`}
+                />
               </button>
             );
           })}
@@ -1223,7 +1231,7 @@ const ChatPanel = ({
         <button
           onClick={() => setGlossaryOpen(true)}
           title="Chess & Analysis Glossary"
-          className="shrink-0 mx-2 p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+          className="shrink-0 mx-2 p-1.5 rounded-[2px] text-muted-foreground hover:text-foreground hover:bg-foreground/[0.05] transition-colors duration-150"
         >
           <BookOpen className="h-3.5 w-3.5" />
         </button>
@@ -1232,25 +1240,27 @@ const ChatPanel = ({
       {/* Messages area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {visibleMessages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground">
+          <div className="flex flex-col items-center justify-center h-full px-4">
             {activeTab === "engine" ? (
-              <>
-                <Cpu className="h-10 w-10 mb-3 opacity-20 text-cyan-400" />
-                <p className="text-sm">Stockfish Engine Coach</p>
-                <p className="text-xs mt-1">
-                  {isLiveMode
+              <SectionHeader
+                align="center"
+                eyebrow="Stockfish Engine"
+                title="Engine Coach"
+                em={
+                  isLiveMode
                     ? "Live analysis is on — analysis appears after each move."
-                    : "Use the buttons below to analyze the position."}
-                </p>
-              </>
+                    : "Use the buttons below to analyse the position."
+                }
+                titleClassName="text-[clamp(1.25rem,2.5vw,1.75rem)]"
+              />
             ) : (
-              <>
-                <Bot className="h-10 w-10 mb-3 opacity-30" />
-                <p className="text-sm">AI Coach</p>
-                <p className="text-xs mt-1">
-                  Ask me anything about the position!
-                </p>
-              </>
+              <SectionHeader
+                align="center"
+                eyebrow="AI Coach"
+                title="Ask anything"
+                em="Pose any question about the position and I'll talk it through."
+                titleClassName="text-[clamp(1.25rem,2.5vw,1.75rem)]"
+              />
             )}
           </div>
         )}
@@ -1267,17 +1277,20 @@ const ChatPanel = ({
         {isLoading && (
           <div className="flex gap-2.5 justify-start">
             <div
-              className={`shrink-0 h-7 w-7 rounded-full flex items-center justify-center
-              ${activeTab === "engine" ? "bg-cyan-500/15" : "bg-primary/10"}`}
+              className={`shrink-0 h-7 w-7 rounded-[2px] border flex items-center justify-center ${
+                activeTab === "engine"
+                  ? "border-border bg-foreground/[0.04]"
+                  : "border-primary/30 bg-primary/[0.08]"
+              }`}
             >
               {activeTab === "engine" ? (
-                <Cpu className="h-3.5 w-3.5 text-cyan-400" />
+                <Cpu className="h-3.5 w-3.5 text-muted-foreground" />
               ) : (
                 <Bot className="h-3.5 w-3.5 text-primary" />
               )}
             </div>
-            <div className="bg-secondary rounded-lg px-3 py-2 text-sm text-muted-foreground flex items-center gap-2">
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            <div className="border border-border bg-foreground/[0.02] rounded-[3px] px-3 py-2 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground flex items-center gap-2">
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
               {activeTab === "engine" ? "Calculating…" : "Thinking…"}
             </div>
           </div>
@@ -1290,70 +1303,65 @@ const ChatPanel = ({
       {activeTab === "engine" ? (
         <div className="p-3 border-t border-border space-y-2">
           <div className="grid grid-cols-3 gap-2">
-            <Button
-              variant="outline"
-              size="sm"
+            <EditorialButton
+              variant="ghost"
               onClick={onEngineAnalyze}
               disabled={isLoading}
-              className="flex flex-col h-auto py-2 gap-1 border-cyan-800/40 hover:bg-cyan-950/40 hover:border-cyan-600/60"
+              className="!px-2 !py-2.5 border border-border hover:border-foreground"
             >
-              <Search className="h-4 w-4 text-cyan-400" />
-              <span className="text-[11px] text-cyan-300">Analyze</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
+              <Search className="h-3.5 w-3.5" />
+              Analyze
+            </EditorialButton>
+            <EditorialButton
+              variant="ghost"
               onClick={onEngineBestMove}
               disabled={isLoading}
-              className="flex flex-col h-auto py-2 gap-1 border-cyan-800/40 hover:bg-cyan-950/40 hover:border-cyan-600/60"
+              className="!px-2 !py-2.5 border border-border hover:border-foreground"
             >
-              <Lightbulb className="h-4 w-4 text-cyan-400" />
-              <span className="text-[11px] text-cyan-300">Best Move</span>
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
+              <Lightbulb className="h-3.5 w-3.5" />
+              Best Move
+            </EditorialButton>
+            <EditorialButton
+              variant="ghost"
               onClick={onEngineHint}
               disabled={isLoading}
-              className="flex flex-col h-auto py-2 gap-1 border-cyan-800/40 hover:bg-cyan-950/40 hover:border-cyan-600/60"
+              className="!px-2 !py-2.5 border border-border hover:border-foreground"
             >
-              <Crosshair className="h-4 w-4 text-cyan-400" />
-              <span className="text-[11px] text-cyan-300">Hint</span>
-            </Button>
+              <Crosshair className="h-3.5 w-3.5" />
+              Hint
+            </EditorialButton>
           </div>
-          {/* Grounded Coach — engine-grounded GM explanation with board arrows */}
-          <Button
-            variant="outline"
-            size="sm"
+          {/* Grounded Coach — engine-grounded GM explanation. Hero action. */}
+          <EditorialButton
+            variant="primary"
             onClick={onGroundedExplain}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 py-2 border-emerald-700/40 bg-emerald-950/20 hover:bg-emerald-950/40 hover:border-emerald-600/60 text-emerald-300"
+            className="w-full"
           >
-            <Sparkles className="h-4 w-4 text-emerald-400" />
-            <span className="text-[11px] font-semibold">Explain (Grounded Coach)</span>
-          </Button>
-          {/* Think Like a GM — full-width premium button */}
-          <Button
+            <Sparkles className="h-4 w-4" />
+            Explain (Grounded Coach)
+          </EditorialButton>
+          {/* Think Like a GM — full-width secondary button */}
+          <EditorialButton
             variant="outline"
-            size="sm"
             onClick={onThinkLikeGM}
             disabled={isLoading}
-            className="w-full flex items-center justify-center gap-2 py-2 border-amber-700/40 bg-amber-950/20 hover:bg-amber-950/40 hover:border-amber-600/60 text-amber-300"
+            className="w-full"
           >
-            <Crown className="h-4 w-4 text-amber-400" />
-            <span className="text-[11px] font-semibold">Think Like a GM</span>
-          </Button>
+            <Crown className="h-4 w-4" />
+            Think Like a GM
+          </EditorialButton>
         </div>
       ) : (
         <div className="p-3 border-t border-border">
-          <div className="mb-2 flex items-center justify-between gap-2 text-[11px] text-muted-foreground">
+          <div className="mb-2.5 flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full border border-border/70 bg-secondary/50 px-2 py-0.5">
+              <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-border bg-foreground/[0.03] px-2 py-0.5">
                 <BrainCircuit className="h-3 w-3" />
-                <span>Context {contextLabel || "0 / 6k"}</span>
+                <span className="tabular-nums">Context {contextLabel || "0 / 6k"}</span>
               </span>
               {tokenStats?.summaryEnabled && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 rounded-[2px] border border-primary/30 bg-primary/[0.08] px-2 py-0.5 text-primary">
                   <Sparkles className="h-3 w-3" />
                   <span>Summary on</span>
                 </span>
@@ -1368,15 +1376,17 @@ const ChatPanel = ({
               onKeyDown={handleKeyDown}
               placeholder="Ask your AI coach…"
               disabled={isLoading}
-              className="flex-1"
+              className="flex-1 rounded-[2px] font-sans"
             />
-            <Button
-              size="icon"
+            <EditorialButton
+              variant="primary"
               onClick={handleSend}
               disabled={isLoading || !input.trim()}
+              className="!px-3.5 shrink-0"
+              aria-label="Send"
             >
               <Send className="h-4 w-4" />
-            </Button>
+            </EditorialButton>
           </div>
         </div>
       )}

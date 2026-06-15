@@ -1,14 +1,17 @@
 import { Chess } from "chess.js";
 import { useState } from "react";
 
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Callout, Chip, EditorialButton } from "@/components/ui/editorial";
 import { Input } from "@/components/ui/input";
+
+const FIELD_LABEL =
+  "font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground mb-2 block";
 
 const STARTING_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -109,35 +112,29 @@ export default function PositionSetupDialog({
     >
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Set Position</DialogTitle>
+          <DialogTitle className="font-display">Set Position</DialogTitle>
         </DialogHeader>
 
         {/* Tab switcher */}
-        <div className="flex gap-1 p-1 bg-secondary rounded-md mb-3">
+        <div className="flex gap-2 mb-4">
           {["fen", "pgn"].map((t) => (
-            <button
+            <Chip
               key={t}
+              active={tab === t}
               onClick={() => {
                 setTab(t);
                 setError("");
               }}
-              className={`flex-1 py-1.5 rounded text-xs font-semibold transition-colors ${
-                tab === t
-                  ? "bg-card text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
             >
               {t.toUpperCase()}
-            </button>
+            </Chip>
           ))}
         </div>
 
         {tab === "fen" && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">
-                FEN String
-              </label>
+              <label className={FIELD_LABEL}>FEN string</label>
               <Input
                 value={fenInput}
                 onChange={(e) => {
@@ -148,23 +145,23 @@ export default function PositionSetupDialog({
                 className="font-mono text-xs"
                 onKeyDown={(e) => e.key === "Enter" && handleLoadFen()}
               />
-              <p className="text-[10px] text-muted-foreground mt-1">
+              <p className="text-xs text-muted-foreground mt-1.5">
                 Leave blank to load the starting position.
               </p>
             </div>
 
             {/* Preset positions */}
             <div>
-              <p className="text-xs text-muted-foreground mb-1.5">Presets</p>
-              <div className="flex flex-wrap gap-1.5">
+              <Callout className="mb-2.5">Presets</Callout>
+              <div className="flex flex-wrap gap-2">
                 {PRESET_POSITIONS.map((p) => (
-                  <button
+                  <Chip
                     key={p.label}
+                    className="normal-case tracking-[0.02em]"
                     onClick={() => handlePreset(p.fen)}
-                    className="px-2 py-1 rounded text-[11px] bg-secondary hover:bg-secondary/70 text-foreground transition-colors border border-border"
                   >
                     {p.label}
-                  </button>
+                  </Chip>
                 ))}
               </div>
             </div>
@@ -173,9 +170,7 @@ export default function PositionSetupDialog({
 
         {tab === "pgn" && (
           <div className="space-y-2">
-            <label className="text-xs text-muted-foreground mb-1 block">
-              PGN String
-            </label>
+            <label className={FIELD_LABEL}>PGN string</label>
             <textarea
               value={pgnInput}
               onChange={(e) => {
@@ -184,32 +179,32 @@ export default function PositionSetupDialog({
               }}
               placeholder="1. e4 e5 2. Nf3 Nc6 ..."
               rows={6}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-xs font-mono
+              className="w-full rounded-[3px] border border-border bg-background px-3 py-2 text-xs font-mono
                          text-foreground placeholder:text-muted-foreground resize-none
                          focus:outline-none focus:ring-1 focus:ring-ring"
             />
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Paste a full PGN game to import and replay.
             </p>
           </div>
         )}
 
         {error && (
-          <p className="text-xs text-red-400 bg-red-400/10 border border-red-400/20 rounded px-2 py-1">
+          <p className="text-xs text-destructive bg-destructive/10 border border-destructive/20 rounded-[3px] px-2.5 py-1.5 mt-3">
             {error}
           </p>
         )}
 
-        <div className="flex justify-end gap-2 mt-4">
-          <Button variant="ghost" size="sm" onClick={handleClose}>
+        <div className="flex justify-end gap-2 mt-5">
+          <EditorialButton variant="ghost" onClick={handleClose}>
             Cancel
-          </Button>
-          <Button
-            size="sm"
+          </EditorialButton>
+          <EditorialButton
+            variant="primary"
             onClick={tab === "fen" ? handleLoadFen : handleLoadPgn}
           >
             Load {tab.toUpperCase()}
-          </Button>
+          </EditorialButton>
         </div>
       </DialogContent>
     </Dialog>

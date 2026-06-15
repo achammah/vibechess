@@ -2,6 +2,7 @@ import { X, Save, FolderOpen, Trash2, Clock, ChevronRight } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Callout } from "@/components/ui/editorial";
 import { Input } from "@/components/ui/input";
 import { loadAutoSave } from "@/lib/db";
 import useGameStore from "@/store/use-game-store";
@@ -23,19 +24,19 @@ const formatDate = (ts) =>
  *
  */
 const GameRow = ({ game, onLoad, onDelete, isAutoSave = false }) => (
-  <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-secondary/40 hover:bg-secondary/70 border border-border/50 transition-colors group">
+  <div className="flex items-center gap-3 px-3 py-3 border-b border-border hover:bg-secondary/30 transition-colors group">
     <div className="flex-1 min-w-0">
-      <div className="flex items-center gap-1.5 flex-wrap">
+      <div className="flex items-center gap-2 flex-wrap">
         <span className="text-sm font-medium text-foreground truncate">
           {game.name}
         </span>
         {isAutoSave && (
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/15 text-primary font-semibold shrink-0">
-            AUTO
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] px-1.5 py-0.5 rounded-[2px] border border-primary/40 text-primary shrink-0">
+            Auto
           </span>
         )}
       </div>
-      <div className="flex items-center gap-2 mt-0.5 text-xs text-muted-foreground">
+      <div className="flex items-center gap-2 mt-1 font-mono text-[11px] text-muted-foreground tabular-nums">
         <Clock className="h-3 w-3 shrink-0" />
         <span>{formatDate(game.timestamp)}</span>
         <span>·</span>
@@ -144,10 +145,12 @@ export default function SavedGamesDialog({
     >
       <div className="w-full max-w-md bg-card border border-border rounded-xl shadow-2xl flex flex-col max-h-[80vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-2">
             <FolderOpen className="h-4 w-4 text-primary" />
-            <span className="font-semibold text-sm">Saved Games</span>
+            <span className="font-display font-semibold text-base">
+              Saved Games
+            </span>
           </div>
           <button
             onClick={onClose}
@@ -158,12 +161,10 @@ export default function SavedGamesDialog({
         </div>
 
         {/* Scrollable body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-5">
+        <div className="flex-1 overflow-y-auto p-5 space-y-6">
           {/* Save current game */}
-          <section>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-              Save Current Game
-            </h3>
+          <section className="space-y-2">
+            <Callout>Save current game</Callout>
             <div className="flex gap-2">
               <Input
                 placeholder={
@@ -188,7 +189,7 @@ export default function SavedGamesDialog({
               </Button>
             </div>
             {moveCount === 0 && (
-              <p className="text-xs text-muted-foreground mt-1.5">
+              <p className="text-xs text-muted-foreground">
                 No moves yet — make at least one move to save.
               </p>
             )}
@@ -196,39 +197,45 @@ export default function SavedGamesDialog({
 
           {/* Auto-save */}
           {autoSaveEntry && (
-            <section>
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                Auto-saved
-              </h3>
-              <GameRow
-                game={autoSaveEntry}
-                onLoad={handleLoad}
-                onDelete={() => {}}
-                isAutoSave
-              />
+            <section className="space-y-2">
+              <Callout>Auto-saved</Callout>
+              <div className="border-t border-border">
+                <GameRow
+                  game={autoSaveEntry}
+                  onLoad={handleLoad}
+                  onDelete={() => {}}
+                  isAutoSave
+                />
+              </div>
             </section>
           )}
 
           {/* Manual saves */}
-          <section>
-            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-              Saved Games{" "}
+          <section className="space-y-2">
+            <Callout>
+              Saved games
               {savedGames.length > 0 && (
-                <span className="text-primary font-bold">
+                <span className="font-mono text-primary tabular-nums">
                   {savedGames.length}
                 </span>
               )}
-            </h3>
+            </Callout>
 
             {savedGames.length === 0 ? (
-              <div className="text-center py-8 text-sm text-muted-foreground">
-                <FolderOpen className="h-8 w-8 mx-auto mb-2 opacity-30" />
-                No saved games yet.
-                <br />
-                Save your current game above.
+              <div className="edit-grid rounded-[3px] border border-border py-12 px-6 text-center">
+                <h3 className="font-display text-xl leading-tight text-foreground">
+                  <span className="block">No games saved yet.</span>
+                  <em className="block not-italic text-muted-foreground">
+                    Your archive starts here.
+                  </em>
+                </h3>
+                <p className="mt-3 text-sm text-muted-foreground max-w-[34ch] mx-auto">
+                  Play a few moves, then save the position above to build your
+                  personal library of games.
+                </p>
               </div>
             ) : (
-              <div className="space-y-1.5">
+              <div className="border-t border-border">
                 {savedGames.map((game) => (
                   <GameRow
                     key={game.id}

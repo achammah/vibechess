@@ -16,14 +16,17 @@ import { useRef, useEffect, useMemo, useState, Fragment } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Callout } from "@/components/ui/editorial";
 import { formatTime } from "@/hooks/use-chess-clock";
 
+// Harmonized move-quality badges: orange signal for strong moves, neutral
+// hairline for soft errors, destructive for blunders. (No cyan/amber.)
 const qualityVariantMap = {
-  excellent: "excellent",
-  good: "good",
-  inaccuracy: "inaccuracy",
-  mistake: "mistake",
-  blunder: "blunder",
+  excellent: "default",
+  good: "secondary",
+  inaccuracy: "outline",
+  mistake: "outline",
+  blunder: "destructive",
 };
 
 /**
@@ -63,25 +66,25 @@ const EvalBar = ({ score }) => {
           : numericScore.toFixed(1);
 
   return (
-    <div className="p-3 border-t border-border shrink-0">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+    <div className="shrink-0 border-t border-border p-3">
+      <div className="mb-1.5 flex items-center justify-between">
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
           Evaluation
         </span>
-        <span className="text-xs font-semibold tabular-nums text-foreground">
+        <span className="font-mono text-xs font-semibold tabular-nums text-foreground">
           {label}
         </span>
       </div>
-      <div className="relative h-2 rounded-full overflow-hidden bg-black border border-border/40">
+      <div className="relative h-2 overflow-hidden rounded-[2px] border border-border/40 bg-black">
         <div
-          className="absolute right-0 top-0 bottom-0 bg-white transition-all duration-500 ease-out"
+          className="absolute bottom-0 right-0 top-0 bg-white transition-all duration-500 ease-out"
           style={{ width: `${whitePercent}%` }}
         />
       </div>
-      <div className="flex justify-between mt-1">
-        <span className="text-[10px] text-muted-foreground">Black</span>
-        <span className="text-[10px] text-muted-foreground">Equal</span>
-        <span className="text-[10px] text-muted-foreground">White</span>
+      <div className="mt-1 flex justify-between font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground">
+        <span>Black</span>
+        <span>Equal</span>
+        <span>White</span>
       </div>
     </div>
   );
@@ -197,28 +200,32 @@ const MoveHistorySidebar = ({
   };
 
   return (
-    <div className="flex flex-col h-full border-r border-border bg-card">
-      {/* Controls: Flip + quality badge + Undo */}
-      <div className="flex items-center gap-1 px-2 py-2 border-b border-border shrink-0">
+    <div className="flex h-full flex-col border-r border-border bg-card">
+      {/* Section header */}
+      <div className="flex items-center justify-between border-b border-border px-3 py-2.5 shrink-0">
+        <Callout>Move log</Callout>
+        {moveQuality && !isReviewMode && (
+          <Badge
+            variant={qualityVariantMap[moveQuality.toLowerCase()] || "default"}
+            className="font-mono text-[10px] uppercase tracking-[0.08em]"
+          >
+            {moveQuality}
+          </Badge>
+        )}
+      </div>
+
+      {/* Controls: Flip + Undo + Copy */}
+      <div className="flex items-center gap-1 border-b border-border px-2 py-1.5 shrink-0">
         <Button
           variant="ghost"
           size="sm"
           onClick={onFlipBoard}
           title="Flip board"
-          className="text-muted-foreground h-7 px-2 text-xs"
+          className="h-7 px-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground"
         >
           <ArrowDownUp className="h-3 w-3" />
           Flip
         </Button>
-
-        {moveQuality && !isReviewMode && (
-          <Badge
-            variant={qualityVariantMap[moveQuality.toLowerCase()] || "default"}
-            className="text-[10px]"
-          >
-            {moveQuality}
-          </Badge>
-        )}
 
         <div className="flex-1" />
 
@@ -228,7 +235,7 @@ const MoveHistorySidebar = ({
           onClick={onUndo}
           disabled={moveHistory.length === 0 || isReviewMode}
           title="Undo last move"
-          className="text-muted-foreground h-7 px-2 text-xs"
+          className="h-7 px-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground"
         >
           <ChevronLeft className="h-3 w-3" />
           Undo
@@ -249,7 +256,7 @@ const MoveHistorySidebar = ({
 
       {/* Review mode nav bar */}
       {isReviewMode && (
-        <div className="flex items-center gap-0.5 px-1.5 py-1.5 border-b border-border bg-primary/5 shrink-0">
+        <div className="flex items-center gap-0.5 border-b border-border bg-primary/5 px-1.5 py-1.5 shrink-0">
           <Button
             variant="ghost"
             size="sm"
@@ -292,7 +299,7 @@ const MoveHistorySidebar = ({
             size="sm"
             onClick={onExitReview}
             title="Return to live game (Esc)"
-            className="h-6 px-2 text-[10px] text-primary hover:text-primary gap-1"
+            className="h-6 gap-1 px-2 font-mono text-[10px] uppercase tracking-[0.1em] text-primary hover:text-primary"
           >
             <X className="h-3 w-3" />
             Live
@@ -303,22 +310,24 @@ const MoveHistorySidebar = ({
       {/* Move list */}
       <div className="flex-1 overflow-y-auto min-h-0">
         {pairs.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-4">
-            <BookOpen className="h-8 w-8 mb-2 opacity-20" />
-            <p className="text-xs">No moves yet</p>
-            <p className="text-[10px] mt-1 opacity-60">
+          <div className="flex h-full flex-col items-center justify-center p-4 text-center text-muted-foreground">
+            <BookOpen className="mb-3 h-8 w-8 opacity-20" />
+            <p className="font-mono text-[11px] uppercase tracking-[0.12em]">
+              No moves yet
+            </p>
+            <p className="mt-1.5 font-sans text-xs opacity-60">
               Make a move to see history
             </p>
           </div>
         ) : (
-          <table className="w-full text-xs font-mono border-collapse">
+          <table className="w-full border-collapse font-mono text-xs tabular-nums">
             <thead>
-              <tr className="text-muted-foreground border-b border-border sticky top-0 bg-card">
-                <th className="text-left px-2 py-1.5 w-7">#</th>
-                <th className="text-left px-2 py-1.5">
+              <tr className="sticky top-0 border-b border-border bg-card font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                <th className="w-7 px-2 py-2 text-left font-normal">#</th>
+                <th className="px-2 py-2 text-left font-normal">
                   White {capturedPts.b > 0 ? `+${capturedPts.b}` : ""}
                 </th>
-                <th className="text-left px-2 py-1.5">
+                <th className="px-2 py-2 text-left font-normal">
                   Black {capturedPts.w > 0 ? `+${capturedPts.w}` : ""}
                 </th>
               </tr>
@@ -361,9 +370,9 @@ const MoveHistorySidebar = ({
                   <Fragment key={pair.number}>
                     <tr
                       ref={rowReference}
-                      className="border-b border-border/30 transition-colors group"
+                      className="group border-b border-border/40 transition-colors duration-150 hover:bg-accent"
                     >
-                      <td className="px-2 py-1 text-muted-foreground">
+                      <td className="px-2 py-1 tabular-nums text-muted-foreground">
                         {pair.number}.
                       </td>
                       {/* White move cell */}
@@ -378,13 +387,13 @@ const MoveHistorySidebar = ({
                                 onJumpToMove(pair.whiteIdx);
                               }
                             }}
-                            className={`cursor-pointer rounded transition-colors
+                            className={`cursor-pointer rounded-[2px] tabular-nums transition-colors duration-150
                               ${
                                 whiteActive
-                                  ? "bg-primary text-primary-foreground font-bold px-1"
+                                  ? "bg-primary px-1 font-bold text-primary-foreground"
                                   : whiteLastLive
-                                    ? "font-bold text-primary hover:bg-secondary/60"
-                                    : "font-semibold text-foreground hover:bg-secondary/60"
+                                    ? "px-1 font-bold text-primary hover:bg-accent"
+                                    : "font-semibold text-foreground hover:bg-accent"
                               }`}
                           >
                             {pair.white}
@@ -424,13 +433,13 @@ const MoveHistorySidebar = ({
                                   onJumpToMove(pair.blackIdx);
                                 }
                               }}
-                              className={`cursor-pointer rounded transition-colors
+                              className={`cursor-pointer rounded-[2px] tabular-nums transition-colors duration-150
                                 ${
                                   blackActive
-                                    ? "bg-primary text-primary-foreground font-bold px-1"
+                                    ? "bg-primary px-1 font-bold text-primary-foreground"
                                     : blackLastLive
-                                      ? "font-bold text-primary hover:bg-secondary/60"
-                                      : "text-foreground hover:bg-secondary/60"
+                                      ? "px-1 font-bold text-primary hover:bg-accent"
+                                      : "font-semibold text-foreground hover:bg-accent"
                                 }`}
                             >
                               {pair.black}
@@ -514,7 +523,7 @@ const MoveHistorySidebar = ({
       {(isAnalyzing || gameReport) && (
         <div className="shrink-0 border-t border-border px-2 py-2">
           {isAnalyzing ? (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
               <Loader2 className="h-3 w-3 animate-spin text-primary" />
               <span>Analyzing game…</span>
               <span className="ml-auto tabular-nums">{analysisProgress}%</span>
@@ -522,7 +531,7 @@ const MoveHistorySidebar = ({
           ) : gameReport ? (
             <button
               onClick={onViewReport}
-              className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium transition-colors"
+              className="flex w-full items-center gap-2 rounded-[2px] border border-primary/30 px-2 py-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-primary transition-colors duration-150 hover:bg-primary/10"
             >
               <BarChart2 className="h-3.5 w-3.5" />
               View Analysis Report
@@ -533,31 +542,31 @@ const MoveHistorySidebar = ({
 
       {/* Chess clock panel */}
       {clockEnabled && timeWhite !== null && timeBlack !== null && (
-        <div className="shrink-0 border-t border-border px-3 py-2 bg-secondary/10">
-          <div className="flex items-center gap-1 mb-1.5">
+        <div className="shrink-0 border-t border-border px-3 py-2.5">
+          <div className="mb-2 flex items-center gap-1.5">
             <Timer className="h-3 w-3 text-muted-foreground" />
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
               Clock
             </span>
           </div>
           <div className="flex gap-2">
             {/* Black clock */}
             <div
-              className={`flex-1 rounded-md border px-2 py-1.5 text-center transition-colors ${
+              className={`flex-1 rounded-[2px] border px-2 py-1.5 text-center transition-colors duration-150 ${
                 clockFlagged === "b"
-                  ? "border-red-500/60 bg-red-500/10"
+                  ? "border-destructive/60 bg-destructive/10"
                   : currentTurn === "b" && !clockFlagged
                     ? "border-primary/70 bg-primary/10"
-                    : "border-border bg-secondary/30"
+                    : "border-border"
               }`}
             >
-              <p className="text-[9px] uppercase tracking-widest text-muted-foreground mb-0.5">
+              <p className="mb-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
                 Black
               </p>
               <p
-                className={`text-lg font-mono font-bold tabular-nums leading-none ${
+                className={`font-mono text-lg font-bold leading-none tabular-nums ${
                   clockFlagged === "b"
-                    ? "text-red-400"
+                    ? "text-destructive"
                     : currentTurn === "b" && !clockFlagged
                       ? "text-primary"
                       : "text-foreground"
@@ -568,21 +577,21 @@ const MoveHistorySidebar = ({
             </div>
             {/* White clock */}
             <div
-              className={`flex-1 rounded-md border px-2 py-1.5 text-center transition-colors ${
+              className={`flex-1 rounded-[2px] border px-2 py-1.5 text-center transition-colors duration-150 ${
                 clockFlagged === "w"
-                  ? "border-red-500/60 bg-red-500/10"
+                  ? "border-destructive/60 bg-destructive/10"
                   : currentTurn === "w" && !clockFlagged
                     ? "border-primary/70 bg-primary/10"
-                    : "border-border bg-secondary/30"
+                    : "border-border"
               }`}
             >
-              <p className="text-[9px] uppercase tracking-widest text-muted-foreground mb-0.5">
+              <p className="mb-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
                 White
               </p>
               <p
-                className={`text-lg font-mono font-bold tabular-nums leading-none ${
+                className={`font-mono text-lg font-bold leading-none tabular-nums ${
                   clockFlagged === "w"
-                    ? "text-red-400"
+                    ? "text-destructive"
                     : currentTurn === "w" && !clockFlagged
                       ? "text-primary"
                       : "text-foreground"

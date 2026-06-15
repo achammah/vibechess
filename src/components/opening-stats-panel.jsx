@@ -2,7 +2,15 @@ import { X, Trash2, TrendingUp, BarChart2 } from "lucide-react";
 import { useState, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Callout } from "@/components/ui/editorial";
 import { getOpeningStats, clearOpeningStats } from "@/lib/opening-stats";
+
+// Win / draw / loss is a real tri-state, so we keep three tones but pull them
+// into the editorial system: wins = signal-orange, draws = muted, losses =
+// destructive. CSS custom properties keep it correct in light AND dark.
+const WIN_TONE = "var(--primary)";
+const DRAW_TONE = "color-mix(in srgb, var(--muted-foreground) 70%, transparent)";
+const LOSS_TONE = "var(--destructive)";
 
 /**
  *
@@ -10,17 +18,17 @@ import { getOpeningStats, clearOpeningStats } from "@/lib/opening-stats";
 const WinBar = ({ wins, draws, losses }) => {
   const total = wins + draws + losses;
   if (total === 0) {
-    return <div className="h-2 rounded-full bg-border/40 w-full" />;
+    return <div className="h-1.5 rounded-full bg-border w-full" />;
   }
   const wPct = (wins / total) * 100;
   const dPct = (draws / total) * 100;
   const lPct = (losses / total) * 100;
 
   return (
-    <div className="flex h-2 rounded-full overflow-hidden w-full">
-      <div style={{ width: `${wPct}%` }} className="bg-green-500" />
-      <div style={{ width: `${dPct}%` }} className="bg-yellow-500/70" />
-      <div style={{ width: `${lPct}%` }} className="bg-red-500/80" />
+    <div className="flex h-1.5 rounded-full overflow-hidden w-full">
+      <div style={{ width: `${wPct}%`, backgroundColor: WIN_TONE }} />
+      <div style={{ width: `${dPct}%`, backgroundColor: DRAW_TONE }} />
+      <div style={{ width: `${lPct}%`, backgroundColor: LOSS_TONE }} />
     </div>
   );
 };
@@ -65,7 +73,7 @@ export default function OpeningStatsPanel({ open, onClose }) {
           <div className="flex items-center gap-2">
             <BarChart2 className="w-4 h-4 text-primary" />
             <div>
-              <h2 className="text-sm font-semibold text-foreground">
+              <h2 className="font-display font-semibold text-base text-foreground">
                 Opening Statistics
               </h2>
               <p className="text-[11px] text-muted-foreground mt-0.5">
@@ -83,25 +91,43 @@ export default function OpeningStatsPanel({ open, onClose }) {
 
         {/* Overall summary */}
         {totalGames > 0 && (
-          <div className="px-5 py-3 border-b border-border bg-secondary/20">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-muted-foreground font-medium">
-                Overall ({totalGames} games)
-              </span>
-              <span className="text-xs font-bold text-foreground">
-                {overallWinPct}% wins
+          <div className="px-5 py-4 border-b border-border bg-secondary/20">
+            <div className="flex items-end justify-between mb-2.5">
+              <Callout>
+                Overall
+                <span className="font-mono tabular-nums text-foreground">
+                  {totalGames}
+                </span>
+                games
+              </Callout>
+              <span className="font-mono text-2xl leading-none tabular-nums text-foreground">
+                {overallWinPct}
+                <span className="text-sm text-muted-foreground">% wins</span>
               </span>
             </div>
             <WinBar wins={totalWins} draws={totalDraws} losses={totalLosses} />
-            <div className="flex gap-4 mt-1.5">
+            <div className="flex gap-5 mt-2.5">
               {[
-                { label: "Wins", val: totalWins, color: "text-green-400" },
-                { label: "Draws", val: totalDraws, color: "text-yellow-400" },
-                { label: "Losses", val: totalLosses, color: "text-red-400" },
+                { label: "Wins", val: totalWins, color: "text-primary" },
+                {
+                  label: "Draws",
+                  val: totalDraws,
+                  color: "text-muted-foreground",
+                },
+                {
+                  label: "Losses",
+                  val: totalLosses,
+                  color: "text-destructive",
+                },
               ].map(({ label, val, color }) => (
-                <span key={label} className="text-[11px] text-muted-foreground">
-                  {label}:{" "}
-                  <span className={`font-semibold ${color}`}>{val}</span>
+                <span
+                  key={label}
+                  className="font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground"
+                >
+                  {label}{" "}
+                  <span className={`font-semibold tabular-nums ${color}`}>
+                    {val}
+                  </span>
                 </span>
               ))}
             </div>
@@ -111,35 +137,40 @@ export default function OpeningStatsPanel({ open, onClose }) {
         {/* Stats table */}
         <div className="overflow-y-auto flex-1">
           {stats.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-14 text-center text-muted-foreground gap-3">
-              <TrendingUp className="w-10 h-10 opacity-20" />
+            <div className="edit-grid m-5 rounded-[3px] border border-border flex flex-col items-center justify-center py-14 px-6 text-center gap-3">
+              <TrendingUp className="w-9 h-9 text-muted-foreground opacity-30" />
               <div>
-                <p className="text-sm font-medium">No data yet</p>
-                <p className="text-xs mt-1 opacity-70">
-                  Play complete games to track your opening statistics.
+                <h3 className="font-display text-xl leading-tight text-foreground">
+                  <span className="block">No data yet.</span>
+                  <em className="block not-italic text-muted-foreground">
+                    Every game counts.
+                  </em>
+                </h3>
+                <p className="text-sm text-muted-foreground mt-3 max-w-[36ch] mx-auto">
+                  Play complete games to track your performance per opening.
                 </p>
               </div>
             </div>
           ) : (
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-border sticky top-0 bg-card">
-                  <th className="text-left px-5 py-2 text-muted-foreground font-medium">
+                <tr className="border-b border-border sticky top-0 bg-card font-mono text-[10px] uppercase tracking-[0.1em]">
+                  <th className="text-left px-5 py-2.5 text-muted-foreground font-medium">
                     Opening
                   </th>
-                  <th className="text-center px-2 py-2 text-muted-foreground font-medium w-10">
+                  <th className="text-center px-2 py-2.5 text-muted-foreground font-medium w-10">
                     G
                   </th>
-                  <th className="text-center px-2 py-2 text-green-400 font-medium w-10">
+                  <th className="text-center px-2 py-2.5 text-primary font-medium w-10">
                     W
                   </th>
-                  <th className="text-center px-2 py-2 text-yellow-400 font-medium w-10">
+                  <th className="text-center px-2 py-2.5 text-muted-foreground font-medium w-10">
                     D
                   </th>
-                  <th className="text-center px-2 py-2 text-red-400 font-medium w-10">
+                  <th className="text-center px-2 py-2.5 text-destructive font-medium w-10">
                     L
                   </th>
-                  <th className="text-right px-5 py-2 text-muted-foreground font-medium w-20">
+                  <th className="text-right px-5 py-2.5 text-muted-foreground font-medium w-20">
                     Win%
                   </th>
                 </tr>
@@ -148,11 +179,11 @@ export default function OpeningStatsPanel({ open, onClose }) {
                 {stats.map((e) => (
                   <tr
                     key={e.eco + e.name}
-                    className="border-b border-border/30 hover:bg-secondary/20 transition-colors"
+                    className="border-b border-border hover:bg-secondary/20 transition-colors"
                   >
-                    <td className="px-5 py-2.5">
+                    <td className="px-5 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono text-muted-foreground bg-secondary/60 px-1 rounded">
+                        <span className="text-[10px] font-mono uppercase tracking-[0.08em] text-muted-foreground border border-border px-1 rounded-[2px]">
                           {e.eco}
                         </span>
                         <span
@@ -164,26 +195,26 @@ export default function OpeningStatsPanel({ open, onClose }) {
                       </div>
                       <WinBar wins={e.wins} draws={e.draws} losses={e.losses} />
                     </td>
-                    <td className="text-center px-2 py-2.5 text-muted-foreground tabular-nums">
+                    <td className="text-center px-2 py-3 font-mono text-muted-foreground tabular-nums">
                       {e.total}
                     </td>
-                    <td className="text-center px-2 py-2.5 text-green-400 font-semibold tabular-nums">
+                    <td className="text-center px-2 py-3 font-mono text-primary font-semibold tabular-nums">
                       {e.wins}
                     </td>
-                    <td className="text-center px-2 py-2.5 text-yellow-400 tabular-nums">
+                    <td className="text-center px-2 py-3 font-mono text-muted-foreground tabular-nums">
                       {e.draws}
                     </td>
-                    <td className="text-center px-2 py-2.5 text-red-400 tabular-nums">
+                    <td className="text-center px-2 py-3 font-mono text-destructive tabular-nums">
                       {e.losses}
                     </td>
-                    <td className="text-right px-5 py-2.5">
+                    <td className="text-right px-5 py-3">
                       <span
-                        className={`font-bold tabular-nums ${
+                        className={`font-mono font-semibold tabular-nums ${
                           e.winPct >= 60
-                            ? "text-green-400"
+                            ? "text-primary"
                             : e.winPct >= 40
-                              ? "text-yellow-400"
-                              : "text-red-400"
+                              ? "text-foreground"
+                              : "text-destructive"
                         }`}
                       >
                         {e.winPct}%
@@ -206,7 +237,7 @@ export default function OpeningStatsPanel({ open, onClose }) {
               variant="ghost"
               size="sm"
               onClick={handleClear}
-              className="text-muted-foreground hover:text-red-400 text-xs h-7"
+              className="text-muted-foreground hover:text-destructive text-xs h-7"
             >
               <Trash2 className="w-3 h-3 mr-1" />
               Clear all

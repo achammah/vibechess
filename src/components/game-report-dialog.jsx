@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Callout, CountUp, Stat } from "@/components/ui/editorial";
 
 const QUALITY_ORDER = [
   "Brilliant",
@@ -14,6 +15,28 @@ const QUALITY_ORDER = [
   "Mistake",
   "Blunder",
 ];
+
+// Harmonized move-quality palette. A single hue ramp from foreground (best)
+// through muted to the signal-orange / destructive band (errors) keeps the
+// breakdown editorial rather than rainbow. Read off CSS custom properties so
+// it stays correct in light AND dark.
+const QUALITY_META = {
+  Brilliant: { emoji: "💎", bar: "var(--primary)" },
+  Excellent: { emoji: "✨", bar: "var(--foreground)" },
+  Good: { emoji: "👍", bar: "var(--muted-foreground)" },
+  Inaccuracy: { emoji: "⚠", bar: "color-mix(in srgb, var(--destructive) 45%, var(--muted-foreground))" },
+  Mistake: { emoji: "✕", bar: "color-mix(in srgb, var(--destructive) 70%, transparent)" },
+  Blunder: { emoji: "✕✕", bar: "var(--destructive)" },
+};
+
+const accuracyTone = (accuracy) =>
+  accuracy >= 80
+    ? "var(--foreground)"
+    : accuracy >= 60
+      ? "var(--primary)"
+      : accuracy >= 45
+        ? "color-mix(in srgb, var(--destructive) 55%, var(--muted-foreground))"
+        : "var(--destructive)";
 
 // ── Eval Graph ────────────────────────────────────────────────────────────────
 /**
@@ -55,10 +78,8 @@ const EvalGraph = ({ evalHistory, onJumpToMove }) => {
 
   return (
     <div className="w-full">
-      <p className="text-[10px] text-muted-foreground uppercase tracking-widest mb-1">
-        Evaluation Graph
-      </p>
-      <div className="relative rounded overflow-hidden bg-black/30 border border-border">
+      <Callout className="mb-2">Evaluation graph</Callout>
+      <div className="relative rounded-[3px] overflow-hidden bg-secondary/30 border border-border">
         <svg
           viewBox={`0 0 ${W} ${H}`}
           className="w-full"
@@ -107,7 +128,7 @@ const EvalGraph = ({ evalHistory, onJumpToMove }) => {
           <polyline
             points={polyline}
             fill="none"
-            stroke="#22c55e"
+            stroke="var(--primary)"
             strokeWidth={1.8}
             strokeLinejoin="round"
           />
@@ -144,64 +165,22 @@ const EvalGraph = ({ evalHistory, onJumpToMove }) => {
   );
 };
 
-// ── Accuracy Ring ─────────────────────────────────────────────────────────────
+// ── Accuracy stat ─────────────────────────────────────────────────────────────
 /**
- *
+ * Big mono accuracy readout (editorial Stat) with a thin tone-coded rule below.
  */
-const AccuracyRing = ({ accuracy, label }) => {
-  const r = 30;
-  const circ = 2 * Math.PI * r;
-  const dashOffset = circ * (1 - accuracy / 100);
-  const color =
-    accuracy >= 80
-      ? "#10b981"
-      : accuracy >= 60
-        ? "#22c55e"
-        : accuracy >= 45
-          ? "#eab308"
-          : "#ef4444";
-
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <svg width="80" height="80" viewBox="0 0 80 80">
-        <circle
-          cx="40"
-          cy="40"
-          r={r}
-          fill="none"
-          stroke="#ffffff15"
-          strokeWidth="6"
-        />
-        <circle
-          cx="40"
-          cy="40"
-          r={r}
-          fill="none"
-          stroke={color}
-          strokeWidth="6"
-          strokeDasharray={circ}
-          strokeDashoffset={dashOffset}
-          strokeLinecap="round"
-          transform="rotate(-90 40 40)"
-          style={{ transition: "stroke-dashoffset 0.8s ease" }}
-        />
-        <text
-          x="40"
-          y="44"
-          textAnchor="middle"
-          fontSize="16"
-          fontWeight="700"
-          fill="white"
-        >
-          {accuracy}%
-        </text>
-      </svg>
-      <span className="text-xs font-semibold text-muted-foreground">
-        {label}
+const AccuracyStat = ({ accuracy, label }) => (
+  <Stat
+    className="flex flex-col items-center text-center"
+    label={label}
+    value={
+      <span style={{ color: accuracyTone(accuracy) }}>
+        <CountUp value={accuracy} duration={900} format={(n) => Math.round(n)} />%
       </span>
-    </div>
-  );
-};
+    }
+    valueClassName="text-[clamp(2rem,8vw,3rem)]"
+  />
+);
 
 // ── Quality breakdown bar ─────────────────────────────────────────────────────
 /**
@@ -210,17 +189,24 @@ const AccuracyRing = ({ accuracy, label }) => {
 const QualityRow = ({ label, count, emoji, color, total }) => {
   if (!count) return null;
   const pct = total > 0 ? (count / total) * 100 : 0;
+  const isError = label === "Blunder";
   return (
     <div className="flex items-center gap-2 text-xs">
-      <span className="w-4 text-center">{emoji}</span>
+      <span className="w-5 text-center text-[11px]">{emoji}</span>
       <span className="w-16 text-muted-foreground truncate">{label}</span>
-      <div className="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden">
+      <div className="flex-1 h-1 bg-secondary/60 rounded-full overflow-hidden">
         <div
           className="h-full rounded-full transition-all duration-700"
           style={{ width: `${pct}%`, backgroundColor: color }}
         />
       </div>
-      <span className="w-4 text-right font-mono text-foreground">{count}</span>
+      <span
+        className={`w-5 text-right font-mono tabular-nums ${
+          isError ? "text-destructive" : "text-foreground"
+        }`}
+      >
+        {count}
+      </span>
     </div>
   );
 };
@@ -251,45 +237,32 @@ export default function GameReportDialog({
   const criticalMove =
     criticalMoveIdx >= 0 ? moveSummary[criticalMoveIdx] : null;
 
-  const QUALITY_META = {
-    Brilliant: { emoji: "💎", bar: "#06b6d4" },
-    Excellent: { emoji: "✨", bar: "#10b981" },
-    Good: { emoji: "👍", bar: "#22c55e" },
-    Inaccuracy: { emoji: "⚠️", bar: "#eab308" },
-    Mistake: { emoji: "❌", bar: "#f97316" },
-    Blunder: { emoji: "💥", bar: "#ef4444" },
-  };
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold flex items-center gap-2">
-            📊 Game Report
-            <span className="text-xs font-normal text-muted-foreground ml-auto">
+          <DialogTitle className="font-display flex items-center gap-2">
+            Game Report
+            <span className="ml-auto font-mono text-[11px] tracking-[0.08em] font-normal text-muted-foreground tabular-nums">
               {moveHistory.length} moves analyzed
             </span>
           </DialogTitle>
         </DialogHeader>
 
-        {/* Accuracy rings */}
-        <div className="flex justify-around py-2">
-          <AccuracyRing accuracy={white.accuracy} label="White" />
-          <div className="flex flex-col items-center justify-center gap-1">
-            <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-              Accuracy
-            </span>
+        {/* Accuracy */}
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4 py-2">
+          <AccuracyStat accuracy={white.accuracy} label="White" />
+          <div className="flex flex-col items-center gap-2">
+            <Callout className="text-[10px]">Accuracy</Callout>
             <div className="w-px h-12 bg-border" />
           </div>
-          <AccuracyRing accuracy={black.accuracy} label="Black" />
+          <AccuracyStat accuracy={black.accuracy} label="Black" />
         </div>
 
         {/* Quality breakdown */}
-        <div className="grid grid-cols-2 gap-4 border border-border rounded-lg p-3">
+        <div className="grid grid-cols-2 gap-4 border border-border rounded-[3px] p-4">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-              White Moves
-            </p>
+            <Callout className="mb-3">White moves</Callout>
             <div className="space-y-1.5">
               {QUALITY_ORDER.map((q) => (
                 <QualityRow
@@ -304,9 +277,7 @@ export default function GameReportDialog({
             </div>
           </div>
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-2">
-              Black Moves
-            </p>
+            <Callout className="mb-3">Black moves</Callout>
             <div className="space-y-1.5">
               {QUALITY_ORDER.map((q) => (
                 <QualityRow
@@ -333,26 +304,24 @@ export default function GameReportDialog({
 
         {/* Critical moment */}
         {criticalMove && (
-          <div className="border border-orange-500/30 rounded-lg p-3 bg-orange-500/5">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-400 mb-1">
-              🎯 Critical Moment
-            </p>
+          <div className="border-l-2 border-primary border-y border-r border-y-border border-r-border rounded-r-[3px] p-4 bg-primary/5">
+            <Callout className="mb-2">Critical moment</Callout>
             <p className="text-sm text-foreground">
-              <span className="font-bold text-orange-400">
-                Move {criticalMove.moveNum}
+              <span className="font-mono font-semibold text-foreground tabular-nums">
+                {criticalMove.moveNum}
                 {criticalMove.side === "w" ? "." : "..."} {criticalMove.san}
               </span>{" "}
               — {criticalMove.qualityEmoji} {criticalMove.quality}
               {criticalMove.cpLost && (
-                <span className="text-muted-foreground ml-1">
+                <span className="font-mono text-muted-foreground ml-1 tabular-nums">
                   (−{criticalMove.cpLost} cp)
                 </span>
               )}
             </p>
             {criticalMove.bestSan && (
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-muted-foreground mt-1">
                 Better was{" "}
-                <span className="text-green-400 font-semibold">
+                <span className="font-mono font-semibold text-primary">
                   {criticalMove.bestSan}
                 </span>
               </p>
@@ -362,7 +331,7 @@ export default function GameReportDialog({
                 onJumpToMove && onJumpToMove(criticalMoveIdx - 1);
                 onOpenChange(false);
               }}
-              className="mt-1 text-[10px] text-primary underline underline-offset-2"
+              className="mt-2 font-mono text-[10px] uppercase tracking-[0.12em] text-primary underline underline-offset-2"
             >
               Jump to this position →
             </button>

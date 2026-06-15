@@ -9,7 +9,11 @@ import {
 import { useState, useCallback, useEffect, useRef } from "react";
 import { Chessboard } from "react-chessboard";
 
-import { Button } from "@/components/ui/button";
+import {
+  Callout,
+  EditorialButton,
+  Stat,
+} from "@/components/ui/editorial";
 import {
   loadQuizByFile,
   loadQuizCatalog,
@@ -17,11 +21,17 @@ import {
 } from "@/lib/puzzle-quizzes";
 import { getAdaptivePuzzle } from "@/lib/puzzles-db";
 
-// Difficulty badge color
+// Difficulty badge color — harmonized, refined tones (semantic where possible)
 const diffColor = {
-  easy: "text-green-400",
-  medium: "text-yellow-400",
-  hard: "text-red-400",
+  easy: "text-emerald-600 dark:text-emerald-400",
+  medium: "text-primary",
+  hard: "text-destructive",
+};
+// Dot-pager difficulty tints
+const diffDot = {
+  easy: "bg-emerald-500/50",
+  medium: "bg-primary/50",
+  hard: "bg-destructive/50",
 };
 const themeEmoji = {
   checkmate: "♟",
@@ -290,8 +300,8 @@ export default function PuzzleMode({
   if (catalogState === "loading") {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-        <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 text-sm text-muted-foreground">
-          Loading quiz library...
+        <div className="bg-card border border-border rounded-md p-6">
+          <Callout>Loading quiz library…</Callout>
         </div>
       </div>
     );
@@ -300,8 +310,8 @@ export default function PuzzleMode({
   if (catalogState === "ready" && !puzzle) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-        <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 text-sm text-muted-foreground">
-          Loading puzzle...
+        <div className="bg-card border border-border rounded-md p-6">
+          <Callout>Loading puzzle…</Callout>
         </div>
       </div>
     );
@@ -310,16 +320,14 @@ export default function PuzzleMode({
   if (catalogState === "error") {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-        <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 max-w-md w-full space-y-3">
-          <p className="text-sm font-semibold text-foreground">
-            Quiz load failed
-          </p>
-          <p className="text-xs text-muted-foreground">
+        <div className="bg-card border border-border rounded-md p-6 max-w-md w-full space-y-4">
+          <Callout dotClassName="bg-destructive">Quiz load failed</Callout>
+          <p className="font-display text-xl font-semibold tracking-[-0.02em] text-foreground">
             {loadError || "No quizzes available."}
           </p>
-          <Button onClick={onClose} className="w-full">
+          <EditorialButton onClick={onClose} className="w-full">
             Close
-          </Button>
+          </EditorialButton>
         </div>
       </div>
     );
@@ -335,11 +343,11 @@ export default function PuzzleMode({
 
   const statusMessage =
     {
-      idle: "Find the best move — drag a piece!",
-      "correct-step": "✓ Good move! Keep going…",
-      wrong: "✗ That's not the best move. Try again!",
-      solved: "🎉 Excellent! Puzzle solved!",
-      revealed: "Solution revealed — the green arrows show the line.",
+      idle: "Find the best move — drag a piece.",
+      "correct-step": "Good move. Keep going.",
+      wrong: "Not the best move. Try again.",
+      solved: "Puzzle solved.",
+      revealed: "Solution revealed — the arrows show the line.",
     }[status] ?? "";
 
   const lastMoveStyle = Object.fromEntries(
@@ -382,16 +390,14 @@ export default function PuzzleMode({
           {/* Header */}
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="text-[10px] uppercase tracking-widest text-primary font-semibold mb-0.5">
-                🧩 Puzzle Mode
-              </p>
-              <p className="text-xs text-muted-foreground">
+              <Callout>Puzzle Mode</Callout>
+              <p className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground tabular-nums">
                 Puzzle {puzzleIndex + 1} / {quizEntries.length}
               </p>
             </div>
             <button
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground transition-colors p-1 rounded-md hover:bg-secondary"
+              className="text-muted-foreground hover:text-foreground transition-colors duration-150 p-1 rounded-[2px] hover:bg-secondary"
             >
               <X className="w-4 h-4" />
             </button>
@@ -399,37 +405,34 @@ export default function PuzzleMode({
 
           {/* Session stats */}
           <div className="flex gap-3">
-            <div className="flex-1 bg-green-500/10 border border-green-500/20 rounded-lg p-2 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-green-400 font-semibold">
-                Solved
-              </p>
-              <p className="text-xl font-bold text-green-300">
-                {sessionStats.solved}
-              </p>
-            </div>
-            <div className="flex-1 bg-red-500/10 border border-red-500/20 rounded-lg p-2 text-center">
-              <p className="text-[10px] uppercase tracking-widest text-red-400 font-semibold">
-                Missed
-              </p>
-              <p className="text-xl font-bold text-red-300">
-                {sessionStats.failed}
-              </p>
-            </div>
+            <Stat
+              className="flex-1 border border-border rounded-[2px] p-3"
+              label="Solved"
+              value={sessionStats.solved}
+              valueClassName="text-3xl text-emerald-600 dark:text-emerald-400"
+            />
+            <Stat
+              className="flex-1 border border-border rounded-[2px] p-3"
+              label="Missed"
+              value={sessionStats.failed}
+              valueClassName="text-3xl text-destructive"
+            />
           </div>
 
           {/* Puzzle info */}
-          <div className="border border-border rounded-lg p-3 bg-secondary/30 space-y-1.5">
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-sm font-semibold text-foreground">
+          <div className="border border-border rounded-[2px] p-3 bg-secondary/30 space-y-2">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="font-mono text-sm font-semibold text-foreground tabular-nums">
                 {puzzle.title}
               </span>
               <span
-                className={`text-[10px] font-semibold uppercase tracking-wide ${diffColor[puzzle.difficulty]}`}
+                className={`font-mono text-[10px] font-semibold uppercase tracking-[0.12em] ${diffColor[puzzle.difficulty]}`}
               >
                 {puzzle.difficulty}
               </span>
-              <span className="text-xs text-muted-foreground">
-                {themeEmoji[puzzle.theme] ?? "♟"} {puzzle.theme}
+              <span className="inline-flex items-center gap-1 font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
+                <span aria-hidden="true">{themeEmoji[puzzle.theme] ?? "♟"}</span>
+                {puzzle.theme}
               </span>
             </div>
             <p className="text-xs text-muted-foreground">
@@ -437,11 +440,11 @@ export default function PuzzleMode({
             </p>
             {/* Progress bar for multi-move puzzles */}
             {puzzle.solution.length > 1 && (
-              <div className="space-y-0.5">
-                <p className="text-[10px] text-muted-foreground">
+              <div className="space-y-1">
+                <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground tabular-nums">
                   Move {solutionStep} / {puzzle.solution.length} in sequence
                 </p>
-                <div className="h-1 bg-border rounded-full overflow-hidden">
+                <div className="h-px bg-border overflow-hidden">
                   <div
                     className="h-full bg-primary transition-all duration-300"
                     style={{ width: `${progressPct}%` }}
@@ -453,21 +456,21 @@ export default function PuzzleMode({
 
           {/* Status message */}
           <div
-            className={`border rounded-lg p-3 text-sm font-medium transition-all ${
+            className={`border rounded-[2px] p-3 text-sm font-medium transition-colors duration-150 ${
               status === "solved"
-                ? "border-green-500/40 bg-green-500/10 text-green-400"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                 : status === "wrong"
-                  ? "border-red-500/40 bg-red-500/10 text-red-400"
+                  ? "border-destructive/40 bg-destructive/10 text-destructive"
                   : status === "correct-step"
-                    ? "border-blue-500/40 bg-blue-500/10 text-blue-400"
+                    ? "border-emerald-500/30 bg-emerald-500/5 text-emerald-600 dark:text-emerald-400"
                     : status === "revealed"
-                      ? "border-yellow-500/40 bg-yellow-500/10 text-yellow-400"
+                      ? "border-primary/40 bg-primary/10 text-primary"
                       : "border-border bg-secondary/20 text-muted-foreground"
             }`}
           >
             {statusMessage}
             {status === "wrong" && wrongMoves > 0 && (
-              <span className="block text-xs mt-0.5 opacity-70">
+              <span className="block font-mono text-[11px] uppercase tracking-[0.1em] mt-1 opacity-70 tabular-nums">
                 Incorrect attempt #{wrongMoves}
               </span>
             )}
@@ -479,59 +482,56 @@ export default function PuzzleMode({
               status === "wrong" ||
               status === "correct-step") && (
               <>
-                <Button
+                <EditorialButton
                   variant="ghost"
-                  size="sm"
                   onClick={handleHint}
-                  className="justify-start text-yellow-400 hover:text-yellow-300"
+                  className="justify-start"
                 >
-                  <Lightbulb className="w-3.5 h-3.5 mr-1.5" />
+                  <Lightbulb className="w-3.5 h-3.5" />
                   {hintUsed ? "Hint shown (arrow on board)" : "Show Hint"}
-                </Button>
-                <Button
+                </EditorialButton>
+                <EditorialButton
                   variant="ghost"
-                  size="sm"
                   onClick={handleReveal}
-                  className="justify-start text-muted-foreground text-xs"
+                  className="justify-start"
                 >
-                  <SkipForward className="w-3.5 h-3.5 mr-1.5" />
+                  <SkipForward className="w-3.5 h-3.5" />
                   Reveal solution
-                </Button>
+                </EditorialButton>
               </>
             )}
             {(status === "solved" || status === "revealed") && (
-              <Button
+              <EditorialButton
                 onClick={goNext}
                 disabled={puzzleIndex >= quizEntries.length - 1}
                 className="w-full"
               >
-                <ChevronRight className="w-4 h-4 mr-1" />
+                <ChevronRight className="w-4 h-4" />
                 {puzzleIndex >= quizEntries.length - 1
-                  ? "All puzzles done! 🎉"
+                  ? "All puzzles done"
                   : "Next Puzzle"}
-              </Button>
+              </EditorialButton>
             )}
           </div>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between pt-2 border-t border-border mt-auto">
-            <Button
+          <div className="flex items-center justify-between pt-3 border-t border-border mt-auto">
+            <EditorialButton
               variant="ghost"
-              size="sm"
               onClick={goPrevious}
               disabled={puzzleIndex === 0}
-              className="text-muted-foreground"
             >
-              <ChevronLeft className="w-4 h-4 mr-1" />
+              <ChevronLeft className="w-3.5 h-3.5" />
               Prev
-            </Button>
+            </EditorialButton>
 
             {/* Dot indicators */}
-            <div className="flex gap-1 flex-wrap justify-center max-w-40">
+            <div className="flex gap-1.5 flex-wrap justify-center max-w-40">
               {quizEntries
                 .slice(Math.max(0, puzzleIndex - 4), puzzleIndex + 5)
                 .map((entry, index) => {
                   const absIndex = Math.max(0, puzzleIndex - 4) + index;
+                  const isActive = absIndex === puzzleIndex;
                   return (
                     <button
                       key={entry.id ?? absIndex}
@@ -539,14 +539,10 @@ export default function PuzzleMode({
                         clearTimeout(engineTimeoutReference.current);
                         setPuzzleIndex(absIndex);
                       }}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        absIndex === puzzleIndex
-                          ? "bg-primary"
-                          : entry.difficulty === "hard"
-                            ? "bg-red-500/50"
-                            : entry.difficulty === "medium"
-                              ? "bg-yellow-500/50"
-                              : "bg-green-500/50"
+                      className={`h-1.5 rounded-full transition-all duration-150 ${
+                        isActive
+                          ? "w-4 bg-primary"
+                          : `w-1.5 ${diffDot[entry.difficulty] ?? "bg-border"} hover:bg-foreground/40`
                       }`}
                       title={`Puzzle ${absIndex + 1}${entry.title ? `: ${entry.title}` : ""}`}
                     />
@@ -554,16 +550,14 @@ export default function PuzzleMode({
                 })}
             </div>
 
-            <Button
+            <EditorialButton
               variant="ghost"
-              size="sm"
               onClick={goNext}
               disabled={puzzleIndex >= quizEntries.length - 1}
-              className="text-muted-foreground"
             >
               Skip
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </EditorialButton>
           </div>
         </div>
       </div>

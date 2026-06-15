@@ -9,6 +9,9 @@ import {
 import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import { Chessboard } from "react-chessboard";
 
+import { Callout, FadeInUp } from "@/components/ui/editorial";
+import { cn } from "@/lib/utils";
+
 import { Dropdown } from "./control-bar";
 
 const PLAYER_COLOR_OPTIONS = [
@@ -111,17 +114,17 @@ const getCapturedPieces = (game) => {
 
 // ── Captured piece row — defined outside BoardPanel to avoid React warnings ──
 const CapturedRow = ({ totalPts, adv }) => (
-  <div className="flex items-center gap-1.5 min-h-5.5">
+  <div className="flex items-center gap-2 min-h-5.5">
     {totalPts > 0 && (
-      <span className="text-xs font-medium text-foreground tabular-nums">
-        {totalPts} pts
+      <span className="font-mono text-xs tabular-nums text-muted-foreground">
+        {totalPts}
+        <span className="ml-0.5 text-[10px] uppercase tracking-[0.1em] text-muted-foreground/70">
+          pts
+        </span>
       </span>
     )}
     {adv > 0 && (
-      <span
-        className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-semibold
-          bg-emerald-500/15 text-emerald-400 border border-emerald-500/25"
-      >
+      <span className="inline-flex items-center font-mono text-[11px] tabular-nums px-1.5 py-0.5 rounded-[2px] border border-primary/30 bg-primary/10 text-primary">
         +{adv}
       </span>
     )}
@@ -422,23 +425,48 @@ const BoardPanel = ({
     >
       {/* Game status banner */}
       {gameStatus && (
-        <div
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium ${
+        <FadeInUp
+          className={cn(
+            "flex items-center gap-2 px-3 py-1.5 rounded-[2px] border bg-card",
             gameStatus.type === "checkmate"
-              ? "bg-yellow-500/15 text-yellow-400"
+              ? "border-primary/40"
               : gameStatus.type === "check"
-                ? "bg-red-500/15 text-red-400"
-                : "bg-blue-500/15 text-blue-400"
-          }`}
+                ? "border-destructive/40"
+                : "border-border",
+          )}
         >
-          <gameStatus.icon className="h-4 w-4" />
-          {gameStatus.text}
-          {isCheckmate && (
-            <span className="text-xs opacity-70 ml-1">
-              {turn === "w" ? "Black" : "White"} wins
+          <gameStatus.icon
+            className={cn(
+              "h-4 w-4 shrink-0",
+              gameStatus.type === "checkmate"
+                ? "text-primary"
+                : gameStatus.type === "check"
+                  ? "text-destructive"
+                  : "text-muted-foreground",
+            )}
+          />
+          {isCheckmate ? (
+            <span className="flex items-baseline gap-2">
+              <span className="font-display text-base font-semibold leading-none text-foreground">
+                Checkmate
+              </span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                {turn === "w" ? "Black" : "White"} wins
+              </span>
+            </span>
+          ) : (
+            <span
+              className={cn(
+                "font-mono text-xs uppercase tracking-[0.14em]",
+                gameStatus.type === "check"
+                  ? "text-destructive"
+                  : "text-muted-foreground",
+              )}
+            >
+              {gameStatus.text}
             </span>
           )}
-        </div>
+        </FadeInUp>
       )}
 
       {/* Captured pieces — opponent (top) */}
@@ -468,15 +496,16 @@ const BoardPanel = ({
                 : 0
           }
         />
-        <div className="flex items-center gap-1">
-          <div
-            className={`h-2.5 w-2.5 rounded-full ${
+        <div className="flex items-center gap-1.5">
+          <span
+            className={cn(
+              "h-2 w-2 rounded-full",
               (boardOrientation === "white" ? "b" : "w") === turn && !isGameOver
                 ? "bg-primary animate-pulse"
-                : "bg-muted-foreground/30"
-            }`}
+                : "bg-muted-foreground/30",
+            )}
           />
-          <span className="text-xs text-muted-foreground">
+          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
             {boardOrientation === "white" ? "Black" : "White"}
           </span>
         </div>
@@ -484,24 +513,26 @@ const BoardPanel = ({
 
       {/* Chess Board */}
       <div
-        className="rounded-lg overflow-hidden shadow-lg border border-border relative"
+        className="rounded-sm overflow-hidden shadow-sm border border-border relative"
         style={{ width: boardWidth, height: boardWidth }}
       >
         {/* AI thinking overlay */}
         {isAIThinking && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/10 pointer-events-none">
-            <div className="bg-card/90 border border-border rounded-full px-3 py-1.5 flex items-center gap-2 shadow-lg text-xs text-primary">
-              <span className="animate-spin inline-block">⚙</span>
-              AI thinking…
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/20 backdrop-blur-[1px] pointer-events-none">
+            <div className="bg-card border border-border rounded-[2px] px-3 py-1.5 flex items-center gap-2 shadow-sm">
+              <span className="animate-spin inline-block text-primary">⚙</span>
+              <Callout className="text-foreground">AI thinking</Callout>
             </div>
           </div>
         )}
         {/* Review mode overlay badge */}
         {isReviewMode && (
           <div className="absolute top-2 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
-            <div className="bg-amber-500/90 text-black text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md">
-              <Eye className="h-3 w-3" />
-              Review Mode
+            <div className="bg-card border border-border rounded-[2px] px-2.5 py-1 flex items-center gap-1.5 shadow-sm">
+              <Eye className="h-3 w-3 text-muted-foreground" />
+              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+                Review Mode
+              </span>
             </div>
           </div>
         )}
@@ -510,11 +541,13 @@ const BoardPanel = ({
           <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20">
             <button
               onClick={onCancelPremove}
-              className="bg-teal-500/90 text-white text-[11px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 shadow-md hover:bg-teal-600/90 transition-colors"
+              className="bg-card border border-primary/40 rounded-[2px] px-2.5 py-1 flex items-center gap-1.5 shadow-sm transition-colors hover:border-primary"
               title="Click to cancel premove"
             >
-              <span className="animate-pulse">⚡</span>
-              Premove queued — click to cancel
+              <span className="animate-pulse text-primary">⚡</span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">
+                Premove queued — tap to cancel
+              </span>
             </button>
           </div>
         )}
@@ -568,15 +601,16 @@ const BoardPanel = ({
                 : 0
           }
         />
-        <div className="flex items-center gap-1">
-          <div
-            className={`h-2.5 w-2.5 rounded-full ${
+        <div className="flex items-center gap-1.5">
+          <span
+            className={cn(
+              "h-2 w-2 rounded-full",
               (boardOrientation === "white" ? "w" : "b") === turn && !isGameOver
                 ? "bg-primary animate-pulse"
-                : "bg-muted-foreground/30"
-            }`}
+                : "bg-muted-foreground/30",
+            )}
           />
-          <span className="text-xs text-muted-foreground">
+          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
             {boardOrientation === "white" ? "White" : "Black"}
           </span>
         </div>

@@ -13,38 +13,54 @@ import {
 } from "@clerk/clerk-react";
 import { Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import {
+  Callout,
+  EditorialButton,
+  FadeInUp,
+  RuleLabel,
+} from "@/components/ui/editorial";
 
 const clerkEnabled = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
 const Landing = () => (
-  <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 text-center">
-    <div className="max-w-md">
-      <div className="font-display text-3xl font-semibold tracking-tight text-foreground">
+  <div className="edit-grid flex min-h-screen flex-col items-center justify-center bg-background px-6">
+    <FadeInUp className="relative w-full max-w-2xl text-center">
+      <div className="font-display text-2xl font-semibold tracking-tight text-foreground">
         <span className="text-primary">♟</span> vibechess
       </div>
-      <h1 className="font-display mt-5 text-4xl font-semibold leading-tight tracking-tight text-foreground">
-        Your AI chess grandmaster
+
+      <div className="mt-8 flex justify-center">
+        <Callout>AI chess coach · Early access</Callout>
+      </div>
+
+      <h1 className="font-display mx-auto mt-6 max-w-[18ch] text-[clamp(2.25rem,6vw,4rem)] font-semibold leading-[1.04] tracking-[-0.02em] text-foreground">
+        <span className="block">Your AI chess</span>
+        <em className="block not-italic text-muted-foreground">grandmaster</em>
       </h1>
-      <p className="mt-3 text-sm text-muted-foreground">
+
+      <p className="mx-auto mt-5 max-w-[52ch] font-sans text-sm leading-relaxed text-muted-foreground sm:text-base">
         Every move explained like a grandmaster would — grounded in real engine
         analysis, drawn on the board. Train openings with spaced repetition, solve
         rated puzzles, and get coached as you play.
       </p>
-      <div className="mt-8 flex items-center justify-center gap-3">
+
+      <div className="mt-7 flex justify-center">
+        <RuleLabel>Grounded. Explained. On the board.</RuleLabel>
+      </div>
+
+      <div className="mt-9 flex items-center justify-center gap-3">
         <SignUpButton mode="modal">
-          <Button size="lg">Get started</Button>
+          <EditorialButton variant="primary">Get started</EditorialButton>
         </SignUpButton>
         <SignInButton mode="modal">
-          <Button size="lg" variant="outline">
-            Sign in
-          </Button>
+          <EditorialButton variant="outline">Sign in</EditorialButton>
         </SignInButton>
       </div>
-      <p className="mt-6 text-xs text-muted-foreground">
-        Free during early access. Bring your own AI key for the coach.
+
+      <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+        Free during early access · Bring your own AI key
       </p>
-    </div>
+    </FadeInUp>
   </div>
 );
 

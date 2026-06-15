@@ -16,6 +16,7 @@ import { useState, useRef, useEffect } from "react";
 
 import AuthControls from "@/components/auth-controls";
 import { Button } from "@/components/ui/button";
+import { EditorialButton } from "@/components/ui/editorial";
 import { Switch } from "@/components/ui/switch";
 
 // ── Simple dropdown component ─────────────────────────────────────────────
@@ -54,26 +55,32 @@ export const Dropdown = ({
         onClick={() => !disabled && setOpen((o) => !o)}
         disabled={disabled}
         title={disabled ? "Cannot change sides during a game" : undefined}
-        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-secondary border border-border text-xs font-medium transition-colors ${
+        className={`group flex items-center gap-2 rounded-[2px] border px-2.5 py-1.5 transition-colors duration-150 ${
+          open ? "border-foreground" : "border-border"
+        } ${
           disabled
-            ? "opacity-50 cursor-not-allowed"
-            : "hover:bg-secondary/80 cursor-pointer"
+            ? "cursor-not-allowed opacity-50"
+            : "cursor-pointer hover:border-foreground"
         }`}
       >
-        {Icon && <Icon className="h-3.5 w-3.5 text-muted-foreground" />}
-        <span className="text-foreground">{label}:</span>
-        <span className="text-primary font-semibold">
+        {Icon && (
+          <Icon className="h-3.5 w-3.5 text-muted-foreground transition-colors duration-150 group-hover:text-foreground" />
+        )}
+        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+          {label}
+        </span>
+        <span className="font-mono text-[11px] uppercase tracking-[0.06em] text-primary">
           {selected?.label || value}
         </span>
         {!disabled && (
           <ChevronDown
-            className={`h-3 w-3 text-muted-foreground transition-transform ${open ? "rotate-180" : ""}`}
+            className={`h-3 w-3 text-muted-foreground transition-transform duration-150 ${open ? "rotate-180" : ""}`}
           />
         )}
       </button>
 
       {open && !disabled && (
-        <div className="absolute top-full left-0 mt-1 z-50 bg-card border border-border rounded-md shadow-xl min-w-[160px] py-1 overflow-hidden">
+        <div className="absolute left-0 top-full z-50 mt-1.5 min-w-[180px] overflow-hidden rounded-[2px] border border-border bg-card py-1 shadow-sm">
           {options.map((opt) => (
             <button
               key={opt.value}
@@ -81,16 +88,16 @@ export const Dropdown = ({
                 onChange(opt.value);
                 setOpen(false);
               }}
-              className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-secondary transition-colors text-left ${
-                opt.value === value
-                  ? "text-primary bg-primary/5"
-                  : "text-foreground"
+              className={`flex w-full items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150 hover:bg-accent ${
+                opt.value === value ? "text-primary" : "text-foreground"
               }`}
             >
               {opt.icon && <opt.icon className="h-3.5 w-3.5" />}
-              <span>{opt.label}</span>
+              <span className="font-mono text-[11px] uppercase tracking-[0.08em]">
+                {opt.label}
+              </span>
               {opt.desc && (
-                <span className="text-muted-foreground ml-auto">
+                <span className="ml-auto font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
                   {opt.desc}
                 </span>
               )}
@@ -134,16 +141,16 @@ const ControlBar = ({
   onToggleDarkMode,
   // Train
 }) => (
-  <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card gap-2 flex-wrap">
+  <div className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-background/70 px-4 py-2.5 backdrop-blur-md">
     {/* Left — branding */}
-    <div className="flex items-center gap-2 shrink-0">
+    <div className="flex shrink-0 items-center gap-2">
       <span className="font-display text-lg font-semibold tracking-tight text-foreground">
         <span className="text-primary">♟</span> vibechess
       </span>
     </div>
 
     {/* Center — controls */}
-    <div className="flex items-center gap-2 flex-wrap">
+    <div className="flex flex-wrap items-center gap-2">
       {/* Opponent selector */}
       <Dropdown
         label="Opponent"
@@ -175,39 +182,59 @@ const ControlBar = ({
           />
         )} */}
 
-      <div className="w-px h-4 bg-border mx-1" />
+      <div className="mx-1 h-5 w-px bg-border" />
 
-      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-secondary">
+      <div className="flex items-center gap-2 rounded-[2px] border border-border px-2.5 py-1.5">
         <Zap
-          className={`h-3.5 w-3.5 ${
+          className={`h-3.5 w-3.5 transition-colors duration-150 ${
             isLiveMode ? "text-primary" : "text-muted-foreground"
           }`}
         />
-        <span className="text-xs text-muted-foreground">
-          {isLiveMode ? "Live Mode" : "Training"}
+        <span
+          className={`font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+            isLiveMode ? "text-primary" : "text-muted-foreground"
+          }`}
+        >
+          {isLiveMode ? "Live" : "Training"}
         </span>
         <Switch checked={isLiveMode} onCheckedChange={onToggleLiveMode} />
       </div>
 
-      <Button variant="ghost" size="sm" onClick={onNewGame}>
-        <RotateCcw className="h-4 w-4" />
+      <EditorialButton
+        variant="ghost"
+        onClick={onNewGame}
+        className="text-[10px] uppercase tracking-[0.12em]"
+      >
+        <RotateCcw className="h-3.5 w-3.5" />
         New Game
-      </Button>
+      </EditorialButton>
 
-      <Button variant="ghost" size="sm" onClick={onOpenSavedGames}>
-        <FolderOpen className="h-4 w-4" />
+      <EditorialButton
+        variant="ghost"
+        onClick={onOpenSavedGames}
+        className="text-[10px] uppercase tracking-[0.12em]"
+      >
+        <FolderOpen className="h-3.5 w-3.5" />
         Save / Load
-      </Button>
+      </EditorialButton>
 
-      <Button variant="ghost" size="sm" onClick={onOpenOpenings}>
-        <BookOpen className="h-4 w-4" />
+      <EditorialButton
+        variant="ghost"
+        onClick={onOpenOpenings}
+        className="text-[10px] uppercase tracking-[0.12em]"
+      >
+        <BookOpen className="h-3.5 w-3.5" />
         Openings
-      </Button>
+      </EditorialButton>
 
-      <Button variant="ghost" size="sm" onClick={onOpenPuzzles}>
-        <Puzzle className="h-4 w-4" />
+      <EditorialButton
+        variant="ghost"
+        onClick={onOpenPuzzles}
+        className="text-[10px] uppercase tracking-[0.12em]"
+      >
+        <Puzzle className="h-3.5 w-3.5" />
         Puzzles
-      </Button>
+      </EditorialButton>
 
       {/* <Button variant="ghost" size="sm" onClick={onSetPosition}>
         <LayoutGrid className="h-4 w-4" />
