@@ -9,6 +9,8 @@ import {
   RotateCcw,
   Check,
   Search,
+  Send,
+  MessageCircle,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chessboard } from "react-chessboard";
@@ -17,7 +19,7 @@ import ReactMarkdown from "react-markdown";
 import { Callout, EditorialButton, FadeInUp } from "@/components/ui/editorial";
 import { Input } from "@/components/ui/input";
 import { toBoardArrows } from "@/lib/board-annotations";
-import { explainOpening } from "@/lib/coach-opening";
+import { coachFollowup, explainOpening } from "@/lib/coach-opening";
 import { getCourseLines, listCourses } from "@/lib/courses-db";
 import { describeCorrection, describeMove, describeReply } from "@/lib/narrate";
 
@@ -147,12 +149,25 @@ const CourseList = ({ onPick }) => {
   const filtered = useMemo(() => {
     if (!courses) return [];
     const q = query.trim().toLowerCase();
-    // Search spans the FULL catalog; the default (unsearched) view is capped so
-    // we never mount hundreds of boards at once. `courses` is already sorted by
-    // lineCount desc in courses-db, so the cap keeps the richest courses.
-    return q
-      ? courses.filter((c) => c.family.toLowerCase().includes(q))
-      : courses.slice(0, CATALOG_CAP);
+    if (!q) return courses.slice(0, CATALOG_CAP);
+    // Smart, token-based search across the FULL catalog: every query word must
+    // appear somewhere in the family name, ECO, or any variation term (so
+    // "najdorf", "dragon", "berlin", "b90", "kings indian" all surface their
+    // family). Ranked: family-name hits first, then earliest match.
+    const tokens = q.split(/\s+/).filter(Boolean);
+    const scored = [];
+    for (const c of courses) {
+      const fam = c.family.toLowerCase();
+      const hay = `${fam} ${(c.eco || "").toLowerCase()} ${c.terms || ""}`;
+      if (!tokens.every((t) => hay.includes(t))) continue;
+      // rank: whole query in family name (0) > all tokens in family (1) > terms (2)
+      const rank = fam.includes(q) ? 0 : tokens.every((t) => fam.includes(t)) ? 1 : 2;
+      scored.push({ c, rank });
+    }
+    return scored
+      .sort((a, b) => a.rank - b.rank || b.c.lineCount - a.c.lineCount)
+      .map((s) => s.c)
+      .slice(0, 60);
   }, [courses, query]);
 
   return (
@@ -254,6 +269,17 @@ const Trainer = ({ course, onExit }) => {
   const replyTimer = useRef(null);
   const aiSeq = useRef(0);
 
+  // ── Coach chat ────────────────────────────────────────────────────────────
+  // A position-scoped follow-up thread. `messages` is [{role,content}]; it is
+  // cleared whenever the decision position changes (line/ply move) so questions
+  // always concern the position on the board. `chatSeq` ignores stale replies.
+  const [messages, setMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatBusy, setChatBusy] = useState(false);
+  const chatSeq = useRef(0);
+  const mounted = useRef(true);
+  useEffect(() => () => { mounted.current = false; }, []);
+
   // ── Line-demo playback ──────────────────────────────────────────────────────
   // Plays the coach's engine-anchored line on the board step by step, then
   // restores the real decision position so training continues. demoTimer drives
@@ -269,6 +295,10 @@ const Trainer = ({ course, onExit }) => {
     clearTimeout(demoTimer.current);
     demoTimer.current = null;
     setDemoActive(false);
+    // Only restore (and clear demo highlights) when a demo was actually running.
+    // Otherwise leave the board's current arrows/squareStyles intact — e.g. the
+    // instant wrong-move red/green arrows must survive the runExplain() call that
+    // invokes stopDemo() at its start.
     if (restoreRef.current) {
       gameRef.current = new Chess(restoreRef.current);
       setFen(restoreRef.current);
@@ -310,12 +340,16 @@ const Trainer = ({ course, onExit }) => {
           // the coach response). Replaces the instant correction's red highlight.
           if (res.arrows?.length) setArrows(toBoardArrows(res.arrows));
           // Deeper reasoning + a replayable engine-anchored line, if provided.
+          // The result is now always grounded (engine line + arrows) even with no
+          // LLM key, so record it whenever ANY structured field is present and
+          // carry aiGenerated so the UI can hint about adding a key.
           const hasLine = Array.isArray(res.line) && res.line.length > 0 && res.lineFromFen;
-          if (res.reasoning || hasLine) {
+          if (res.reasoning || hasLine || explanation) {
             setCoachExtra({
               reasoning: res.reasoning || "",
               line: hasLine ? res.line : null,
               lineFromFen: hasLine ? res.lineFromFen : null,
+              aiGenerated: res.aiGenerated !== false,
             });
           }
         }
@@ -500,7 +534,20 @@ const Trainer = ({ course, onExit }) => {
 
       const correct = sourceSquare === expected.from && targetSquare === expected.to;
       if (!correct) {
-        setSquareStyles({ [targetSquare]: { background: "rgba(192,57,43,0.35)" } });
+        // ALWAYS draw arrows immediately, independent of the async explainOpening:
+        // RED for the played (wrong) move, GREEN for the expected book move — plus
+        // lit squares on both. runExplain replaces these with the coach's own
+        // arrows when it resolves; until then the board is never arrow-less.
+        setArrows([
+          { startSquare: sourceSquare, endSquare: targetSquare, color: "#c0392b" },
+          { startSquare: expected.from, endSquare: expected.to, color: "#2e9e3b" },
+        ]);
+        setSquareStyles({
+          [sourceSquare]: { background: "rgba(192,57,43,0.20)" },
+          [targetSquare]: { background: "rgba(192,57,43,0.35)" },
+          [expected.from]: { background: "rgba(46,158,59,0.20)" },
+          [expected.to]: { background: "rgba(46,158,59,0.35)" },
+        });
         setFeedback("wrong");
         setMistakesThisLine((m) => m + 1);
         if (mode === "drill") setCombo(0);
@@ -539,6 +586,71 @@ const Trainer = ({ course, onExit }) => {
     runExplain();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, feedback, lines, lineIdx, plyIdx, side]);
+
+  // Learn mode: show WHAT to move WHERE. When it's the student's turn to play
+  // the book move (feedback idle, expected is the student's move), draw a GREEN
+  // arrow for the expected move and lighten its from/to squares so the learner
+  // sees the move to make. Cleared on opponent replies, line change, a played
+  // move, or leaving Learn mode (handleDrop/autoPlayReplies/loadLine reset these).
+  useEffect(() => {
+    if (mode !== "learn" || feedback !== "idle" || demoActive) return undefined;
+    const expected = lines?.[lineIdx]?.plies[plyIdx];
+    if (!expected || expected.color !== side) return undefined;
+    setArrows([{ startSquare: expected.from, endSquare: expected.to, color: "#2e9e3b" }]);
+    setSquareStyles({
+      [expected.from]: { background: "rgba(46,158,59,0.20)" },
+      [expected.to]: { background: "rgba(46,158,59,0.35)" },
+    });
+    return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, feedback, lines, lineIdx, plyIdx, side, demoActive]);
+
+  // Scope the coach chat to the current decision: clear the thread (and ignore
+  // any in-flight reply) whenever the line or ply changes.
+  useEffect(() => {
+    chatSeq.current += 1;
+    setMessages([]);
+    setChatInput("");
+    setChatBusy(false);
+  }, [lineIdx, plyIdx]);
+
+  // Ask the coach a follow-up about the position currently on the board. Grounds
+  // the answer in the decision fen + line context + the running thread, then
+  // appends both the question and the markdown reply to `messages`.
+  const sendChat = useCallback(() => {
+    const question = chatInput.trim();
+    if (!question || chatBusy) return;
+    const expected = lines?.[lineIdx]?.plies[plyIdx];
+    const fenBefore = expected?.fenBefore ?? gameRef.current.fen();
+    const historySan = (lines?.[lineIdx]?.plies ?? []).slice(0, plyIdx).map((p) => p.san);
+    const prior = messages.map((m) => ({ role: m.role, content: m.content }));
+    setMessages((prev) => [...prev, { role: "user", content: question }]);
+    setChatInput("");
+    setChatBusy(true);
+    const seq = ++chatSeq.current;
+    coachFollowup({
+      question,
+      fen: fenBefore,
+      family: course.family,
+      lineName: lines?.[lineIdx]?.name ?? "",
+      historySan,
+      prior,
+    })
+      .then((reply) => {
+        if (!mounted.current || seq !== chatSeq.current) return;
+        setMessages((prev) => [...prev, { role: "assistant", content: reply || "" }]);
+      })
+      .catch(() => {
+        if (!mounted.current || seq !== chatSeq.current) return;
+        setMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: "_The coach could not answer that just now. Try again._" },
+        ]);
+      })
+      .finally(() => {
+        if (mounted.current && seq === chatSeq.current) setChatBusy(false);
+      });
+  }, [chatInput, chatBusy, lines, lineIdx, plyIdx, messages, course.family]);
 
   const nextLine = useCallback(() => {
     const idx = pickNextIndex(lines, lineIdx);
@@ -696,7 +808,75 @@ const Trainer = ({ course, onExit }) => {
                 )}
               </div>
             )}
+
+            {/* Templated (keyless) coaching still ships real arrows + a real
+                engine line; nudge toward a key for deeper prose. */}
+            {coachExtra && coachExtra.aiGenerated === false && (
+              <p className="mt-4 font-mono text-[10px] leading-relaxed tracking-[0.04em] text-muted-foreground">
+                Add a Gemini key in Settings for deeper coaching.
+              </p>
+            )}
           </div>
+
+          {/* Coach chat — ask follow-ups about THIS position. Appears once an
+              explanation exists; scoped to the current decision (cleared on a new
+              line/ply). Editorial: mono label, hairline divider, scrollable. */}
+          {coach && (
+            <div className="mt-4 rounded-md border border-border bg-background">
+              <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
+                <MessageCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                <Callout className="text-[10px]">Ask the coach</Callout>
+              </div>
+
+              {messages.length > 0 && (
+                <div className="max-h-64 space-y-3 overflow-y-auto px-4 py-3">
+                  {messages.map((m, i) => (
+                    <div key={i} className={m.role === "user" ? "" : "border-l-2 border-primary/40 pl-3"}>
+                      <Callout className="text-[9px]">
+                        {m.role === "user" ? "You" : "Coach"}
+                      </Callout>
+                      <div className="mt-1 text-[13px] leading-relaxed text-foreground">
+                        <CoachText>{m.content}</CoachText>
+                      </div>
+                    </div>
+                  ))}
+                  {chatBusy && (
+                    <div className="flex items-center gap-2">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
+                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">
+                        Coach thinking…
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <form
+                className="flex items-center gap-2 border-t border-border px-3 py-2.5"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  sendChat();
+                }}
+              >
+                <Input
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Ask the coach…"
+                  aria-label="Ask the coach a question about this position"
+                  className="h-9 flex-1 font-sans text-[13px]"
+                  disabled={chatBusy}
+                />
+                <EditorialButton
+                  type="submit"
+                  variant="primary"
+                  disabled={chatBusy || !chatInput.trim()}
+                  aria-label="Send question to coach"
+                >
+                  <Send className="h-3.5 w-3.5" />
+                </EditorialButton>
+              </form>
+            </div>
+          )}
 
           {line && (
             <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">

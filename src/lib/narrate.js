@@ -46,3 +46,67 @@ export const describeCorrection = (expectedPly, lineName) => {
     : `the ${piece} to ${expectedPly.to}`;
   return `Not the move this line plays. ${lineName} continues with ${expectedPly.san} — ${where}. Try again.`;
 };
+
+// ── Engine-grounded keyless templates (no LLM key) ────────────────────────────
+// These build a real, content-rich explanation purely from Stockfish evidence:
+// the played move, the book move, the resulting assessment phrase, and the
+// follow-up line in SAN. Used by explainOpening when no Google key is set.
+
+const joinSan = (line = []) =>
+  line.map((m) => (typeof m === "string" ? m : m?.san)).filter(Boolean).join(" ");
+
+const bold = (san) => (san ? `**${san}**` : "");
+
+/**
+ * Keyless correction explanation for a wrong move.
+ * @param {object} a
+ * @param {string} a.playedSan   the move the student played
+ * @param {string} a.bookSan     the move this line plays
+ * @param {string} [a.assessment] eval phrase after the played move, e.g. "a slight edge for White"
+ * @param {Array<{san:string}>|string[]} [a.followupLine] the punishing continuation
+ * @param {string} [a.side]      side being trained ("White"/"Black")
+ * @returns {{explanation:string, reasoning:string}}
+ */
+export const templatedCorrection = ({
+  playedSan,
+  bookSan,
+  assessment = "",
+  followupLine = [],
+  side = "",
+}) => {
+  const followSan = joinSan(followupLine);
+  const who = side || "you";
+  const explanation = followSan
+    ? `Playing ${bold(playedSan)} drifts from the plan; this line plays ${bold(bookSan)}, and after ${followSan} the position becomes ${assessment || "harder for you"}.`
+    : `Playing ${bold(playedSan)} drifts from the plan; this line plays ${bold(bookSan)} instead.`;
+  const reasoning = followSan
+    ? `After ${bold(playedSan)} the natural continuation ${followSan} leaves ${assessment || "the worse side for " + who}, which is why ${bold(bookSan)} is the move to learn here.`
+    : `${bold(bookSan)} is the move this line plays; ${bold(playedSan)} hands the initiative the other way.`;
+  return { explanation, reasoning };
+};
+
+/**
+ * Keyless explanation for the correct / book move (the plan).
+ * @param {object} a
+ * @param {string} a.bookSan     the book move just understood
+ * @param {string} [a.assessment] eval phrase after the book move
+ * @param {Array<{san:string}>|string[]} [a.followupLine] the recommended continuation
+ * @param {string} [a.side]      side being trained ("White"/"Black")
+ * @returns {{explanation:string, reasoning:string}}
+ */
+export const templatedPlan = ({
+  bookSan,
+  assessment = "",
+  followupLine = [],
+  side = "",
+}) => {
+  const followSan = joinSan(followupLine);
+  const who = side || "you";
+  const explanation = followSan
+    ? `This line plays ${bold(bookSan)}, and after ${followSan} ${who} keep ${assessment || "a healthy position"}.`
+    : `This line plays ${bold(bookSan)} to keep ${assessment || "a healthy position"}.`;
+  const reasoning = followSan
+    ? `Following ${bold(bookSan)} with ${followSan} gives ${assessment || "a comfortable game"}, so the move fits the plan of this line.`
+    : `${bold(bookSan)} keeps the plan of this line on track for ${assessment || "a comfortable game"}.`;
+  return { explanation, reasoning };
+};

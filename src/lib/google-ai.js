@@ -416,6 +416,65 @@ export const generateJson = async ({
   return JSON.parse(cleaned);
 };
 
+/**
+ * Lightweight multi-turn chat generation. No tools, no JSON, no board actions —
+ * just a grounded prose reply. Used by the opening coach's follow-up chat.
+ * Returns the raw reply text. Throws on a missing key or empty reply.
+ *
+ * @param {object} a
+ * @param {string} a.instruction        system instruction
+ * @param {Array<{role:string,content:string}>} [a.history] prior chat turns
+ * @param {string} a.message            the latest user message (already grounded)
+ * @param {string} a.apiKey             Google API key
+ * @param {string} [a.model]            Gemini model id
+ * @param {number} [a.temperature]      sampling temperature
+ * @param {number} [a.maxOutputTokens]  output token cap
+ * @param {number} [a.thinkingBudget]   thinking-model reasoning budget; pass 0 to disable
+ * @returns {Promise<string>} reply text
+ */
+export const generateChat = async ({
+  instruction,
+  history = [],
+  message,
+  apiKey,
+  model = "gemini-3.5-flash",
+  temperature = 0.4,
+  maxOutputTokens = 600,
+  thinkingBudget,
+}) => {
+  if (!apiKey) throw new Error("Please set your Google API key in Settings.");
+  const ai = createGoogleClient(apiKey);
+  const contents = [
+    ...toGoogleContents(history),
+    { role: "user", parts: [{ text: message }] },
+  ];
+  const baseConfig = { temperature, maxOutputTokens };
+
+  const call = async (config) => {
+    const response = await ai.models.generateContent({
+      model,
+      systemInstruction: instruction,
+      config,
+      contents,
+    });
+    return response.text || "";
+  };
+
+  // Disable thinking for a fast reply when asked; retry without it if rejected.
+  if (thinkingBudget != null) {
+    try {
+      const raw = await call({
+        ...baseConfig,
+        thinkingConfig: { thinkingBudget },
+      });
+      if (raw) return raw;
+    } catch {
+      // fall through to a plain call
+    }
+  }
+  return call(baseConfig);
+};
+
 // ── Available Gemini models ───────────────────────────────────────────────────
 export const GEMINI_MODELS = [
   {

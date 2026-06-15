@@ -85,10 +85,14 @@ export const listCourses = async ({ min = 4 } = {}) => {
     if (!fam) continue;
     let cur = fams.get(fam);
     if (!cur) {
-      cur = { family: fam, slug: slugify(fam), eco: r.eco, lineCount: 0, _repPgn: "", _repScore: -1 };
+      cur = { family: fam, slug: slugify(fam), eco: r.eco, lineCount: 0, _repPgn: "", _repScore: -1, _terms: new Set() };
       fams.set(fam, cur);
     }
     cur.lineCount += 1;
+    // Searchable terms: the FULL line name (so sub-variations like "Najdorf",
+    // "Dragon", "Berlin" surface their family) + the ECO code.
+    if (r.name) cur._terms.add(r.name.toLowerCase());
+    if (r.eco) cur._terms.add(r.eco.toLowerCase());
     // Score each candidate; higher wins. Exact-family name is best; otherwise
     // favour the shortest sensible mainline (≥4 plies) so the thumbnail shows a
     // recognisable, characteristic position rather than a deep sideline.
@@ -106,10 +110,12 @@ export const listCourses = async ({ min = 4 } = {}) => {
   _courseCache = [...fams.values()]
     .filter((c) => c.lineCount >= min)
     .sort((a, b) => b.lineCount - a.lineCount)
-    .map(({ _repPgn, _repScore, ...c }) => ({
+    .map(({ _repPgn, _repScore, _terms, ...c }) => ({
       ...c,
       fen: finalFenOf(_repPgn),
       arrow: arrowOf(_repPgn),
+      // Space-joined searchable terms: family + every variation name + ECOs.
+      terms: [...(_terms || [])].join(" "),
     }));
   return _courseCache;
 };
