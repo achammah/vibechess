@@ -24,7 +24,7 @@ export const sendChatMessage = async ({
   messages,
   fen,
   apiKey,
-  model = "gpt-4o-mini",
+  model = "gpt-5.4-mini",
 }) => {
   if (!apiKey) {
     throw new Error("Please set your API key in Settings first.");
@@ -120,7 +120,7 @@ export const summarizeConversation = async ({
   messages,
   existingSummary = "",
   apiKey,
-  model = "gpt-4o-mini",
+  model = "gpt-5.4-mini",
 }) => {
   if (!apiKey) {
     throw new Error("Please set your OpenAI API key in Settings first.");
@@ -179,7 +179,7 @@ export const getGMThoughtProcess = async ({
   moveHistorySan = [],
   elo = 1000,
   apiKey,
-  model = "gpt-4o-mini",
+  model = "gpt-5.4-mini",
 }) => {
   if (!apiKey) {
     throw new Error("Please set your OpenAI API key in Settings first.");

@@ -1,5 +1,9 @@
 import { GoogleGenAI, createPartFromFunctionResponse } from "@google/genai";
 
+// Re-export the Gemini catalog from the centralized model registry so existing
+// `import { GEMINI_MODELS } from "@/lib/google-ai"` call sites keep working.
+export { GEMINI_MODELS } from "./models";
+
 // ── System prompt ────────────────────────────────────────────────────────────
 const GM_SYSTEM_PROMPT = `You are a patient, encouraging chess teacher at Grandmaster level working one-on-one with a student.
 
@@ -474,46 +478,3 @@ export const generateChat = async ({
   }
   return call(baseConfig);
 };
-
-// ── Available Gemini models ───────────────────────────────────────────────────
-export const GEMINI_MODELS = [
-  {
-    id: "gemini-2.5-pro",
-    label: "Gemini 2.5 Pro",
-    description: "Most capable — deep reasoning & complex analysis",
-  },
-  {
-    id: "gemini-3.5-flash",
-    label: "Gemini 3.5 Flash",
-    description:
-      "Best price/performance — fast with strong reasoning (recommended)",
-  },
-  {
-    id: "gemini-2.5-flash-lite",
-    label: "Gemini 2.5 Flash-Lite",
-    description: "Fastest & cheapest — great for quick hints",
-  },
-  {
-    id: "gemini-3.1-pro-preview",
-    label: "Gemini 3.1 Pro Preview",
-    description:
-      "Preview of the upcoming Gemini 3.1 Pro model; highest reasoning capability",
-  },
-  {
-    id: "gemini-3.1-flash-lite-preview",
-    label: "Gemini 3.1 Flash-Lite Preview",
-    description: "Preview of the ultra-fast, lightweight Gemini 3.1 Flash-Lite",
-  },
-  {
-    id: "gemini-3-pro-preview",
-    label: "Gemini 3 Pro Preview",
-    description:
-      "Early access to Gemini 3 Pro with improved general performance",
-  },
-  {
-    id: "gemini-3-flash-preview",
-    label: "Gemini 3 Flash Preview",
-    description:
-      "Preview of the Gemini 3 Flash model offering balance of speed and power",
-  },
-];

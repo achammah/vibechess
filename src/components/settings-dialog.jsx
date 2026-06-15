@@ -11,20 +11,13 @@ import {
 import { Callout, Chip, EditorialButton } from "@/components/ui/editorial";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { GEMINI_MODELS } from "@/lib/google-ai";
+import { GEMINI_MODELS, OPENAI_MODELS } from "@/lib/models";
 import { voiceSupported } from "@/lib/voice";
 
 const FIELD_LABEL =
   "font-mono text-[11px] uppercase tracking-[0.14em] text-muted-foreground";
 const SELECT_CLS =
   "flex h-9 w-full rounded-[3px] border border-border bg-transparent px-3 py-1 text-sm font-sans text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
-
-const OPENAI_MODELS = [
-  { id: "gpt-4o-mini", label: "GPT-4o Mini" },
-  { id: "gpt-4o", label: "GPT-4o" },
-  { id: "gpt-4-turbo", label: "GPT-4 Turbo" },
-  { id: "gpt-3.5-turbo", label: "GPT-3.5 Turbo" },
-];
 
 /**
  *
@@ -34,7 +27,7 @@ const SettingsDialog = ({ open, onOpenChange }) => {
   const [googleApiKey, setGoogleApiKey] = useState("");
   const [googleModel, setGoogleModel] = useState("gemini-3.5-flash");
   const [openaiApiKey, setOpenaiApiKey] = useState("");
-  const [openaiModel, setOpenaiModel] = useState("gpt-4o-mini");
+  const [openaiModel, setOpenaiModel] = useState("gpt-5.4-mini");
   const [elo, setElo] = useState("1000");
   const [voiceCoach, setVoiceCoach] = useState(false);
 
@@ -46,7 +39,7 @@ const SettingsDialog = ({ open, onOpenChange }) => {
       localStorage.getItem("chess-google-model") || "gemini-3.5-flash",
     );
     setOpenaiApiKey(localStorage.getItem("chess-coach-api-key") || "");
-    setOpenaiModel(localStorage.getItem("chess-coach-model") || "gpt-4o-mini");
+    setOpenaiModel(localStorage.getItem("chess-coach-model") || "gpt-5.4-mini");
     setElo(localStorage.getItem("chess-coach-elo") || "1000");
     setVoiceCoach(localStorage.getItem("chess-voice-coach") === "on");
   }, [open]);

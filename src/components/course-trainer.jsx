@@ -18,6 +18,7 @@ import ReactMarkdown from "react-markdown";
 
 import { Callout, EditorialButton, FadeInUp } from "@/components/ui/editorial";
 import { Input } from "@/components/ui/input";
+import ModelPicker from "@/components/ui/model-picker";
 import { toBoardArrows } from "@/lib/board-annotations";
 import { coachFollowup, explainOpening } from "@/lib/coach-opening";
 import { getCourseLines, listCourses } from "@/lib/courses-db";
@@ -735,6 +736,14 @@ const Trainer = ({ course, onExit }) => {
               </button>
             );
           })}
+        </div>
+
+        {/* coach model */}
+        <div className="flex items-center justify-between gap-2 border-b border-border px-5 py-2">
+          <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+            Coach model
+          </span>
+          <ModelPicker compact />
         </div>
 
         {/* progress / score */}

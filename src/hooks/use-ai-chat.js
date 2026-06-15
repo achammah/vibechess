@@ -179,7 +179,7 @@ export const getGoogleModel = () =>
   localStorage.getItem("chess-google-model") || "gemini-3.5-flash";
 
 export const getModel = () =>
-  localStorage.getItem("chess-coach-model") || "gpt-4o-mini";
+  localStorage.getItem("chess-coach-model") || "gpt-5.4-mini";
 
 export const getElo = () =>
   Number.parseInt(localStorage.getItem("chess-coach-elo") || "1000", 10);

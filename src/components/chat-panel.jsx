@@ -30,6 +30,7 @@ import {
   EditorialButton,
   FadeInUp,
 } from "@/components/ui/editorial";
+import ModelPicker from "@/components/ui/model-picker";
 
 // ── Quality colour map ────────────────────────────────────────────────────
 // Harmonised, hairline-bordered set. Distinguishable via a tight palette of

@@ -538,7 +538,7 @@ const useEngineCoach = ({
 
         const apiKey = localStorage.getItem("chess-coach-api-key") || "";
         const model =
-          localStorage.getItem("chess-coach-model") || "gpt-4o-mini";
+          localStorage.getItem("chess-coach-model") || "gpt-5.4-mini";
         const elo = Number.parseInt(
           localStorage.getItem("chess-coach-elo") || "1000",
           10,

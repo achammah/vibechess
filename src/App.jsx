@@ -7,6 +7,7 @@ import BoardPanel, { playSound } from "@/components/board-panel";
 import ChatPanel from "@/components/chat-panel";
 import ControlBar from "@/components/control-bar";
 import CourseTrainer from "@/components/course-trainer";
+import KeyInvite, { hasLlmKey } from "@/components/key-invite";
 import EndgameMode from "@/components/endgame-mode";
 import GameReportDialog from "@/components/game-report-dialog";
 import MoveHistorySidebar from "@/components/move-history-sidebar";
@@ -63,6 +64,15 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [moveQuality, setMoveQuality] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [keyInviteOpen, setKeyInviteOpen] = useState(false);
+
+  // Invite signed-in users without an AI key to add one (unlocks the coach,
+  // opening explanations + chat, etc.). Shown once until dismissed.
+  useEffect(() => {
+    if (!hasLlmKey() && localStorage.getItem("vibechess-key-invite-dismissed") !== "1") {
+      setKeyInviteOpen(true);
+    }
+  }, []);
   const [openingsOpen, setOpeningsOpen] = useState(false);
   // Top-level view: 'play' | 'openings' | 'puzzles'. Persistent TopNav stays
   // visible at all times; the content region below switches on this.
@@ -1120,6 +1130,17 @@ const App = () => {
 
       {/* Dialogs & Overlays */}
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <KeyInvite
+        open={keyInviteOpen}
+        onOpenChange={(v) => {
+          setKeyInviteOpen(v);
+          if (!v) localStorage.setItem("vibechess-key-invite-dismissed", "1");
+        }}
+        onAddKey={() => {
+          setKeyInviteOpen(false);
+          setSettingsOpen(true);
+        }}
+      />
       <OpeningsDialog open={openingsOpen} onOpenChange={setOpeningsOpen} />
 
       <GameReportDialog
