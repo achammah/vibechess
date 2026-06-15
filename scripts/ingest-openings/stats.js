@@ -38,6 +38,8 @@ const PROXY_URL =
   process.env.HTTPS_PROXY ||
   "";
 const usingProxy = Boolean(PROXY_URL);
+// Lichess API token (Bearer) — authorizes the now-login-gated opening explorer.
+const LICHESS_TOKEN = process.env.LICHESS_TOKEN || "";
 if (usingProxy) {
   setGlobalDispatcher(
     new ProxyAgent({ uri: PROXY_URL, requestTls: { rejectUnauthorized: false } }),
@@ -171,7 +173,13 @@ const fetchExplorer = async (fen, db, cache, state) => {
     if (Date.now() > state.deadline) return null;
     try {
       const res = await fetch(url, {
-        headers: { "User-Agent": "vibechess-stats/1.0 (opening research)", Accept: "application/json" },
+        headers: {
+          "User-Agent": "vibechess-stats/1.0 (opening research)",
+          Accept: "application/json",
+          // Lichess now gates opening data behind a login — a free API token
+          // (lichess.org/account/oauth/token/create, no scopes) authorizes it.
+          ...(LICHESS_TOKEN ? { Authorization: `Bearer ${LICHESS_TOKEN}` } : {}),
+        },
       });
       if (res.status === 429 || res.status === 503) {
         await sleep(2000 * (attempt + 1));
