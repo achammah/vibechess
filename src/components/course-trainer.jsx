@@ -484,7 +484,10 @@ const CourseList = ({ onPick }) => {
 // ── Trainer ──────────────────────────────────────────────────────────────────
 const Trainer = ({ course, onExit, onAddKey }) => {
   const [lines, setLines] = useState(null);
-  const [side] = useState("w"); // courses default to White; flip support can follow
+  // Train (and orient the board for) the side that PLAYS this opening: Black for
+  // a defense / Black system (board flips to Black at the bottom and White's
+  // leading moves auto-play), White otherwise. Derived from the course's side.
+  const [side] = useState(course?.side === "black" ? "b" : "w");
   const [mode, setMode] = useState("learn");
   const [learned, setLearned] = useState(() => loadLearned(course.slug));
 
