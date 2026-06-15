@@ -19,14 +19,16 @@ import {
   FadeInUp,
   RuleLabel,
 } from "@/components/ui/editorial";
+import LogoMark from "@/components/ui/logo-mark";
 
 const clerkEnabled = Boolean(import.meta.env.VITE_CLERK_PUBLISHABLE_KEY);
 
 const Landing = () => (
   <div className="edit-grid flex min-h-screen flex-col items-center justify-center bg-background px-6">
     <FadeInUp className="relative w-full max-w-2xl text-center">
-      <div className="font-display text-2xl font-semibold tracking-tight text-foreground">
-        <span className="text-primary">♟</span> vibechess
+      <div className="flex items-center justify-center gap-2.5 font-display text-2xl font-semibold tracking-tight text-foreground">
+        <LogoMark className="h-9 w-auto text-foreground" />
+        vibechess
       </div>
 
       <div className="mt-8 flex justify-center">

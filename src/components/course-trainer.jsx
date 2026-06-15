@@ -43,6 +43,20 @@ const MODES = [
   { id: "drill", label: "Drill", icon: Flame, blurb: "Rapid fire. Build a no-mistake combo." },
 ];
 
+// A line's variation label within its family: the descriptive tail after the
+// first ":" (e.g. "London System: Poisoned Pawn" → "Poisoned Pawn",
+// "Queen's Pawn Game: London System, with e6" → "London System, with e6"),
+// else the bare name. Lets a family's lines be grouped into selectable
+// variations so the student can train the whole system or drill just one.
+const ALL_VARIATIONS = "__all__";
+const variationLabel = (name = "", family = "") => {
+  const s = String(name).trim();
+  const colon = s.indexOf(":");
+  let tail = colon >= 0 ? s.slice(colon + 1).trim() : s;
+  if (!tail || tail === family) tail = "Main line";
+  return tail;
+};
+
 // Render coach prose as real styled text (bold, lists, inline moves) — never raw markdown.
 const MD = {
   p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
@@ -315,6 +329,32 @@ const Trainer = ({ course, onExit, onAddKey }) => {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
+  // ── Variations ──────────────────────────────────────────────────────────────
+  // A family course holds many variations. `variationFilter` scopes the working
+  // set: ALL_VARIATIONS trains the whole system (every line); a specific label
+  // drills just that variation. `activeLines` is the working set the trainer
+  // cycles/counts over; `lineIdx` indexes INTO activeLines. Declared BEFORE the
+  // callbacks/effects that depend on it so it's initialized when their dep
+  // arrays evaluate.
+  const [variationFilter, setVariationFilter] = useState(ALL_VARIATIONS);
+  const variations = useMemo(() => {
+    const map = new Map();
+    for (const l of lines || []) {
+      const label = variationLabel(l.name, course.family);
+      map.set(label, (map.get(label) || 0) + 1);
+    }
+    return [...map.entries()].map(([label, count]) => ({ label, count }));
+  }, [lines, course.family]);
+  const activeLines = useMemo(() => {
+    const all = lines || [];
+    if (variationFilter === ALL_VARIATIONS) return all;
+    return all.filter((l) => variationLabel(l.name, course.family) === variationFilter);
+  }, [lines, variationFilter, course.family]);
+  const learnedInView = useMemo(
+    () => activeLines.filter((l) => learned.has(l.id)).length,
+    [activeLines, learned],
+  );
+
   // ── Manual line walk (step-through) ──────────────────────────────────────────
   // A coach message with a non-empty `line` can be "walked" ON the board, one
   // ply at a time, under the STUDENT's control (Prev / Next) — NOT autoplay.
@@ -395,7 +435,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
   // lineName, side, and the SAN of every ply played so far.
   const runExplain = useCallback(
     async ({ playedUci = null, kind = "explain", pendingText = "Let me explain this move…" } = {}) => {
-      const l = lines?.[lineIdx];
+      const l = activeLines?.[lineIdx];
       const expected = l?.plies[plyIdx];
       if (!expected) return;
       // A fresh explanation invalidates any running walk.
@@ -441,7 +481,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
         });
       }
     },
-    [lines, lineIdx, plyIdx, course.family, side, stopWalk, appendMessage, replaceMessage],
+    [activeLines, lineIdx, plyIdx, course.family, side, stopWalk, appendMessage, replaceMessage],
   );
 
   // Begin a manual walk of a coach message's engine-anchored line. Remembers the
@@ -483,7 +523,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
     [walkBoardAt],
   );
 
-  const line = lines?.[lineIdx] ?? null;
+  const line = activeLines?.[lineIdx] ?? null;
 
   useEffect(() => {
     getCourseLines(course.family).then(setLines).catch(() => setLines([]));
@@ -513,7 +553,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
 
   // Load a line into the board, auto-playing any leading opponent plies.
   const loadLine = useCallback(
-    (idx, list = lines) => {
+    (idx, list = activeLines) => {
       const l = list?.[idx];
       if (!l) return;
       clearTimeout(replyTimer.current);
@@ -549,14 +589,15 @@ const Trainer = ({ course, onExit, onAddKey }) => {
           : `${l.name} — play your line.`;
       setMessages([{ id: nextId(), role: "coach", text: intro, kind: "intro" }]);
     },
-    [lines, side, mode, stopWalk, appendMessage],
+    [activeLines, side, mode, stopWalk, appendMessage],
   );
 
-  // (re)start when lines arrive or mode changes
+  // (re)start when the working set arrives, the mode changes, or the chosen
+  // variation changes — always reload from the start of the active set.
   useEffect(() => {
-    if (lines?.length) loadLine(pickNextIndex(lines, -1), lines);
+    if (activeLines?.length) loadLine(pickNextIndex(activeLines, -1), activeLines);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lines, mode]);
+  }, [activeLines, mode]);
 
   const completeLine = useCallback(() => {
     setFeedback("lineDone");
@@ -567,7 +608,8 @@ const Trainer = ({ course, onExit, onAddKey }) => {
       next.add(line.id);
       setLearned(next);
       saveLearned(course.slug, next);
-      text = `Line learned: ${line.name}. ${next.size}/${lines.length} discovered.`;
+      const inView = activeLines.filter((l) => next.has(l.id)).length;
+      text = `Line learned: ${line.name}. ${inView}/${activeLines.length} discovered.`;
     } else if (mode === "drill") {
       const clean = mistakesThisLine === 0;
       const newCombo = clean ? combo + 1 : 0;
@@ -578,11 +620,11 @@ const Trainer = ({ course, onExit, onAddKey }) => {
       text = mistakesThisLine === 0 ? "Solved cleanly." : "Solved, with a slip. It'll come back sooner.";
     }
     appendMessage({ id: nextId(), role: "coach", text, kind: "done" });
-  }, [mode, learned, line, lines, course.slug, combo, mistakesThisLine, appendMessage]);
+  }, [mode, learned, line, activeLines, course.slug, combo, mistakesThisLine, appendMessage]);
 
   const autoPlayReplies = useCallback(
     (g, fromPly) => {
-      const l = lines[lineIdx];
+      const l = activeLines[lineIdx];
       let p = fromPly;
       const step = () => {
         if (p >= l.plies.length) {
@@ -610,13 +652,13 @@ const Trainer = ({ course, onExit, onAddKey }) => {
       };
       step();
     },
-    [lines, lineIdx, side, mode, completeLine, appendMessage],
+    [activeLines, lineIdx, side, mode, completeLine, appendMessage],
   );
 
   const handleDrop = useCallback(
     ({ sourceSquare, targetSquare }) => {
       if (feedback === "lineDone" || walkActive) return false;
-      const l = lines?.[lineIdx];
+      const l = activeLines?.[lineIdx];
       const expected = l?.plies[plyIdx];
       if (!expected || expected.color !== side) return false;
 
@@ -677,7 +719,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
       replyTimer.current = setTimeout(() => autoPlayReplies(g, nextPly), 350);
       return true;
     },
-    [feedback, walkActive, lines, lineIdx, plyIdx, side, mode, autoPlayReplies, runExplain],
+    [feedback, walkActive, activeLines, lineIdx, plyIdx, side, mode, autoPlayReplies, runExplain],
   );
 
   // The coach does NOT explain correct/expected moves. Explanations appear only
@@ -692,7 +734,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
   // move, or leaving Learn mode (handleDrop/autoPlayReplies/loadLine reset these).
   useEffect(() => {
     if (mode !== "learn" || feedback !== "idle" || walkActive) return undefined;
-    const expected = lines?.[lineIdx]?.plies[plyIdx];
+    const expected = activeLines?.[lineIdx]?.plies[plyIdx];
     if (!expected || expected.color !== side) return undefined;
     setArrows([{ startSquare: expected.from, endSquare: expected.to, color: "#2e9e3b" }]);
     setSquareStyles({
@@ -701,7 +743,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
     });
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, feedback, lines, lineIdx, plyIdx, side, walkActive]);
+  }, [mode, feedback, activeLines, lineIdx, plyIdx, side, walkActive]);
 
   // Ask the coach a follow-up about the position currently on the board. Appends
   // the user's question, then a pending coach bubble, and grounds the answer in
@@ -711,9 +753,9 @@ const Trainer = ({ course, onExit, onAddKey }) => {
   const sendChat = useCallback(() => {
     const question = chatInput.trim();
     if (!question) return;
-    const expected = lines?.[lineIdx]?.plies[plyIdx];
+    const expected = activeLines?.[lineIdx]?.plies[plyIdx];
     const fenBefore = expected?.fenBefore ?? gameRef.current.fen();
-    const historySan = (lines?.[lineIdx]?.plies ?? []).slice(0, plyIdx).map((p) => p.san);
+    const historySan = (activeLines?.[lineIdx]?.plies ?? []).slice(0, plyIdx).map((p) => p.san);
     // Prior conversation for grounding: the thread so far mapped to the LLM's
     // {role,content} shape — coach utterances become 'assistant'.
     const prior = messages.map((m) => ({
@@ -728,7 +770,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
       question,
       fen: fenBefore,
       family: course.family,
-      lineName: lines?.[lineIdx]?.name ?? "",
+      lineName: activeLines?.[lineIdx]?.name ?? "",
       historySan,
       prior,
     })
@@ -743,17 +785,17 @@ const Trainer = ({ course, onExit, onAddKey }) => {
           pending: false,
         });
       });
-  }, [chatInput, lines, lineIdx, plyIdx, messages, course.family, appendMessage, replaceMessage]);
+  }, [chatInput, activeLines, lineIdx, plyIdx, messages, course.family, appendMessage, replaceMessage]);
 
   const nextLine = useCallback(() => {
-    const idx = pickNextIndex(lines, lineIdx);
+    const idx = pickNextIndex(activeLines, lineIdx);
     loadLine(idx);
-  }, [pickNextIndex, lines, lineIdx, loadLine]);
+  }, [pickNextIndex, activeLines, lineIdx, loadLine]);
 
   const showHint = useCallback(() => {
-    const expected = lines?.[lineIdx]?.plies[plyIdx];
+    const expected = activeLines?.[lineIdx]?.plies[plyIdx];
     if (expected) setArrows([{ startSquare: expected.from, endSquare: expected.to, color: "#ff6600" }]);
-  }, [lines, lineIdx, plyIdx]);
+  }, [activeLines, lineIdx, plyIdx]);
 
   const retry = useCallback(() => {
     setFeedback("idle");
@@ -834,6 +876,30 @@ const Trainer = ({ course, onExit, onAddKey }) => {
           })}
         </div>
 
+        {/* variation selector — train the whole system or drill one variation */}
+        {variations.length > 1 && (
+          <div className="flex items-center justify-between gap-2 border-b border-border px-5 py-2">
+            <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+              Variation
+            </span>
+            <select
+              value={variationFilter}
+              onChange={(e) => setVariationFilter(e.target.value)}
+              className="min-w-0 max-w-[68%] truncate rounded-[3px] border border-border bg-transparent px-2 py-1 text-right font-sans text-xs text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <option value={ALL_VARIATIONS}>
+                All variations ({lines?.length ?? 0})
+              </option>
+              {variations.map((v) => (
+                <option key={v.label} value={v.label}>
+                  {v.label}
+                  {v.count > 1 ? ` (${v.count})` : ""}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* coach model */}
         <div className="flex items-center justify-between gap-2 border-b border-border px-5 py-2">
           <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
@@ -847,7 +913,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
           <Callout>
             {mode === "drill"
               ? `Combo ×${combo}`
-              : `${learned.size}/${lines?.length ?? "—"} learned`}
+              : `${learnedInView}/${activeLines.length || "—"} learned`}
           </Callout>
           {mode === "drill" ? (
             <span className="font-mono text-sm tabular-nums text-primary">{score} pts</span>
@@ -967,7 +1033,7 @@ const Trainer = ({ course, onExit, onAddKey }) => {
 
           {line && (
             <p className="pt-1 text-center font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-              {line.eco} · line {lineIdx + 1} of {lines.length}
+              {line.eco} · line {lineIdx + 1} of {activeLines.length}
             </p>
           )}
         </div>

@@ -10,6 +10,7 @@ import {
 
 import AuthControls from "@/components/auth-controls";
 import { Button } from "@/components/ui/button";
+import LogoMark from "@/components/ui/logo-mark";
 
 // ── Top product navigation ────────────────────────────────────────────────
 // Cohesive mode switcher: Play (board), Openings (course trainer), Puzzles.
@@ -44,8 +45,9 @@ const TopNav = ({
   <header className="sticky top-0 z-[60] flex items-center justify-between gap-4 border-b border-border bg-background/70 px-4 py-2.5 backdrop-blur-md">
     {/* Left — wordmark */}
     <div className="flex shrink-0 items-center gap-2">
-      <span className="font-display text-lg font-semibold tracking-tight text-foreground">
-        <span className="text-primary">♟</span> vibechess
+      <span className="flex items-center gap-2 font-display text-lg font-semibold tracking-tight text-foreground">
+        <LogoMark className="h-6 w-auto text-foreground" />
+        vibechess
       </span>
     </div>
 

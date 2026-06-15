@@ -149,22 +149,74 @@ const parseLine = (pgn) => {
 };
 
 /**
- * Lines for a course (family). Returns [{ id, name, eco, plies }].
- * `side` ('w'|'b') keeps only lines where that side has a move to learn, and is
- * used by the trainer to decide which plies the user plays.
+ * Does `name` belong to the opening system `family`?
+ *
+ * A family card should collect EVERY line of that system, not just the rows
+ * whose name starts with the family string. Lichess files the same system under
+ * many different lead names — e.g. the London is spread across "London System",
+ * "Queen's Pawn Game: London System", "Indian Defense: Accelerated London
+ * System", etc. So we match the family as a colon/comma-delimited *segment*:
+ *
+ *   - any segment that equals the family ("…: London System");
+ *   - a non-prefix segment that the family appears in as a whole-word system
+ *     label — either trailing ("Accelerated London System" ⊃ "London System")
+ *     or leading ("London System, with Bd3");
+ *   - the prefix segment only when it actually starts the family ("London
+ *     System: …"), NEVER when the family is a trailing substring of a *sibling*
+ *     family ("King's Indian Defense" must not match the "Indian Defense" card,
+ *     "Semi-Slav Defense" must not match the "Slav Defense" card).
+ *
+ * Matching at segment boundaries (not bare substring) is what prevents that
+ * sibling-family over-match while still pulling London from 4 prefix rows up to
+ * ~14 across all its host families.
  */
-export const getCourseLines = async (family, { limit = 60 } = {}) => {
+const lineInFamily = (name, family) => {
+  if (!name || !family) return false;
+  const segs = name.split(/[:,]/).map((s) => s.trim()).filter(Boolean);
+  return segs.some((seg, i) => {
+    if (seg === family) return true;
+    if (i === 0) return seg.startsWith(`${family} `); // prefix: must START the family
+    // Sub-label: adjective-modified ("Accelerated London System") or leading.
+    return seg.endsWith(` ${family}`) || seg.startsWith(`${family} `);
+  });
+};
+
+/** Stable signature of a line's moves (for cross-family dedup). */
+const lineKey = (plies) => plies.map((p) => p.uci).join(" ");
+
+/**
+ * Lines for a course (family). Returns [{ id, name, eco, plies }].
+ *
+ * Pulls every row whose name references the system anywhere (not just a prefix
+ * match), via `lineInFamily`, then dedupes by move signature so the same line
+ * filed under two host families appears once. `side` is handled by the trainer.
+ */
+export const getCourseLines = async (family, { limit = 300 } = {}) => {
   if (!supabaseAnon || !family) return [];
+  // Superset fetch: any name containing the family substring. We over-fetch
+  // (`%family%` also catches sibling families) and prune precisely client-side
+  // with `lineInFamily`. A wide cap keeps it to a single round-trip.
+  const needle = family.replace(/[%_]/g, "");
   const { data } = await supabaseAnon
     .from("openings")
     .select("id, name, eco, pgn")
-    .ilike("name", `${family}%`)
-    .limit(limit);
+    .ilike("name", `%${needle}%`)
+    .limit(Math.max(limit * 8, 2000));
+
+  const seen = new Set();
   return (data ?? [])
+    .filter((o) => lineInFamily(o.name, family))
     .map((o) => ({ id: o.id, name: o.name, eco: o.eco, plies: parseLine(o.pgn) }))
-    .filter((l) => l.plies.length > 0)
+    .filter((l) => {
+      if (l.plies.length === 0) return false;
+      const k = lineKey(l.plies);
+      if (seen.has(k)) return false; // dedup identical move sequences
+      seen.add(k);
+      return true;
+    })
     // Longer, more instructive lines first.
-    .sort((a, b) => b.plies.length - a.plies.length);
+    .sort((a, b) => b.plies.length - a.plies.length)
+    .slice(0, limit);
 };
 
 /**

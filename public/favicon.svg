@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 150" fill="none" role="img" aria-label="vibechess">
+  <style>
+    .ink { stroke: #1A1A1A; }
+    .node { fill: #1A1A1A; }
+    @media (prefers-color-scheme: dark) {
+      .ink { stroke: #F5F5F5; }
+      .node { fill: #F5F5F5; }
+    }
+  </style>
+  <g class="ink" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M 52 135 C 47 112 45 96 45 82 C 45 74 45 70 47 66 L 24 61 L 36 55
+             L 44 48 L 53 24 L 61 35 L 54 40 C 71 33 87 43 89 67
+             C 91 99 83 123 74 135" />
+    <line x1="59" y1="100" x2="59" y2="128" />
+    <line x1="59" y1="111" x2="71" y2="106" />
+  </g>
+  <circle class="node" cx="59" cy="100" r="5" />
+  <circle class="node" cx="59" cy="128" r="5" />
+  <circle cx="71" cy="106" r="5.5" fill="#FF6600" />
+</svg>
