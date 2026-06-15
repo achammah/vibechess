@@ -8,8 +8,10 @@ import { fileURLToPath } from 'node:url'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/chess/' : '/',
+export default defineConfig(() => ({
+  // Served from the domain root on Vercel (the upstream repo used '/chess/' for
+  // GitHub Pages — that 404s the bundle on a root domain).
+  base: '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
