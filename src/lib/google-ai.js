@@ -90,6 +90,17 @@ const toGoogleContents = (messages) =>
       parts: [{ text: message.content }],
     }));
 
+// Low-latency thinking config, per model family. Gemini 3.x models use
+// `thinkingLevel` ("minimal" ≈ effectively off, lowest latency) and IGNORE the
+// older `thinkingBudget` param — sending only thinkingBudget leaves a 3.x model
+// at its default "medium" thinking, which adds many seconds of latency and makes
+// interactive coach calls time out. Gemini 2.5 models use `thinkingBudget: 0` to
+// disable thinking. This builds the right config so either family answers fast.
+const lowLatencyThinkingConfig = (model) =>
+  /gemini-3/.test(model || "")
+    ? { thinkingLevel: "minimal" }
+    : { thinkingBudget: 0 };
+
 const getResponseContent = (response) => response.candidates?.[0]?.content;
 
 const getFunctionCalls = (response) =>
@@ -336,7 +347,7 @@ export const explainGrounded = async ({
       const response = await ai.models.generateContent({
         model,
         systemInstruction: instruction,
-        config: { ...baseConfig, thinkingConfig: { thinkingBudget } },
+        config: { ...baseConfig, thinkingConfig: lowLatencyThinkingConfig(model) },
         contents,
       });
       return response.text || "";
@@ -407,7 +418,7 @@ export const generateJson = async ({
   let raw = "";
   if (thinkingBudget != null) {
     try {
-      raw = await call({ ...baseConfig, thinkingConfig: { thinkingBudget } });
+      raw = await call({ ...baseConfig, thinkingConfig: lowLatencyThinkingConfig(model) });
     } catch {
       // thinkingConfig rejected — fall through to a plain call below
     }
@@ -464,12 +475,12 @@ export const generateChat = async ({
     return response.text || "";
   };
 
-  // Disable thinking for a fast reply when asked; retry without it if rejected.
+  // Minimize thinking for a fast reply when asked; retry without it if rejected.
   if (thinkingBudget != null) {
     try {
       const raw = await call({
         ...baseConfig,
-        thinkingConfig: { thinkingBudget },
+        thinkingConfig: lowLatencyThinkingConfig(model),
       });
       if (raw) return raw;
     } catch {

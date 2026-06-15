@@ -680,16 +680,10 @@ const Trainer = ({ course, onExit, onAddKey }) => {
     [feedback, walkActive, lines, lineIdx, plyIdx, side, mode, autoPlayReplies, runExplain],
   );
 
-  // Learn mode: automatically ground the "why this move" explanation whenever
-  // it's the student's turn to play a book move. The instant rule-based line set
-  // by loadLine/autoPlayReplies shows first; the AI prose replaces it when ready.
-  useEffect(() => {
-    if (mode !== "learn" || feedback !== "idle") return;
-    const expected = lines?.[lineIdx]?.plies[plyIdx];
-    if (!expected || expected.color !== side) return;
-    runExplain();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, feedback, lines, lineIdx, plyIdx, side]);
+  // The coach does NOT explain correct/expected moves. Explanations appear only
+  // after a MISTAKE (handleDrop → runExplain) or when the student explicitly asks
+  // via the Explain button. On the student's turn we only HINT the move to play
+  // (green arrow + lit squares, below) — no proactive prose.
 
   // Learn mode: show WHAT to move WHERE. When it's the student's turn to play
   // the book move (feedback idle, expected is the student's move), draw a GREEN
