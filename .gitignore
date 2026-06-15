@@ -15,3 +15,6 @@ vibe-*.png
 
 # Subagent worktrees
 .claude/worktrees/
+
+# Ingestion response cache
+.cache/

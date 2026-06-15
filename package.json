@@ -11,6 +11,7 @@
     "db:expand-openings": "node scripts/ingest-openings/expand.js",
     "db:expand-engine": "node scripts/ingest-openings/expand-engine.js",
     "db:name-lines": "node scripts/ingest-openings/name-lines.js",
+    "db:ingest-stats": "node scripts/ingest-openings/stats.js",
     "db:ingest-puzzles": "node scripts/ingest-puzzles/run.js",
     "lint": "eslint .",
     "preview": "vite preview",
