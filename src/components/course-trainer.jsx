@@ -2,6 +2,7 @@ import { Chess } from "chess.js";
 import {
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   BookOpen,
   Target,
   Flame,
@@ -22,7 +23,7 @@ import { Input } from "@/components/ui/input";
 import ModelPicker from "@/components/ui/model-picker";
 import { toBoardArrows } from "@/lib/board-annotations";
 import { coachFollowup, explainOpening } from "@/lib/coach-opening";
-import { familyOf, getCourseLines, listCourses } from "@/lib/courses-db";
+import { familyOf, getCourseLines, listCourses, listOpeningStats } from "@/lib/courses-db";
 import { describeMove, describeReply } from "@/lib/narrate";
 
 // ── localStorage progress ────────────────────────────────────────────────────
@@ -153,11 +154,81 @@ const BoardThumbnail = ({ course, className }) => {
 // FULL list (see CourseList) — this only trims the default catalog view.
 const CATALOG_CAP = 60;
 
+// ── Catalog filter vocab ─────────────────────────────────────────────────────
+// The Side + First-move dropdowns filter BOTH the systems and the families
+// sections. Values match the `side`/`firstMove` fields the data layer stamps on
+// every card (see courses-db.js). "all" is the no-op pass-through.
+const SIDE_OPTIONS = [
+  { value: "all", label: "All sides" },
+  { value: "white", label: "White" },
+  { value: "black", label: "Black" },
+];
+const FIRST_MOVE_OPTIONS = [
+  { value: "all", label: "Any first move" },
+  { value: "e4", label: "1.e4" },
+  { value: "d4", label: "1.d4" },
+  { value: "c4", label: "1.c4" },
+  { value: "Nf3", label: "1.Nf3" },
+  { value: "other", label: "Other" },
+];
+const SORT_OPTIONS = [
+  { value: "lines", label: "Lines" },
+  { value: "popularity", label: "Popularity" },
+  { value: "effectiveness", label: "Effectiveness" },
+];
+
+// Editorial styled dropdown: a mono uppercase label sits inline, the native
+// <select> carries the value (full a11y + keyboard) under a hairline border,
+// semantic tokens, and a chevron. No raw hex — all colors via tokens.
+const FilterSelect = ({ label, value, onChange, options }) => (
+  <label className="flex min-w-0 items-center gap-2">
+    <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+      {label}
+    </span>
+    <div className="relative min-w-0 flex-1">
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label={label}
+        className="h-9 w-full cursor-pointer appearance-none truncate rounded-[3px] border border-border bg-card pl-2.5 pr-7 font-mono text-[11px] uppercase tracking-[0.1em] text-foreground transition-colors hover:border-foreground/40 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+      >
+        {options.map((o) => (
+          <option key={o.value} value={o.value}>
+            {o.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="pointer-events-none absolute right-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+    </div>
+  </label>
+);
+
+// One-line eval/assessment readout from the OPTIONAL opening_stats overlay.
+// Renders nothing when the family has no stats row (table absent or unmatched),
+// so the catalog is identical with or without the table. eval_cp is shown in
+// pawns from White's view (+ favours White); assessment is a short verdict.
+const StatLine = ({ stat }) => {
+  if (!stat) return null;
+  const cp = typeof stat.eval_cp === "number" ? stat.eval_cp : null;
+  const evalStr = cp === null ? null : `${cp > 0 ? "+" : ""}${(cp / 100).toFixed(2)}`;
+  const bits = [evalStr, stat.assessment].filter(Boolean);
+  if (!bits.length) return null;
+  return (
+    <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+      {bits.join(" · ")}
+    </p>
+  );
+};
+
 // ── Course list ────────────────────────────────────────────────────────────
 const CourseList = ({ onPick }) => {
   const [courses, setCourses] = useState(null);
   const [metas, setMetas] = useState([]);
+  const [stats, setStats] = useState(null); // Map<family,row> | null (optional)
   const [query, setQuery] = useState("");
+  const [sideFilter, setSideFilter] = useState("all");
+  const [moveFilter, setMoveFilter] = useState("all");
+  const [sortBy, setSortBy] = useState("lines");
 
   useEffect(() => {
     listCourses()
@@ -169,57 +240,147 @@ const CourseList = ({ onPick }) => {
         setCourses([]);
         setMetas([]);
       });
+    // OPTIONAL eval overlay — never blocks the catalog. Resolves to an empty map
+    // when the opening_stats table is absent.
+    listOpeningStats()
+      .then((s) => setStats(s instanceof Map ? s : new Map()))
+      .catch(() => setStats(new Map()));
   }, []);
 
-  // Token search shared by metas + families: every query word must appear in the
-  // name, ECO, or aggregated terms. Returns the ranked, capped matches.
-  const search = useCallback((list, q, tokens, cap) => {
-    const scored = [];
-    for (const c of list) {
-      const fam = c.family.toLowerCase();
-      const hay = `${fam} ${(c.eco || "").toLowerCase()} ${c.terms || ""}`;
-      if (!tokens.every((t) => hay.includes(t))) continue;
-      const rank = fam.includes(q) ? 0 : tokens.every((t) => fam.includes(t)) ? 1 : 2;
-      scored.push({ c, rank });
-    }
-    return scored
-      .sort((a, b) => a.rank - b.rank || b.c.lineCount - a.c.lineCount)
-      .map((s) => s.c)
-      .slice(0, cap);
+  const hasStats = stats instanceof Map && stats.size > 0;
+
+  // Token search shared by systems + families: every query word must appear in
+  // the name, ECO, or aggregated terms.
+  const search = useCallback((list, tokens) => {
+    if (!tokens.length) return list;
+    return list.filter((c) => {
+      const hay = `${c.family.toLowerCase()} ${(c.eco || "").toLowerCase()} ${c.terms || ""}`;
+      return tokens.every((t) => hay.includes(t));
+    });
   }, []);
 
-  const filteredMetas = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return metas; // always show every meta when not searching
-    return search(metas, q, q.split(/\s+/).filter(Boolean), metas.length);
-  }, [metas, query, search]);
+  // Apply search AND both dropdowns, then sort. Shared by systems + families so
+  // the two sections stay perfectly consistent.
+  const applyFilters = useCallback(
+    (list, cap) => {
+      const tokens = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      let out = search(list, tokens);
+      if (sideFilter !== "all") out = out.filter((c) => c.side === sideFilter);
+      if (moveFilter !== "all") out = out.filter((c) => c.firstMove === moveFilter);
+      const stat = (c) => (hasStats ? stats.get(c.family) : null);
+      out = [...out].sort((a, b) => {
+        if (sortBy === "popularity" && hasStats) {
+          return (stat(b)?.popularity ?? -1) - (stat(a)?.popularity ?? -1);
+        }
+        if (sortBy === "effectiveness" && hasStats) {
+          // Higher signed eval = more effective for the card's own side; missing
+          // rows sort last. eval_cp is from White's view, so Black reads -cp.
+          const eff = (c) => {
+            const cp = stat(c)?.eval_cp;
+            if (typeof cp !== "number") return -Infinity;
+            return c.side === "black" ? -cp : cp;
+          };
+          return eff(b) - eff(a);
+        }
+        return b.lineCount - a.lineCount;
+      });
+      return typeof cap === "number" ? out.slice(0, cap) : out;
+    },
+    [query, sideFilter, moveFilter, sortBy, hasStats, stats, search],
+  );
+
+  const filteredMetas = useMemo(() => applyFilters(metas), [metas, applyFilters]);
+  const whiteSystems = useMemo(
+    () => filteredMetas.filter((c) => c.side === "white"),
+    [filteredMetas],
+  );
+  const blackSystems = useMemo(
+    () => filteredMetas.filter((c) => c.side === "black"),
+    [filteredMetas],
+  );
 
   const filtered = useMemo(() => {
     if (!courses) return [];
-    const q = query.trim().toLowerCase();
-    if (!q) return courses.slice(0, CATALOG_CAP);
-    // Smart, token-based search across the FULL catalog: every query word must
-    // appear somewhere in the family name, ECO, or any variation term (so
-    // "najdorf", "dragon", "berlin", "b90", "kings indian" all surface their
-    // family). Ranked: family-name hits first, then earliest match.
-    return search(courses, q, q.split(/\s+/).filter(Boolean), 60);
-  }, [courses, query, search]);
+    const anyFilter = query.trim() || sideFilter !== "all" || moveFilter !== "all";
+    return applyFilters(courses, anyFilter ? 80 : CATALOG_CAP);
+  }, [courses, applyFilters, query, sideFilter, moveFilter]);
+
+  // System card (accent style). Shared by the White + Black system groups.
+  const renderSystem = (c, i) => {
+    const learned = loadLearned(c.slug).size;
+    const pct = c.lineCount ? Math.min(100, Math.round((learned / c.lineCount) * 100)) : 0;
+    return (
+      <FadeInUp
+        as="button"
+        key={c.slug}
+        stagger={(i % 5) + 1}
+        onClick={() => onPick(c)}
+        className="group flex flex-col overflow-hidden rounded-md border border-primary/40 bg-primary/[0.04] text-left transition-colors hover:border-primary"
+      >
+        <div className="border-b border-primary/30 bg-primary/[0.06] p-3">
+          <BoardThumbnail course={c} className="border border-primary/30" />
+        </div>
+        <div className="flex flex-1 flex-col p-4">
+          <div className="flex items-center justify-between gap-2">
+            <Callout className="text-primary">System</Callout>
+            <span className="font-mono text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+              {c.side}
+            </span>
+          </div>
+          <div className="mt-1.5 flex items-baseline justify-between gap-2">
+            <h3 className="font-display text-base leading-tight text-foreground transition-colors group-hover:text-primary">
+              {c.family}
+            </h3>
+            <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+              {c.eco}
+            </span>
+          </div>
+          {c.members?.length > 1 && (
+            <p className="mt-2 font-sans text-[12px] leading-snug text-muted-foreground">
+              {c.members.join(" · ")}
+            </p>
+          )}
+          {hasStats && <StatLine stat={stats.get(c.family)} />}
+          <div className="mt-auto pt-4">
+            <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+              <span className="text-primary">{c.lineCount} lines</span>
+              <span>{pct}%</span>
+            </div>
+            <div className="mt-2 h-px w-full bg-border">
+              <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        </div>
+      </FadeInUp>
+    );
+  };
+
+  const noResults = courses && filtered.length === 0 && filteredMetas.length === 0;
 
   return (
     <div className="h-full w-full overflow-y-auto bg-background">
       <div className="mx-auto max-w-6xl px-6 py-8">
-        {/* Compact top row: small mono label + prominent search. No hero. */}
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <Callout className="shrink-0">Opening courses</Callout>
-          <div className="relative w-full sm:max-w-md">
+        <Callout className="shrink-0">Opening courses</Callout>
+
+        {/* Filter controls row: search + Side + First-move (+ Sort when the
+            optional eval overlay is present). All filter BOTH sections. */}
+        <div className="mt-4 flex flex-col gap-3 lg:flex-row lg:items-center">
+          <div className="relative w-full lg:max-w-xs">
             <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search openings…"
               aria-label="Search openings"
-              className="h-11 pl-10 font-sans text-[15px]"
+              className="h-9 pl-10 font-sans text-[14px]"
             />
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:flex-1 lg:items-center">
+            <FilterSelect label="Side" value={sideFilter} onChange={setSideFilter} options={SIDE_OPTIONS} />
+            <FilterSelect label="First move" value={moveFilter} onChange={setMoveFilter} options={FIRST_MOVE_OPTIONS} />
+            {hasStats && (
+              <FilterSelect label="Sort" value={sortBy} onChange={setSortBy} options={SORT_OPTIONS} />
+            )}
           </div>
         </div>
 
@@ -228,70 +389,50 @@ const CourseList = ({ onPick }) => {
             Loading courses…
           </p>
         )}
-        {courses && filtered.length === 0 && filteredMetas.length === 0 && (
+        {noResults && (
           <p className="mt-10 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
-            No openings match “{query.trim()}”.
+            No openings match these filters.
           </p>
         )}
 
-        {/* ── Meta systems ───────────────────────────────────────────────────
-            Higher-level groupings rendered FIRST, in a visually distinct style:
-            a "META SYSTEM" mono eyebrow, a primary-accent border + tint, and the
-            member families listed beneath. Clicking trains the whole bundle. */}
+        {/* ── Systems ─────────────────────────────────────────────────────────
+            Rendered FIRST, as the distinct accent cards, GROUPED BY SIDE: a
+            WHITE subhead then a BLACK subhead. A system trains the union of its
+            member families; clicking opens the trainer on the whole system. */}
         {filteredMetas.length > 0 && (
           <>
             <div className="mt-8 flex items-center gap-3">
-              <Callout className="text-primary">Meta systems</Callout>
+              <Callout className="text-primary">Systems</Callout>
               <div className="h-px flex-1 bg-border" />
             </div>
-            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filteredMetas.map((c, i) => {
-                const learned = loadLearned(c.slug).size;
-                const pct = c.lineCount ? Math.min(100, Math.round((learned / c.lineCount) * 100)) : 0;
-                return (
-                  <FadeInUp
-                    as="button"
-                    key={c.slug}
-                    stagger={(i % 5) + 1}
-                    onClick={() => onPick(c)}
-                    className="group flex flex-col overflow-hidden rounded-md border border-primary/40 bg-primary/[0.04] text-left transition-colors hover:border-primary"
-                  >
-                    <div className="border-b border-primary/30 bg-primary/[0.06] p-3">
-                      <BoardThumbnail course={c} className="border border-primary/30" />
-                    </div>
-                    <div className="flex flex-1 flex-col p-4">
-                      <Callout className="text-primary">Meta system</Callout>
-                      <div className="mt-1.5 flex items-baseline justify-between gap-2">
-                        <h3 className="font-display text-base leading-tight text-foreground transition-colors group-hover:text-primary">
-                          {c.family}
-                        </h3>
-                        <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-                          {c.eco}
-                        </span>
-                      </div>
-                      <p className="mt-2 font-sans text-[12px] leading-snug text-muted-foreground">
-                        {c.members?.join(" · ")}
-                      </p>
-                      <div className="mt-auto pt-4">
-                        <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-                          <span className="text-primary">{c.lineCount} lines</span>
-                          <span>{pct}%</span>
-                        </div>
-                        <div className="mt-2 h-px w-full bg-border">
-                          <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
-                        </div>
-                      </div>
-                    </div>
-                  </FadeInUp>
-                );
-              })}
-            </div>
+
+            {whiteSystems.length > 0 && (
+              <>
+                <p className="mt-5 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                  White
+                </p>
+                <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {whiteSystems.map(renderSystem)}
+                </div>
+              </>
+            )}
+
+            {blackSystems.length > 0 && (
+              <>
+                <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                  Black
+                </p>
+                <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {blackSystems.map(renderSystem)}
+                </div>
+              </>
+            )}
           </>
         )}
 
         {filtered.length > 0 && (
-          <div className="mt-8 flex items-center gap-3">
-            <Callout>Openings</Callout>
+          <div className="mt-10 flex items-center gap-3">
+            <Callout>More openings</Callout>
             <div className="h-px flex-1 bg-border" />
           </div>
         )}
@@ -320,6 +461,7 @@ const CourseList = ({ onPick }) => {
                       {c.eco}
                     </span>
                   </div>
+                  {hasStats && <StatLine stat={stats.get(c.family)} />}
                   <div className="mt-auto pt-4">
                     <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
                       <span>{c.lineCount} lines</span>

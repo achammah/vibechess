@@ -21,80 +21,74 @@ export const slugify = (s) =>
 // trainer's "all variations" count are computed identically and never disagree.
 export const COURSE_LINE_CAP = 500;
 
-// ── Meta opening systems ──────────────────────────────────────────────────────
-// Higher-level groupings that bundle several related family courses into ONE
-// card. A meta trains every line of every member family at once; the trainer's
-// Variation selector then lets the student drill into a specific sub-system.
-// Each member is a `familyOf(name)` string that EXISTS in the DB (verified live).
-// A family appears in at most one meta. Order here = display order at the top of
-// the catalog. The first member listed is the "lead" — its representative board
-// position + arrow represent the meta on the card.
-export const META_SYSTEMS = [
-  {
-    name: "Queen's Gambit",
-    slug: "meta-queens-gambit",
-    members: [
-      "Queen's Gambit Declined",
-      "Queen's Gambit Accepted",
-      "Slav Defense",
-      "Semi-Slav Defense",
-      "Semi-Slav Defense Accepted",
-      "Tarrasch Defense",
-    ],
-  },
-  {
-    name: "Indian Defenses",
-    slug: "meta-indian-defenses",
-    members: [
-      "King's Indian Defense",
-      "Nimzo-Indian Defense",
-      "Queen's Indian Defense",
-      "Grünfeld Defense",
-      "Neo-Grünfeld Defense",
-      "Benoni Defense",
-      "Bogo-Indian Defense",
-      "Old Indian Defense",
-      "Catalan Opening",
-    ],
-  },
-  {
-    name: "Open Games (1.e4 e5)",
-    slug: "meta-open-games",
-    members: [
-      "Ruy Lopez",
-      "Italian Game",
-      "Scotch Game",
-      "Vienna Game",
-      "Vienna Gambit",
-      "Petrov's Defense",
-      "King's Gambit Accepted",
-      "King's Gambit Declined",
-      "Four Knights Game",
-      "Three Knights Opening",
-      "Philidor Defense",
-      "Bishop's Opening",
-      "Ponziani Opening",
-    ],
-  },
-  {
-    name: "Flank Openings",
-    slug: "meta-flank-openings",
-    members: [
-      "English Opening",
-      "Réti Opening",
-      "Bird Opening",
-      "King's Indian Attack",
-      "Zukertort Opening",
-      "Hungarian Opening",
-      "Nimzo-Larsen Attack",
-      "Polish Opening",
-    ],
-  },
+// ── Opening systems ───────────────────────────────────────────────────────────
+// Granular, side-tagged opening systems: each one a single recognizable opening
+// that bundles its closely-related family courses into ONE card. A system trains
+// every line of every member family at once; the trainer's Variation selector
+// then lets the student drill into a specific member sub-system.
+//
+// Each member is an exact `familyOf(name)` string that EXISTS in the DB
+// (verified live). A family appears in at most one system; the first member
+// listed is the "lead" — its representative board position + arrow + first move
+// represent the system on the card. `side` ("white" | "black") is explicit per
+// the curated taxonomy and is NOT inferred. Order here = display order, but the
+// catalog groups by side (White, then Black) at render time.
+export const SYSTEMS = [
+  // ── White ──
+  { name: "London System", slug: "sys-london-system", side: "white", members: ["London System"] },
+  { name: "Italian Game", slug: "sys-italian-game", side: "white", members: ["Italian Game"] },
+  { name: "Ruy Lopez", slug: "sys-ruy-lopez", side: "white", members: ["Ruy Lopez"] },
+  { name: "Scotch Game", slug: "sys-scotch-game", side: "white", members: ["Scotch Game"] },
+  { name: "Vienna Game", slug: "sys-vienna-game", side: "white", members: ["Vienna Game", "Vienna Gambit"] },
+  { name: "King's Gambit", slug: "sys-kings-gambit", side: "white", members: ["King's Gambit Accepted", "King's Gambit Declined"] },
+  { name: "Bishop's Opening", slug: "sys-bishops-opening", side: "white", members: ["Bishop's Opening"] },
+  { name: "Ponziani Opening", slug: "sys-ponziani-opening", side: "white", members: ["Ponziani Opening"] },
+  { name: "Four Knights Game", slug: "sys-four-knights-game", side: "white", members: ["Four Knights Game", "Three Knights Opening"] },
+  { name: "Catalan Opening", slug: "sys-catalan-opening", side: "white", members: ["Catalan Opening"] },
+  { name: "Trompowsky Attack", slug: "sys-trompowsky-attack", side: "white", members: ["Trompowsky Attack"] },
+  { name: "Colle System", slug: "sys-colle-system", side: "white", members: ["Colle System"] },
+  { name: "Torre Attack", slug: "sys-torre-attack", side: "white", members: ["Torre Attack"] },
+  { name: "English Opening", slug: "sys-english-opening", side: "white", members: ["English Opening"] },
+  { name: "Réti Opening", slug: "sys-reti-opening", side: "white", members: ["Réti Opening", "Zukertort Opening"] },
+  { name: "Bird Opening", slug: "sys-bird-opening", side: "white", members: ["Bird Opening"] },
+  { name: "King's Indian Attack", slug: "sys-kings-indian-attack", side: "white", members: ["King's Indian Attack"] },
+  { name: "Nimzo-Larsen Attack", slug: "sys-nimzo-larsen-attack", side: "white", members: ["Nimzo-Larsen Attack"] },
+  { name: "Blackmar-Diemer Gambit", slug: "sys-blackmar-diemer-gambit", side: "white", members: ["Blackmar-Diemer Gambit", "Blackmar-Diemer Gambit Accepted", "Blackmar-Diemer Gambit Declined"] },
+
+  // ── Black ──
+  { name: "Sicilian Defense", slug: "sys-sicilian-defense", side: "black", members: ["Sicilian Defense"] },
+  { name: "French Defense", slug: "sys-french-defense", side: "black", members: ["French Defense"] },
+  { name: "Caro-Kann Defense", slug: "sys-caro-kann-defense", side: "black", members: ["Caro-Kann Defense"] },
+  { name: "Pirc Defense", slug: "sys-pirc-defense", side: "black", members: ["Pirc Defense"] },
+  { name: "Modern Defense", slug: "sys-modern-defense", side: "black", members: ["Modern Defense"] },
+  { name: "Scandinavian Defense", slug: "sys-scandinavian-defense", side: "black", members: ["Scandinavian Defense"] },
+  { name: "Alekhine Defense", slug: "sys-alekhine-defense", side: "black", members: ["Alekhine Defense"] },
+  { name: "Nimzowitsch Defense", slug: "sys-nimzowitsch-defense", side: "black", members: ["Nimzowitsch Defense"] },
+  { name: "Philidor Defense", slug: "sys-philidor-defense", side: "black", members: ["Philidor Defense"] },
+  { name: "Petrov's Defense", slug: "sys-petrovs-defense", side: "black", members: ["Petrov's Defense"] },
+  { name: "King's Indian Defense", slug: "sys-kings-indian-defense", side: "black", members: ["King's Indian Defense"] },
+  { name: "Nimzo-Indian Defense", slug: "sys-nimzo-indian-defense", side: "black", members: ["Nimzo-Indian Defense"] },
+  { name: "Queen's Indian Defense", slug: "sys-queens-indian-defense", side: "black", members: ["Queen's Indian Defense"] },
+  { name: "Grünfeld Defense", slug: "sys-grunfeld-defense", side: "black", members: ["Grünfeld Defense", "Neo-Grünfeld Defense"] },
+  { name: "Bogo-Indian Defense", slug: "sys-bogo-indian-defense", side: "black", members: ["Bogo-Indian Defense"] },
+  { name: "Old Indian Defense", slug: "sys-old-indian-defense", side: "black", members: ["Old Indian Defense"] },
+  { name: "Benoni Defense", slug: "sys-benoni-defense", side: "black", members: ["Benoni Defense"] },
+  { name: "Benko Gambit", slug: "sys-benko-gambit", side: "black", members: ["Benko Gambit", "Benko Gambit Accepted", "Benko Gambit Declined"] },
+  { name: "Dutch Defense", slug: "sys-dutch-defense", side: "black", members: ["Dutch Defense"] },
+  { name: "Queen's Gambit Declined", slug: "sys-queens-gambit-declined", side: "black", members: ["Queen's Gambit Declined"] },
+  { name: "Queen's Gambit Accepted", slug: "sys-queens-gambit-accepted", side: "black", members: ["Queen's Gambit Accepted"] },
+  { name: "Slav Defense", slug: "sys-slav-defense", side: "black", members: ["Slav Defense"] },
+  { name: "Semi-Slav Defense", slug: "sys-semi-slav-defense", side: "black", members: ["Semi-Slav Defense", "Semi-Slav Defense Accepted"] },
+  { name: "Tarrasch Defense", slug: "sys-tarrasch-defense", side: "black", members: ["Tarrasch Defense"] },
 ];
 
-/** Look up a meta system by its family/name (case-sensitive on the curated name). */
+// Back-compat alias: callers/tests that referenced META_SYSTEMS keep working;
+// the trainer/catalog now speak in terms of side-tagged SYSTEMS.
+export const META_SYSTEMS = SYSTEMS;
+
+/** Look up a system by its family/name (case-sensitive on the curated name). */
 export const metaByName = (name) =>
-  META_SYSTEMS.find((m) => m.name === name) || null;
+  SYSTEMS.find((m) => m.name === name) || null;
 
 // Cheap, parse-free move signature for dedup: strip move numbers + result and
 // normalise whitespace, leaving the SAN sequence ("d4 d5 Bf4 …"). Identical move
@@ -135,6 +129,38 @@ const arrowOf = (pgn) => {
   } catch {
     return null;
   }
+};
+
+/**
+ * The SAN of the representative line's FIRST move, bucketed to one of the
+ * catalog's first-move filter values: "e4" | "d4" | "c4" | "Nf3" | "other".
+ * Empty/unparseable lines fall back to "other".
+ */
+const firstMoveOf = (pgn) => {
+  if (!pgn) return "other";
+  try {
+    const g = new Chess();
+    g.loadPgn(pgn);
+    const first = g.history()[0];
+    if (!first) return "other";
+    if (first === "e4" || first === "d4" || first === "c4" || first === "Nf3") return first;
+    return "other";
+  } catch {
+    return "other";
+  }
+};
+
+/**
+ * Infer the side a regular (non-system) family is studied from, by its name.
+ * "Defense"/"Defence" or a "… Gambit Declined" → Black; otherwise White.
+ * Curated SYSTEMS override this with their explicit `side`; this only labels the
+ * leftover "more openings" families.
+ */
+const inferFamilySide = (family) => {
+  const n = (family || "").toLowerCase();
+  if (/\bgambit declined\b/.test(n)) return "black";
+  if (/\bdefense\b|\bdefence\b/.test(n)) return "black";
+  return "white";
 };
 
 /**
@@ -241,8 +267,8 @@ export const listCourses = async ({ min = 2 } = {}) => {
   // The lead member (most lines, already computed above) lends its representative
   // PGN/FEN/arrow + ECO; terms aggregate every member's terms so search hits work.
   const metas = [];
-  const claimed = new Set(); // family names consumed by a meta (at most one meta each)
-  for (const meta of META_SYSTEMS) {
+  const claimed = new Set(); // family names consumed by a system (at most one each)
+  for (const meta of SYSTEMS) {
     const present = meta.members.filter((m) => fams.has(m) && !claimed.has(m));
     if (!present.length) continue;
     for (const m of present) claimed.add(m);
@@ -252,10 +278,9 @@ export const listCourses = async ({ min = 2 } = {}) => {
       if (!p.sig) continue;
       if (present.some((m) => matchesFamily(p.segs, m))) seen.add(p.sig);
     }
-    // Lead = present member with the most lines → its board represents the meta.
-    const lead = present
-      .map((m) => fams.get(m))
-      .sort((a, b) => b.lineCount - a.lineCount)[0];
+    // Lead = the FIRST present member (curated order) → its board, arrow, ECO,
+    // and first move represent the system on the card.
+    const lead = fams.get(present[0]);
     const terms = new Set();
     terms.add(meta.name.toLowerCase());
     for (const m of present) {
@@ -268,22 +293,30 @@ export const listCourses = async ({ min = 2 } = {}) => {
       members: present,
       family: meta.name, // the trainer/UI treat `family` as the course identity
       slug: meta.slug,
+      side: meta.side, // explicit curated side ("white" | "black")
       eco: lead?.eco || "",
       lineCount: Math.min(seen.size, COURSE_LINE_CAP),
       fen: finalFenOf(lead?._repPgn || ""),
       arrow: arrowOf(lead?._repPgn || ""),
+      firstMove: firstMoveOf(lead?._repPgn || ""),
       terms: [...terms].join(" "),
     });
   }
 
+  // Member families of a system are represented by their system card, so they
+  // are EXCLUDED from the regular "more openings" grid. The rest carry an
+  // inferred `side` + a derived `firstMove` so the catalog dropdowns can filter
+  // them alongside the systems.
   const families = [...fams.values()]
-    .filter((c) => c.lineCount >= min)
+    .filter((c) => c.lineCount >= min && !claimed.has(c.family))
     .sort((a, b) => b.lineCount - a.lineCount)
     .map(({ _repPgn, _repScore, _terms, ...c }) => ({
       ...c,
       isMeta: false,
+      side: inferFamilySide(c.family),
       fen: finalFenOf(_repPgn),
       arrow: arrowOf(_repPgn),
+      firstMove: firstMoveOf(_repPgn),
       // Space-joined searchable terms: family + every variation name + ECOs.
       terms: [...(_terms || [])].join(" "),
     }));
@@ -303,8 +336,12 @@ export const listCourses = async ({ min = 2 } = {}) => {
  */
 export const getMetaLines = async (members, { limit = COURSE_LINE_CAP } = {}) => {
   if (!supabaseAnon || !members?.length) return [];
+  // Resolve each member as a RAW family (getFamilyLines), never getCourseLines:
+  // a single-member system's name can equal its member family name (e.g. the
+  // "Slav Defense" system has member "Slav Defense"), and dispatching back
+  // through getCourseLines would re-enter metaByName and recurse forever.
   const perFamily = await Promise.all(
-    members.map((m) => getCourseLines(m, { limit })),
+    members.map((m) => getFamilyLines(m, { limit })),
   );
   const seen = new Set();
   const merged = [];
@@ -384,18 +421,18 @@ const lineInFamily = (name, family) => {
 const lineKey = (plies) => plies.map((p) => p.uci).join(" ");
 
 /**
- * Lines for a course (family). Returns [{ id, name, eco, plies }].
+ * RAW lines for one opening family (no system dispatch). Returns
+ * [{ id, name, eco, plies }].
  *
- * Pulls every row whose name references the system anywhere (not just a prefix
+ * Pulls every row whose name references the family anywhere (not just a prefix
  * match), via `lineInFamily`, then dedupes by move signature so the same line
- * filed under two host families appears once. `side` is handled by the trainer.
+ * filed under two host families appears once. Kept separate from getCourseLines
+ * so getMetaLines can union members WITHOUT re-entering the system dispatch
+ * (which would recurse for a single-member system whose name equals its member
+ * family, e.g. "Slav Defense").
  */
-export const getCourseLines = async (family, { limit = COURSE_LINE_CAP } = {}) => {
+const getFamilyLines = async (family, { limit = COURSE_LINE_CAP } = {}) => {
   if (!supabaseAnon || !family) return [];
-  // A meta system trains the UNION of its member families — dispatch so the
-  // Trainer's getCourseLines(course.family) call works for metas transparently.
-  const meta = metaByName(family);
-  if (meta) return getMetaLines(meta.members, { limit });
   // Superset fetch: any name containing the family substring. We over-fetch
   // (`%family%` also catches sibling families) and prune precisely client-side
   // with `lineInFamily`. A wide cap keeps it to a single round-trip.
@@ -423,6 +460,20 @@ export const getCourseLines = async (family, { limit = COURSE_LINE_CAP } = {}) =
 };
 
 /**
+ * Lines for a course. Returns [{ id, name, eco, plies }].
+ *
+ * A system (curated SYSTEMS entry) trains the UNION of its member families —
+ * dispatch so the Trainer's getCourseLines(course.family) call works for systems
+ * transparently. Any other name resolves as a single raw family.
+ */
+export const getCourseLines = async (family, { limit = COURSE_LINE_CAP } = {}) => {
+  if (!supabaseAnon || !family) return [];
+  const meta = metaByName(family);
+  if (meta) return getMetaLines(meta.members, { limit });
+  return getFamilyLines(family, { limit });
+};
+
+/**
  * Infer which side a course is "for" (the side that makes the defining move).
  * Heuristic: most opening families are studied from the side that moves last in
  * the shortest defining line; default white. The trainer lets the user flip.
@@ -430,4 +481,41 @@ export const getCourseLines = async (family, { limit = COURSE_LINE_CAP } = {}) =
 export const inferSide = (lines) => {
   // If the family name implies a defense (Black) vs an attack/system (White)…
   return "w";
+};
+
+/**
+ * OPTIONAL eval/assessment overlay. Reads the `opening_stats` table (columns:
+ * family, eval_cp, assessment, popularity, white_pct, draw_pct, black_pct) if it
+ * exists and returns a Map keyed by family name → row. The catalog uses it to
+ * show a small eval line + a "Sort" option. Degrades gracefully: a missing
+ * table, an error, or no rows all resolve to an EMPTY map — never throws, so the
+ * catalog renders identically whether or not the table has been created yet.
+ * Cached in-memory.
+ */
+let _statsCache = null;
+export const listOpeningStats = async () => {
+  if (_statsCache) return _statsCache;
+  const empty = new Map();
+  if (!supabaseAnon) {
+    _statsCache = empty;
+    return empty;
+  }
+  try {
+    const { data, error } = await supabaseAnon
+      .from("opening_stats")
+      .select("family, eval_cp, assessment, popularity, white_pct, draw_pct, black_pct");
+    if (error || !Array.isArray(data)) {
+      _statsCache = empty;
+      return empty;
+    }
+    const map = new Map();
+    for (const r of data) {
+      if (r?.family) map.set(r.family, r);
+    }
+    _statsCache = map;
+    return map;
+  } catch {
+    _statsCache = empty;
+    return empty;
+  }
 };
