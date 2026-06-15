@@ -10,7 +10,9 @@ import { supabaseAnon } from "./supabase";
 export const coursesAvailable = () => Boolean(supabaseAnon);
 
 /** Family name = text before the first colon. */
-export const familyOf = (name) => (name || "").split(":")[0].trim();
+// Family = text before the first ":" OR "," so e.g. "London System, with Bd3"
+// groups under "London System" instead of fragmenting into singletons.
+export const familyOf = (name) => (name || "").split(/[:,]/)[0].trim();
 
 export const slugify = (s) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -59,7 +61,7 @@ const arrowOf = (pgn) => {
  * available). Its final FEN is the card thumbnail.
  */
 let _courseCache = null;
-export const listCourses = async ({ min = 4 } = {}) => {
+export const listCourses = async ({ min = 2 } = {}) => {
   if (_courseCache) return _courseCache;
   if (!supabaseAnon) return [];
   // Page through names (PostgREST caps at 1000/req). Pull pgn too so we can pick

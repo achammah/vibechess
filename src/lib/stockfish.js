@@ -54,6 +54,27 @@ export class StockfishEngine {
     this._initPromise = null;
     this._initTimeoutId = null;
     this._pending = null;
+    // FIFO serialization: the engine has a single search slot, so concurrent
+    // callers (e.g. the board's eval read AND the coach's PV read) MUST NOT
+    // interleave stop/position/go commands — doing so desyncs the UCI stream and
+    // a `bestmove` gets matched to the wrong waiter, hanging the last caller.
+    // Every getMove/analyze runs through this chain so only one search is ever
+    // in flight; the next starts only after the previous emits its bestmove.
+    this._chain = Promise.resolve();
+    // Per-operation watchdog so a dropped bestmove can never hang the chain.
+    this._opTimeoutMs = 30_000;
+  }
+
+  // Queue an engine operation. `body` returns a Promise that resolves when the
+  // engine replies (bestmove). Calls are run strictly in submission order.
+  _enqueue(body) {
+    const run = this._chain.then(() => body());
+    // Keep the chain alive even if this op rejects (abort/timeout/destroy).
+    this._chain = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
   }
 
   _clearInitTimeout() {
@@ -177,18 +198,6 @@ export class StockfishEngine {
     }
   }
 
-  // ── Abort any in-flight operation ─────────────────────────────────────────
-  async _abort() {
-    if (!this._pending) return;
-    this._worker.postMessage("stop");
-    // Give the engine a tick to reply with bestmove before we stomp on state
-    await new Promise((r) => setTimeout(r, 60));
-    if (this._pending) {
-      this._pending.reject(new Error("Aborted"));
-      this._pending = null;
-    }
-  }
-
   // ── Get best move (game mode) ─────────────────────────────────────────────
   /**
    * Request an opponent move at an exact target ELO. Uses the engine's native
@@ -199,27 +208,27 @@ export class StockfishEngine {
    */
   async getMove(fen, elo = 1200) {
     await this.init();
-    await this._abort();
-
     const { limitStrength, uciElo, skill, movetime } = eloToConfig(elo);
 
-    return new Promise((resolve, reject) => {
-      this._pending = { type: "move", resolve, reject };
-      this._worker.postMessage("setoption name MultiPV value 1");
-      if (limitStrength) {
-        this._worker.postMessage("setoption name UCI_LimitStrength value true");
-        this._worker.postMessage(`setoption name UCI_Elo value ${uciElo}`);
-        // Restore full skill so UCI_Elo is the sole strength limiter.
-        this._worker.postMessage("setoption name Skill Level value 20");
-      } else {
-        this._worker.postMessage(
-          "setoption name UCI_LimitStrength value false",
-        );
-        this._worker.postMessage(`setoption name Skill Level value ${skill}`);
-      }
-      this._worker.postMessage(`position fen ${fen}`);
-      this._worker.postMessage(`go movetime ${movetime}`);
-    });
+    return this._enqueue(
+      () =>
+        new Promise((resolve, reject) => {
+          const settle = this._withWatchdog(resolve, reject);
+          this._pending = { type: "move", resolve: settle.resolve, reject: settle.reject };
+          this._worker.postMessage("setoption name MultiPV value 1");
+          if (limitStrength) {
+            this._worker.postMessage("setoption name UCI_LimitStrength value true");
+            this._worker.postMessage(`setoption name UCI_Elo value ${uciElo}`);
+            // Restore full skill so UCI_Elo is the sole strength limiter.
+            this._worker.postMessage("setoption name Skill Level value 20");
+          } else {
+            this._worker.postMessage("setoption name UCI_LimitStrength value false");
+            this._worker.postMessage(`setoption name Skill Level value ${skill}`);
+          }
+          this._worker.postMessage(`position fen ${fen}`);
+          this._worker.postMessage(`go movetime ${movetime}`);
+        }),
+    );
   }
 
   // ── Analyze position (coach mode) ────────────────────────────────────────
@@ -231,17 +240,54 @@ export class StockfishEngine {
    */
   async analyze(fen, depth = 18, multiPV = 3) {
     await this.init();
-    await this._abort();
 
-    return new Promise((resolve, reject) => {
-      this._pending = { type: "analyze", resolve, reject, infoLines: {} };
-      this._worker.postMessage(`setoption name MultiPV value ${multiPV}`);
-      // Full strength for analysis — clear any ELO cap left by getMove().
-      this._worker.postMessage("setoption name UCI_LimitStrength value false");
-      this._worker.postMessage("setoption name Skill Level value 20");
-      this._worker.postMessage(`position fen ${fen}`);
-      this._worker.postMessage(`go depth ${depth}`);
-    });
+    return this._enqueue(
+      () =>
+        new Promise((resolve, reject) => {
+          const settle = this._withWatchdog(resolve, reject);
+          this._pending = {
+            type: "analyze",
+            resolve: settle.resolve,
+            reject: settle.reject,
+            infoLines: {},
+          };
+          this._worker.postMessage(`setoption name MultiPV value ${multiPV}`);
+          // Full strength for analysis — clear any ELO cap left by getMove().
+          this._worker.postMessage("setoption name UCI_LimitStrength value false");
+          this._worker.postMessage("setoption name Skill Level value 20");
+          this._worker.postMessage(`position fen ${fen}`);
+          this._worker.postMessage(`go depth ${depth}`);
+        }),
+    );
+  }
+
+  // Wrap a pending op's resolve/reject with a one-shot guard + watchdog timer.
+  // If the engine never emits bestmove (dropped message, odd FEN), the op
+  // rejects after _opTimeoutMs and clears _pending so the chain advances —
+  // a stuck search can never block every later caller.
+  _withWatchdog(resolve, reject) {
+    let done = false;
+    const timer = setTimeout(() => {
+      if (done) return;
+      done = true;
+      if (this._pending) this._pending = null;
+      this._worker?.postMessage("stop");
+      reject(new Error("Stockfish op timed out"));
+    }, this._opTimeoutMs);
+    return {
+      resolve: (v) => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        resolve(v);
+      },
+      reject: (e) => {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        reject(e);
+      },
+    };
   }
 
   // ── Convert UCI move string → chess.js move object ────────────────────────

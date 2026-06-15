@@ -1,16 +1,16 @@
 import { Chess } from "chess.js";
 import {
-  X,
   ChevronLeft,
+  ChevronRight,
   BookOpen,
   Target,
   Flame,
   Lightbulb,
   RotateCcw,
-  Check,
   Search,
   Send,
-  MessageCircle,
+  Loader2,
+  Play,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chessboard } from "react-chessboard";
@@ -22,7 +22,7 @@ import ModelPicker from "@/components/ui/model-picker";
 import { toBoardArrows } from "@/lib/board-annotations";
 import { coachFollowup, explainOpening } from "@/lib/coach-opening";
 import { getCourseLines, listCourses } from "@/lib/courses-db";
-import { describeCorrection, describeMove, describeReply } from "@/lib/narrate";
+import { describeMove, describeReply } from "@/lib/narrate";
 
 // ── localStorage progress ────────────────────────────────────────────────────
 const learnedKey = (slug) => `vibechess-course-${slug}-learned`;
@@ -255,51 +255,129 @@ const Trainer = ({ course, onExit }) => {
   const [fen, setFen] = useState(gameRef.current.fen());
   const [lineIdx, setLineIdx] = useState(0);
   const [plyIdx, setPlyIdx] = useState(0);
-  const [coach, setCoach] = useState(""); // prominent explanation (markdown string)
-  // Structured extras from the grounded coach: deeper reasoning paragraph + an
-  // engine-anchored line the student can replay on the board. Set ONLY by
-  // runExplain; cleared by every rule-based coach update and on each new move.
-  const [coachExtra, setCoachExtra] = useState(null); // { reasoning, line, lineFromFen } | null
   const [feedback, setFeedback] = useState("idle"); // idle | wrong | lineDone
   const [arrows, setArrows] = useState([]);
   const [squareStyles, setSquareStyles] = useState({});
   const [combo, setCombo] = useState(0);
   const [score, setScore] = useState(0);
   const [mistakesThisLine, setMistakesThisLine] = useState(0);
-  const [aiBusy, setAiBusy] = useState(false);
   const replyTimer = useRef(null);
-  const aiSeq = useRef(0);
 
-  // ── Coach chat ────────────────────────────────────────────────────────────
-  // A position-scoped follow-up thread. `messages` is [{role,content}]; it is
-  // cleared whenever the decision position changes (line/ply move) so questions
-  // always concern the position on the board. `chatSeq` ignores stale replies.
+  // ── Coach chat thread ───────────────────────────────────────────────────────
+  // ONE conversational transcript. Every coach utterance — move explanations,
+  // wrong-move corrections, and answers to typed follow-ups — is a message here,
+  // alongside the student's own questions. The thread is reset on a new line
+  // (loadLine) but kept across corrections/follow-ups within the same line.
+  //
+  // message: {
+  //   id,                         unique, also drives the pending→final replace
+  //   role: 'coach' | 'user',
+  //   text,                       markdown rendered via CoachText
+  //   reasoning,                  optional deeper "Why" paragraph (coach)
+  //   line, lineFromFen,          optional replayable engine line (coach)
+  //   aiGenerated,                false ⇒ templated (no LLM key) — nudge for a key
+  //   pending,                    true while awaiting async resolution (spinner)
+  //   kind,                       'correction' | 'explain' | 'answer' | 'question'
+  // }
   const [messages, setMessages] = useState([]);
   const [chatInput, setChatInput] = useState("");
-  const [chatBusy, setChatBusy] = useState(false);
-  const chatSeq = useRef(0);
+  // Monotonic id generator for messages AND the staleness guard: a pending
+  // message records the aiSeq it was issued under; a resolved async reply only
+  // replaces it when no newer decision (move/line) has bumped aiSeq since.
+  const msgId = useRef(0);
+  const aiSeq = useRef(0);
+  const transcriptRef = useRef(null);
   const mounted = useRef(true);
-  useEffect(() => () => { mounted.current = false; }, []);
+  // Set true on (re)mount and false on unmount. The body MUST set it true so that
+  // StrictMode's dev mount→unmount→remount cycle doesn't leave it stuck false
+  // (which would make every async guard `!mounted.current` drop its result).
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
-  // ── Line-demo playback ──────────────────────────────────────────────────────
-  // Plays the coach's engine-anchored line on the board step by step, then
-  // restores the real decision position so training continues. demoTimer drives
-  // the steps; demoActive guards against overlapping demos; restoreRef holds the
-  // fen to snap back to (the position before the demo started).
-  const demoTimer = useRef(null);
-  const [demoActive, setDemoActive] = useState(false);
+  const nextId = () => `m${++msgId.current}`;
+  const appendMessage = useCallback((msg) => {
+    setMessages((prev) => [...prev, msg]);
+  }, []);
+  // Replace a message by id (used to swap a pending coach bubble for its
+  // resolved content). No-op if the id is gone (thread was reset meanwhile).
+  const replaceMessage = useCallback((id, patch) => {
+    setMessages((prev) => prev.map((m) => (m.id === id ? { ...m, ...patch } : m)));
+  }, []);
+
+  // Auto-scroll the transcript to the newest message.
+  useEffect(() => {
+    const el = transcriptRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages]);
+
+  // ── Manual line walk (step-through) ──────────────────────────────────────────
+  // A coach message with a non-empty `line` can be "walked" ON the board, one
+  // ply at a time, under the STUDENT's control (Prev / Next) — NOT autoplay.
+  // Only one walk runs at a time. `walk` describes the active walk:
+  //   { msgId, line:[{from,to,san}], lineFromFen, step }
+  // step 0 = lineFromFen (no moves applied); step k = after the first k plies.
+  // `restoreRef` holds the real decision fen to snap back to when the walk ends.
+  const [walk, setWalk] = useState(null);
+  const walkActive = walk !== null;
   const restoreRef = useRef(null);
 
-  // Cancel any in-flight line demo and snap the board back to the real decision
-  // position (restoreRef). Safe to call when no demo is running.
-  const stopDemo = useCallback(() => {
-    clearTimeout(demoTimer.current);
-    demoTimer.current = null;
-    setDemoActive(false);
-    // Only restore (and clear demo highlights) when a demo was actually running.
-    // Otherwise leave the board's current arrows/squareStyles intact — e.g. the
-    // instant wrong-move red/green arrows must survive the runExplain() call that
-    // invokes stopDemo() at its start.
+  // Compute the board fen + last-move highlight for a given walk step by
+  // replaying lineFromFen + the first `step` plies.
+  const walkBoardAt = useCallback((w, step) => {
+    const g = new Chess(w.lineFromFen);
+    let last = null;
+    for (let i = 0; i < step && i < w.line.length; i += 1) {
+      const mv = w.line[i];
+      try {
+        g.move({ from: mv.from, to: mv.to, promotion: "q" });
+        last = mv;
+      } catch {
+        break;
+      }
+    }
+    return { fen: g.fen(), last };
+  }, []);
+
+  // Short caption for the move that lands the walk on `step` (1-based). Replays
+  // lineFromFen up to that move to learn the side-to-move and a real SAN, then
+  // pairs the SAN with a one-line idea from narrate (describeMove for the side
+  // we're training, describeReply otherwise). Step 0 has no move yet.
+  const walkCaption = useCallback((w, step) => {
+    if (!w || step <= 0 || step > w.line.length) return null;
+    const g = new Chess(w.lineFromFen);
+    let caption = null;
+    for (let i = 0; i < step; i += 1) {
+      const mv = w.line[i];
+      const color = g.turn(); // side to move BEFORE this ply
+      let san = mv.san;
+      try {
+        const res = g.move({ from: mv.from, to: mv.to, promotion: "q" });
+        if (!san && res) san = res.san;
+      } catch {
+        break;
+      }
+      if (i === step - 1) {
+        const ply = { ...mv, san, color };
+        // Prefer the coach's AI note for this move (one per move, generated in a
+        // single call); fall back to the rule-based idea when keyless.
+        const idea =
+          mv.note || (color === side ? describeMove(ply) : describeReply(ply));
+        caption = idea ? `${san} — ${idea}` : san;
+      }
+    }
+    return caption;
+  }, [side]);
+
+  // Cancel any active walk and snap the board back to the real decision position
+  // (restoreRef). Safe to call when no walk is running — in that case it leaves
+  // the board's current arrows/squareStyles intact (e.g. the instant wrong-move
+  // red/green arrows must survive the runExplain() call that calls this first).
+  const stopWalk = useCallback(() => {
+    setWalk(null);
     if (restoreRef.current) {
       gameRef.current = new Chess(restoreRef.current);
       setFen(restoreRef.current);
@@ -309,18 +387,22 @@ const Trainer = ({ course, onExit }) => {
   }, []);
 
   // Grounded AI explanation for the current decision (book move, or an error).
-  // Always passes the full line context so the coach can ground its answer:
-  // family, lineName, side, and the SAN of every ply played so far.
+  // Posts ONE coach message into the thread: first a pending bubble (spinner +
+  // `pendingText`), then — when explainOpening resolves — the SAME bubble is
+  // replaced in place with the explanation / reasoning / replayable line. Always
+  // passes the full line context so the coach can ground its answer: family,
+  // lineName, side, and the SAN of every ply played so far.
   const runExplain = useCallback(
-    async ({ playedUci = null } = {}) => {
+    async ({ playedUci = null, kind = "explain", pendingText = "Let me explain this move…" } = {}) => {
       const l = lines?.[lineIdx];
       const expected = l?.plies[plyIdx];
       if (!expected) return;
-      // A fresh explanation invalidates any running demo and prior extras.
-      stopDemo();
-      setCoachExtra(null);
+      // A fresh explanation invalidates any running walk.
+      stopWalk();
       const seq = ++aiSeq.current;
-      setAiBusy(true);
+      const id = nextId();
+      // Pending coach bubble — spinner + placeholder line, appended immediately.
+      appendMessage({ id, role: "coach", text: pendingText, pending: true, kind, seq });
       try {
         const res = await explainOpening({
           fenBefore: expected.fenBefore,
@@ -331,74 +413,74 @@ const Trainer = ({ course, onExit }) => {
           side,
           historySan: l.plies.slice(0, plyIdx).map((p) => p.san),
         });
-        // Ignore stale responses (a newer move/line started before this resolved).
-        if (res && seq === aiSeq.current) {
-          // New structured shape: { explanation, reasoning, line, lineFromFen,
-          // arrows }. Tolerate the legacy { prose } shape too.
-          const explanation = res.explanation ?? res.prose;
-          if (explanation) setCoach(explanation);
-          // Coach arrows: green = book move, red = mistake (deterministic, from
-          // the coach response). Replaces the instant correction's red highlight.
-          if (res.arrows?.length) setArrows(toBoardArrows(res.arrows));
-          // Deeper reasoning + a replayable engine-anchored line, if provided.
-          // The result is now always grounded (engine line + arrows) even with no
-          // LLM key, so record it whenever ANY structured field is present and
-          // carry aiGenerated so the UI can hint about adding a key.
-          const hasLine = Array.isArray(res.line) && res.line.length > 0 && res.lineFromFen;
-          if (res.reasoning || hasLine || explanation) {
-            setCoachExtra({
-              reasoning: res.reasoning || "",
-              line: hasLine ? res.line : null,
-              lineFromFen: hasLine ? res.lineFromFen : null,
-              aiGenerated: res.aiGenerated !== false,
-            });
-          }
-        }
-      } finally {
-        if (seq === aiSeq.current) setAiBusy(false);
+        // Ignore stale responses (a newer move/line bumped aiSeq before this
+        // resolved): leave the now-orphaned pending bubble for the reset to clear.
+        if (!mounted.current || seq !== aiSeq.current) return;
+        // New structured shape: { explanation, reasoning, line, lineFromFen,
+        // arrows }. Tolerate the legacy { prose } shape too.
+        const explanation = res?.explanation ?? res?.prose ?? "";
+        // Coach arrows: green = book move, red = mistake (deterministic, from the
+        // coach response). Replaces the instant correction's red highlight.
+        if (res?.arrows?.length) setArrows(toBoardArrows(res.arrows));
+        const hasLine = Array.isArray(res?.line) && res.line.length > 0 && res.lineFromFen;
+        // Swap the pending bubble for the resolved content, in place.
+        replaceMessage(id, {
+          text: explanation || pendingText,
+          reasoning: res?.reasoning || "",
+          line: hasLine ? res.line : null,
+          lineFromFen: hasLine ? res.lineFromFen : null,
+          aiGenerated: res?.aiGenerated !== false,
+          pending: false,
+        });
+      } catch {
+        if (!mounted.current || seq !== aiSeq.current) return;
+        replaceMessage(id, {
+          text: "_The coach could not explain that just now._",
+          pending: false,
+        });
       }
     },
-    [lines, lineIdx, plyIdx, course.family, side, stopDemo],
+    [lines, lineIdx, plyIdx, course.family, side, stopWalk, appendMessage, replaceMessage],
   );
 
-  // Replay the coach's engine-anchored line on the board, step by step (~750ms
-  // between moves), highlighting each move so the student SEES the refutation or
-  // plan. Restores the real decision position when done (or via stopDemo).
-  const playDemo = useCallback(() => {
-    const extra = coachExtra;
-    if (!extra?.line?.length || !extra.lineFromFen) return;
-    if (demoActive) return; // guard against overlapping demos
-    clearTimeout(demoTimer.current);
-    // Remember where to return to (the actual current decision position).
-    restoreRef.current = gameRef.current.fen();
-    setDemoActive(true);
-    const g = new Chess(extra.lineFromFen);
-    setFen(g.fen());
+  // Begin a manual walk of a coach message's engine-anchored line. Remembers the
+  // current decision fen (to restore on Done), then puts the board at step 0
+  // (lineFromFen, no moves). The student advances with Next/Prev. Only one walk
+  // at a time — starting a new one replaces any active walk first.
+  const startWalk = useCallback((msg) => {
+    if (!msg?.line?.length || !msg.lineFromFen) return;
+    if (!restoreRef.current) restoreRef.current = gameRef.current.fen();
+    setWalk({ msgId: msg.id, line: msg.line, lineFromFen: msg.lineFromFen, step: 0 });
+    gameRef.current = new Chess(msg.lineFromFen);
+    setFen(msg.lineFromFen);
     setSquareStyles({});
-    let i = 0;
-    const step = () => {
-      if (i >= extra.line.length) {
-        // Demo finished — restore the real position so play continues.
-        stopDemo();
-        return;
-      }
-      const mv = extra.line[i];
-      try {
-        g.move({ from: mv.from, to: mv.to, promotion: "q" });
-      } catch {
-        stopDemo();
-        return;
-      }
-      setFen(g.fen());
-      setSquareStyles({
-        [mv.from]: { background: "rgba(255,102,0,0.18)" },
-        [mv.to]: { background: "rgba(255,102,0,0.30)" },
+    setArrows([]);
+  }, []);
+
+  // Move the active walk to a target step (clamped), replaying the board and
+  // highlighting the last applied move.
+  const walkTo = useCallback(
+    (targetStep) => {
+      setWalk((w) => {
+        if (!w) return w;
+        const step = Math.max(0, Math.min(w.line.length, targetStep));
+        const { fen: f, last } = walkBoardAt(w, step);
+        gameRef.current = new Chess(f);
+        setFen(f);
+        setArrows([]);
+        setSquareStyles(
+          last
+            ? {
+                [last.from]: { background: "rgba(255,102,0,0.18)" },
+                [last.to]: { background: "rgba(255,102,0,0.30)" },
+              }
+            : {},
+        );
+        return { ...w, step };
       });
-      i += 1;
-      demoTimer.current = setTimeout(step, 750);
-    };
-    demoTimer.current = setTimeout(step, 400);
-  }, [coachExtra, demoActive, stopDemo]);
+    },
+    [walkBoardAt],
+  );
 
   const line = lines?.[lineIdx] ?? null;
 
@@ -406,7 +488,6 @@ const Trainer = ({ course, onExit }) => {
     getCourseLines(course.family).then(setLines).catch(() => setLines([]));
     return () => {
       clearTimeout(replyTimer.current);
-      clearTimeout(demoTimer.current);
     };
   }, [course.family]);
 
@@ -435,9 +516,11 @@ const Trainer = ({ course, onExit }) => {
       const l = list?.[idx];
       if (!l) return;
       clearTimeout(replyTimer.current);
-      stopDemo();
-      setCoachExtra(null);
+      stopWalk();
       aiSeq.current += 1; // invalidate any in-flight explanation for the old position
+      // Reset the chat thread: it is scoped to the line so it stays relevant.
+      setMessages([]);
+      setChatInput("");
       const g = new Chess();
       let p = 0;
       // auto-play leading opponent plies
@@ -453,16 +536,19 @@ const Trainer = ({ course, onExit }) => {
       setArrows([]);
       setSquareStyles({});
       setMistakesThisLine(0);
+      // Seed the fresh thread with a rule-based opening line so the transcript
+      // is never empty. In Learn, the auto-explain effect appends the grounded
+      // "why this move" right after.
       const expected = l.plies[p];
-      setCoach(
+      const intro =
         mode === "learn"
           ? expected
             ? `${l.name}. ${describeMove(expected)}`
             : l.name
-          : `${l.name} — play your line.`,
-      );
+          : `${l.name} — play your line.`;
+      setMessages([{ id: nextId(), role: "coach", text: intro, kind: "intro" }]);
     },
-    [lines, side, mode, stopDemo],
+    [lines, side, mode, stopWalk, appendMessage],
   );
 
   // (re)start when lines arrive or mode changes
@@ -474,23 +560,24 @@ const Trainer = ({ course, onExit }) => {
   const completeLine = useCallback(() => {
     setFeedback("lineDone");
     setArrows([]);
-    setCoachExtra(null);
+    let text;
     if (mode === "learn") {
       const next = new Set(learned);
       next.add(line.id);
       setLearned(next);
       saveLearned(course.slug, next);
-      setCoach(`Line learned: ${line.name}. ${next.size}/${lines.length} discovered.`);
+      text = `Line learned: ${line.name}. ${next.size}/${lines.length} discovered.`;
     } else if (mode === "drill") {
       const clean = mistakesThisLine === 0;
       const newCombo = clean ? combo + 1 : 0;
       setCombo(newCombo);
       if (clean) setScore((s) => s + 10 * Math.max(1, newCombo));
-      setCoach(clean ? `Clean! Combo ×${newCombo}.` : "Combo reset — a mistake slipped in.");
+      text = clean ? `Clean! Combo ×${newCombo}.` : "Combo reset — a mistake slipped in.";
     } else {
-      setCoach(mistakesThisLine === 0 ? "Solved cleanly." : "Solved, with a slip. It'll come back sooner.");
+      text = mistakesThisLine === 0 ? "Solved cleanly." : "Solved, with a slip. It'll come back sooner.";
     }
-  }, [mode, learned, line, lines, course.slug, combo, mistakesThisLine]);
+    appendMessage({ id: nextId(), role: "coach", text, kind: "done" });
+  }, [mode, learned, line, lines, course.slug, combo, mistakesThisLine, appendMessage]);
 
   const autoPlayReplies = useCallback(
     (g, fromPly) => {
@@ -503,12 +590,11 @@ const Trainer = ({ course, onExit }) => {
         }
         const ply = l.plies[p];
         if (ply.color === side) {
-          // back to the user — clear any prior coach arrows and structured
-          // extras so the next grounded explanation is for THIS decision.
+          // back to the user — clear any prior coach arrows so the next grounded
+          // explanation is for THIS decision.
           setArrows([]);
-          setCoachExtra(null);
           setPlyIdx(p);
-          if (mode === "learn") setCoach(`${describeMove(ply)}`);
+          if (mode === "learn") appendMessage({ id: nextId(), role: "coach", text: describeMove(ply), kind: "intro" });
           return;
         }
         g.move({ from: ply.from, to: ply.to, promotion: ply.promotion });
@@ -517,21 +603,33 @@ const Trainer = ({ course, onExit }) => {
           [ply.from]: { background: "rgba(255,102,0,0.18)" },
           [ply.to]: { background: "rgba(255,102,0,0.28)" },
         });
-        if (mode === "learn") setCoach(describeReply(ply));
+        if (mode === "learn") appendMessage({ id: nextId(), role: "coach", text: describeReply(ply), kind: "reply" });
         p += 1;
         replyTimer.current = setTimeout(step, 650);
       };
       step();
     },
-    [lines, lineIdx, side, mode, completeLine],
+    [lines, lineIdx, side, mode, completeLine, appendMessage],
   );
 
   const handleDrop = useCallback(
     ({ sourceSquare, targetSquare }) => {
-      if (feedback === "lineDone" || demoActive) return false;
+      if (feedback === "lineDone" || walkActive) return false;
       const l = lines?.[lineIdx];
       const expected = l?.plies[plyIdx];
       if (!expected || expected.color !== side) return false;
+
+      // Reject illegal drops outright (same-square, blocked, off-piece). Only a
+      // LEGAL but off-book move deserves a coach correction — never explain a
+      // non-move (which would surface raw UCI like "e2e2" as the played move).
+      let legal = false;
+      try {
+        const probe = new Chess(gameRef.current.fen());
+        legal = !!probe.move({ from: sourceSquare, to: targetSquare, promotion: "q" });
+      } catch {
+        legal = false;
+      }
+      if (!legal) return false;
 
       const correct = sourceSquare === expected.from && targetSquare === expected.to;
       if (!correct) {
@@ -552,10 +650,14 @@ const Trainer = ({ course, onExit }) => {
         setFeedback("wrong");
         setMistakesThisLine((m) => m + 1);
         if (mode === "drill") setCombo(0);
-        // Instant rule-based correction, then an automatic grounded AI coach
-        // explanation (with board arrows) replaces it the moment it's ready.
-        setCoach(describeCorrection(expected, l.name));
-        runExplain({ playedUci: `${sourceSquare}${targetSquare}` });
+        // Post a pending coach correction into the thread immediately (spinner +
+        // placeholder), then the grounded AI explanation (with board arrows)
+        // replaces that same bubble the moment it's ready.
+        runExplain({
+          playedUci: `${sourceSquare}${targetSquare}`,
+          kind: "correction",
+          pendingText: "That's not the move this line plays — let me explain why…",
+        });
         return false;
       }
 
@@ -574,7 +676,7 @@ const Trainer = ({ course, onExit }) => {
       replyTimer.current = setTimeout(() => autoPlayReplies(g, nextPly), 350);
       return true;
     },
-    [feedback, demoActive, lines, lineIdx, plyIdx, side, mode, autoPlayReplies, runExplain],
+    [feedback, walkActive, lines, lineIdx, plyIdx, side, mode, autoPlayReplies, runExplain],
   );
 
   // Learn mode: automatically ground the "why this move" explanation whenever
@@ -594,7 +696,7 @@ const Trainer = ({ course, onExit }) => {
   // sees the move to make. Cleared on opponent replies, line change, a played
   // move, or leaving Learn mode (handleDrop/autoPlayReplies/loadLine reset these).
   useEffect(() => {
-    if (mode !== "learn" || feedback !== "idle" || demoActive) return undefined;
+    if (mode !== "learn" || feedback !== "idle" || walkActive) return undefined;
     const expected = lines?.[lineIdx]?.plies[plyIdx];
     if (!expected || expected.color !== side) return undefined;
     setArrows([{ startSquare: expected.from, endSquare: expected.to, color: "#2e9e3b" }]);
@@ -604,31 +706,29 @@ const Trainer = ({ course, onExit }) => {
     });
     return undefined;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, feedback, lines, lineIdx, plyIdx, side, demoActive]);
+  }, [mode, feedback, lines, lineIdx, plyIdx, side, walkActive]);
 
-  // Scope the coach chat to the current decision: clear the thread (and ignore
-  // any in-flight reply) whenever the line or ply changes.
-  useEffect(() => {
-    chatSeq.current += 1;
-    setMessages([]);
-    setChatInput("");
-    setChatBusy(false);
-  }, [lineIdx, plyIdx]);
-
-  // Ask the coach a follow-up about the position currently on the board. Grounds
-  // the answer in the decision fen + line context + the running thread, then
-  // appends both the question and the markdown reply to `messages`.
+  // Ask the coach a follow-up about the position currently on the board. Appends
+  // the user's question, then a pending coach bubble, and grounds the answer in
+  // the decision fen + line context + the running thread (mapped to {role,content}
+  // with the coach as 'assistant'). The pending bubble is replaced in place with
+  // the markdown reply. Always available, regardless of mode/feedback.
   const sendChat = useCallback(() => {
     const question = chatInput.trim();
-    if (!question || chatBusy) return;
+    if (!question) return;
     const expected = lines?.[lineIdx]?.plies[plyIdx];
     const fenBefore = expected?.fenBefore ?? gameRef.current.fen();
     const historySan = (lines?.[lineIdx]?.plies ?? []).slice(0, plyIdx).map((p) => p.san);
-    const prior = messages.map((m) => ({ role: m.role, content: m.content }));
-    setMessages((prev) => [...prev, { role: "user", content: question }]);
+    // Prior conversation for grounding: the thread so far mapped to the LLM's
+    // {role,content} shape — coach utterances become 'assistant'.
+    const prior = messages.map((m) => ({
+      role: m.role === "coach" ? "assistant" : "user",
+      content: m.text,
+    }));
+    appendMessage({ id: nextId(), role: "user", text: question, kind: "question" });
     setChatInput("");
-    setChatBusy(true);
-    const seq = ++chatSeq.current;
+    const id = nextId();
+    appendMessage({ id, role: "coach", text: "", pending: true, kind: "answer" });
     coachFollowup({
       question,
       fen: fenBefore,
@@ -638,20 +738,17 @@ const Trainer = ({ course, onExit }) => {
       prior,
     })
       .then((reply) => {
-        if (!mounted.current || seq !== chatSeq.current) return;
-        setMessages((prev) => [...prev, { role: "assistant", content: reply || "" }]);
+        if (!mounted.current) return;
+        replaceMessage(id, { text: reply || "", pending: false });
       })
       .catch(() => {
-        if (!mounted.current || seq !== chatSeq.current) return;
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "_The coach could not answer that just now. Try again._" },
-        ]);
-      })
-      .finally(() => {
-        if (mounted.current && seq === chatSeq.current) setChatBusy(false);
+        if (!mounted.current) return;
+        replaceMessage(id, {
+          text: "_The coach could not answer that just now. Try again._",
+          pending: false,
+        });
       });
-  }, [chatInput, chatBusy, lines, lineIdx, plyIdx, messages, course.family]);
+  }, [chatInput, lines, lineIdx, plyIdx, messages, course.family, appendMessage, replaceMessage]);
 
   const nextLine = useCallback(() => {
     const idx = pickNextIndex(lines, lineIdx);
@@ -667,6 +764,10 @@ const Trainer = ({ course, onExit }) => {
     setFeedback("idle");
     setSquareStyles({});
   }, []);
+
+  // Coach is "analyzing" while any explanation/correction bubble is still
+  // pending (drives the Explain button's disabled/label state).
+  const aiBusy = messages.some((m) => m.pending && (m.kind === "explain" || m.kind === "correction"));
 
   if (lines && lines.length === 0) {
     return (
@@ -696,7 +797,7 @@ const Trainer = ({ course, onExit }) => {
               animationDurationInMs: 200,
               arrows,
               squareStyles,
-              allowDragging: feedback !== "lineDone" && !demoActive,
+              allowDragging: feedback !== "lineDone" && !walkActive,
               ...BOARD_STYLE,
               boardStyle: { borderRadius: "4px" },
             }}
@@ -762,137 +863,138 @@ const Trainer = ({ course, onExit }) => {
           )}
         </div>
 
-        {/* coach text */}
-        <div className="flex-1 overflow-y-auto px-5 py-6">
-          <div
-            className={`rounded-md border p-4 font-sans text-sm leading-relaxed ${
-              feedback === "wrong"
-                ? "border-destructive/40 bg-destructive/[0.05] text-foreground"
-                : feedback === "lineDone"
-                  ? "border-primary/40 bg-primary/[0.05] text-foreground"
-                  : "border-border bg-background text-foreground"
-            }`}
-          >
-            <div className="mb-2 flex items-center gap-2">
-              {feedback === "lineDone" && <Check className="h-4 w-4 text-primary" />}
-              {feedback === "wrong" && <X className="h-4 w-4 text-destructive" />}
-              {aiBusy && <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />}
-              <Callout className={`text-[10px] ${aiBusy ? "text-primary" : ""}`}>
-                {aiBusy ? "Coach analyzing…" : feedback === "wrong" ? "Correction" : "Coach"}
-              </Callout>
-            </div>
+        {/* ── Single chat thread ──────────────────────────────────────────────
+            ONE scrollable transcript: every coach utterance (move explanations,
+            wrong-move corrections, follow-up answers) and the student's own
+            questions live here as messages. Auto-scrolls to the newest. */}
+        <div ref={transcriptRef} className="flex-1 space-y-3 overflow-y-auto px-5 py-5">
+          {messages.map((m) => {
+            const isUser = m.role === "user";
+            const walkingThis = walk?.msgId === m.id;
+            const hasLine = Array.isArray(m.line) && m.line.length > 0 && m.lineFromFen;
+            return (
+              <div key={m.id} className={isUser ? "flex justify-end" : "flex justify-start"}>
+                <div
+                  className={`max-w-[88%] rounded-md px-3.5 py-3 font-sans text-[13px] leading-relaxed ${
+                    isUser
+                      ? "bg-secondary text-secondary-foreground"
+                      : "border border-border bg-background text-foreground"
+                  }`}
+                >
+                  <Callout className="text-[9px]">{isUser ? "You" : "Coach"}</Callout>
 
-            {/* Prominent short explanation. */}
-            <div className="text-[15px]">
-              <CoachText>{coach}</CoachText>
-            </div>
+                  <div className="mt-1.5">
+                    {m.pending ? (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-primary" />
+                        <span className="text-[13px] leading-relaxed">{m.text}</span>
+                      </div>
+                    ) : (
+                      <CoachText>{m.text}</CoachText>
+                    )}
+                  </div>
 
-            {/* Deeper reasoning, slightly muted, under a small mono WHY label. */}
-            {coachExtra?.reasoning && (
-              <div className="mt-4 border-t border-border pt-3">
-                <Callout className="text-[10px]">Why</Callout>
-                <div className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-                  <CoachText>{coachExtra.reasoning}</CoachText>
-                </div>
-              </div>
-            )}
-
-            {/* Replay the engine-anchored line ON the board so the student SEES
-                the refutation (mistake) or plan (good move). */}
-            {coachExtra?.line && (
-              <div className="mt-4 flex items-center gap-2">
-                {demoActive ? (
-                  <EditorialButton variant="outline" onClick={stopDemo}>
-                    <RotateCcw className="h-3.5 w-3.5" /> Reset
-                  </EditorialButton>
-                ) : (
-                  <EditorialButton variant="primary" onClick={playDemo}>
-                    ▶ Show the line
-                  </EditorialButton>
-                )}
-                {demoActive && (
-                  <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">
-                    Playing…
-                  </span>
-                )}
-              </div>
-            )}
-
-            {/* Templated (keyless) coaching still ships real arrows + a real
-                engine line; nudge toward a key for deeper prose. */}
-            {coachExtra && coachExtra.aiGenerated === false && (
-              <p className="mt-4 font-mono text-[10px] leading-relaxed tracking-[0.04em] text-muted-foreground">
-                Add a Gemini key in Settings for deeper coaching.
-              </p>
-            )}
-          </div>
-
-          {/* Coach chat — ask follow-ups about THIS position. Appears once an
-              explanation exists; scoped to the current decision (cleared on a new
-              line/ply). Editorial: mono label, hairline divider, scrollable. */}
-          {coach && (
-            <div className="mt-4 rounded-md border border-border bg-background">
-              <div className="flex items-center gap-2 border-b border-border px-4 py-2.5">
-                <MessageCircle className="h-3.5 w-3.5 text-muted-foreground" />
-                <Callout className="text-[10px]">Ask the coach</Callout>
-              </div>
-
-              {messages.length > 0 && (
-                <div className="max-h-64 space-y-3 overflow-y-auto px-4 py-3">
-                  {messages.map((m, i) => (
-                    <div key={i} className={m.role === "user" ? "" : "border-l-2 border-primary/40 pl-3"}>
-                      <Callout className="text-[9px]">
-                        {m.role === "user" ? "You" : "Coach"}
-                      </Callout>
-                      <div className="mt-1 text-[13px] leading-relaxed text-foreground">
-                        <CoachText>{m.content}</CoachText>
+                  {/* Deeper reasoning, muted, under a small mono WHY label. */}
+                  {!m.pending && m.reasoning && (
+                    <div className="mt-3 border-t border-border pt-2.5">
+                      <Callout className="text-[9px]">Why</Callout>
+                      <div className="mt-1.5 text-[12px] leading-relaxed text-muted-foreground">
+                        <CoachText>{m.reasoning}</CoachText>
                       </div>
                     </div>
-                  ))}
-                  {chatBusy && (
-                    <div className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
-                      <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-primary">
-                        Coach thinking…
-                      </span>
-                    </div>
+                  )}
+
+                  {/* Manual step-through of this message's engine line. */}
+                  {!m.pending && hasLine && (
+                    walkingThis ? (
+                      <div className="mt-3 rounded-[4px] border border-primary/40 bg-primary/[0.04] px-3 py-2.5">
+                        <div className="flex items-center justify-between">
+                          <Callout className="text-[9px] text-primary">
+                            Step {walk.step} / {walk.line.length}
+                          </Callout>
+                          <button
+                            onClick={stopWalk}
+                            className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"
+                          >
+                            Done
+                          </button>
+                        </div>
+                        <div className="mt-2 min-h-[2.2em] text-[12px] leading-relaxed text-foreground">
+                          {walk.step === 0
+                            ? "Starting position. Step forward to walk the line."
+                            : walkCaption(walk, walk.step)}
+                        </div>
+                        <div className="mt-2.5 flex items-center gap-2">
+                          <EditorialButton
+                            variant="outline"
+                            onClick={() => walkTo(walk.step - 1)}
+                            disabled={walk.step <= 0}
+                            aria-label="Previous step"
+                          >
+                            <ChevronLeft className="h-3.5 w-3.5" /> Prev
+                          </EditorialButton>
+                          <EditorialButton
+                            variant="primary"
+                            onClick={() => walkTo(walk.step + 1)}
+                            disabled={walk.step >= walk.line.length}
+                            aria-label="Next step"
+                          >
+                            Next <ChevronRight className="h-3.5 w-3.5" />
+                          </EditorialButton>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-3">
+                        <EditorialButton variant="outline" onClick={() => startWalk(m)} disabled={walkActive}>
+                          <Play className="h-3 w-3" /> Walk the line
+                        </EditorialButton>
+                      </div>
+                    )
+                  )}
+
+                  {/* Templated (keyless) coaching still ships real arrows + a real
+                      engine line; nudge toward a key for deeper prose. */}
+                  {!m.pending && m.aiGenerated === false && (
+                    <p className="mt-3 font-mono text-[10px] leading-relaxed tracking-[0.04em] text-muted-foreground">
+                      Add a Gemini key in Settings for deeper coaching.
+                    </p>
                   )}
                 </div>
-              )}
-
-              <form
-                className="flex items-center gap-2 border-t border-border px-3 py-2.5"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  sendChat();
-                }}
-              >
-                <Input
-                  value={chatInput}
-                  onChange={(e) => setChatInput(e.target.value)}
-                  placeholder="Ask the coach…"
-                  aria-label="Ask the coach a question about this position"
-                  className="h-9 flex-1 font-sans text-[13px]"
-                  disabled={chatBusy}
-                />
-                <EditorialButton
-                  type="submit"
-                  variant="primary"
-                  disabled={chatBusy || !chatInput.trim()}
-                  aria-label="Send question to coach"
-                >
-                  <Send className="h-3.5 w-3.5" />
-                </EditorialButton>
-              </form>
-            </div>
-          )}
+              </div>
+            );
+          })}
 
           {line && (
-            <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+            <p className="pt-1 text-center font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
               {line.eco} · line {lineIdx + 1} of {lines.length}
             </p>
           )}
         </div>
+
+        {/* ── Chat input — always available ──────────────────────────────────── */}
+        <form
+          className="flex items-center gap-2 border-t border-border px-4 py-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendChat();
+          }}
+        >
+          <Input
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder="Ask the coach…"
+            aria-label="Ask the coach a question about this position"
+            className="h-10 flex-1 font-sans text-[13px]"
+          />
+          <EditorialButton
+            type="submit"
+            variant="primary"
+            disabled={!chatInput.trim()}
+            aria-label="Send question to coach"
+          >
+            <Send className="h-3.5 w-3.5" />
+          </EditorialButton>
+        </form>
 
         {/* controls */}
         <div className="flex items-center gap-2 border-t border-border px-5 py-4">
@@ -901,12 +1003,12 @@ const Trainer = ({ course, onExit }) => {
               <RotateCcw className="h-3.5 w-3.5" /> Try again
             </EditorialButton>
           ) : (
-            <EditorialButton variant="ghost" onClick={showHint} disabled={feedback === "lineDone"}>
+            <EditorialButton variant="ghost" onClick={showHint} disabled={feedback === "lineDone" || walkActive}>
               <Lightbulb className="h-3.5 w-3.5" /> Hint
             </EditorialButton>
           )}
           {feedback !== "lineDone" && (
-            <EditorialButton variant="ghost" onClick={() => runExplain()} disabled={aiBusy}>
+            <EditorialButton variant="ghost" onClick={() => runExplain()} disabled={aiBusy || walkActive}>
               <Search className="h-3.5 w-3.5" /> {aiBusy ? "Analyzing…" : "Explain"}
             </EditorialButton>
           )}

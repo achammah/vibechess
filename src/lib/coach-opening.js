@@ -20,6 +20,17 @@ import { templatedCorrection, templatedPlan } from "./narrate";
 const PV_DEPTH = 16; // depth for the principal-variation (demonstration line) call
 const EVAL_DEPTH = 12; // depth for the lightweight book-move eval
 const MAX_LINE_PLIES = 8; // cap the drawn demonstration line length
+const LLM_TIMEOUT_MS = 12_000; // bound the LLM call so a rate-limited/slow key
+// degrades to the instant templated path instead of leaving the coach hanging.
+
+// Reject `p` after `ms` so a stalled network call can't block the explanation.
+const withTimeout = (p, ms) =>
+  Promise.race([
+    p,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("LLM timeout")), ms),
+    ),
+  ]);
 
 const getGoogleKey = () =>
   localStorage.getItem("chess-google-api-key") ||
@@ -99,7 +110,9 @@ Return a JSON object with exactly two string fields:
 
 "reasoning": a deeper 2 to 4 sentence paragraph that REFERENCES the concrete Stockfish follow-up moves you were given (cite them by their SAN, e.g. "After **Nf3**, Black's …Nc6 and your d4 break give you a lasting space edge."). Explain the plan or, for a mistake, the engine's punishing continuation. Markdown bold on moves is fine.
 
-ABSOLUTELY FORBIDDEN in BOTH fields:
+"steps": an array that ANNOTATES the Stockfish follow-up line move by move. Return EXACTLY ONE object per move in the follow-up line I gave you, IN THE SAME ORDER, each {"move": that move's SAN copied verbatim, "note": a concrete explanation of WHY this move is played — the plan, idea, threat, or what it develops, fights for, prepares, or prevents}. The "note" MUST give the reasoning, NEVER a restatement of what moved where (do NOT write "the knight goes to f3" or "pawn to d5"; instead "develops the knight and eyes the e5 square"). For the OPPONENT'S moves, explain the opponent's intention — what they are trying to achieve against you. One sentence, 20 words maximum, plain prose, no move numbers, no markdown, no list markers. Do NOT add, drop, reorder, merge, or invent moves — annotate only the moves given. If no follow-up line was given, return an empty array.
+
+ABSOLUTELY FORBIDDEN in the prose fields:
 - headings or title lines, bold section labels (e.g. "**Why it works:**")
 - numbered lists, bulleted lists, enumerated reasons
 - preamble or filler ("Based on…", "Here is…", "Okay", "Sure")
@@ -107,14 +120,48 @@ ABSOLUTELY FORBIDDEN in BOTH fields:
 
 Output ONLY the JSON object.`;
 
-// Gemini structured-output schema: two prose strings, nothing else.
+// Gemini structured-output schema: two prose strings plus a per-move annotation
+// array for the demonstration line (one {move, note} per Stockfish follow-up move,
+// produced in a SINGLE call — never one request per move).
 const RESPONSE_SCHEMA = {
   type: "object",
   properties: {
     explanation: { type: "string" },
     reasoning: { type: "string" },
+    steps: {
+      type: "array",
+      items: {
+        type: "object",
+        properties: {
+          move: { type: "string" },
+          note: { type: "string" },
+        },
+        required: ["move", "note"],
+      },
+    },
   },
   required: ["explanation", "reasoning"],
+};
+
+// SAN without check/mate/annotation glyphs, for matching AI notes to engine plies.
+const normSan = (s) => (s || "").replace(/[+#!?]/g, "").trim();
+
+// Merge AI per-move notes onto the engine line ({from,to,san}). Matches each
+// engine ply to a step by normalized SAN first (robust to reordering), then falls
+// back to positional index. Plies with no usable note are returned unchanged, so
+// the trainer can fall back to its rule-based caption for them.
+export const attachNotes = (line, steps) => {
+  if (!Array.isArray(steps) || steps.length === 0) return line;
+  const byMove = new Map();
+  steps.forEach((st) => {
+    const k = normSan(st?.move);
+    const note = cleanProse(st?.note || "");
+    if (k && note && !byMove.has(k)) byMove.set(k, note);
+  });
+  return line.map((m, i) => {
+    const note = byMove.get(normSan(m.san)) || cleanProse(steps[i]?.note || "");
+    return note ? { ...m, note } : m;
+  });
 };
 
 // Defensive cleaner: strips leaked preamble / list markers / arrow & drawing
@@ -281,24 +328,32 @@ export const explainOpening = async ({
     let explanation = "";
     let reasoning = "";
     let aiGenerated = false;
+    // The demonstration line, optionally annotated with one AI note per move.
+    let annotatedLine = line;
 
     // ── LLM path (key present): structured JSON verbalizing the evidence ──────
     if (key) {
       try {
-        const json = await generateJson({
-          instruction: INSTRUCTION,
-          prompt: `TASK: ${task}\n\n${ev.join("\n")}`,
-          schema: RESPONSE_SCHEMA,
-          apiKey: key,
-          model: getGoogleModel(),
-          temperature: 0.25,
-          maxOutputTokens: 700,
-          // gemini-3.5-flash is a thinking model; disable reasoning for speed.
-          // generateJson retries without thinkingConfig if rejected.
-          thinkingBudget: 0,
-        });
+        const json = await withTimeout(
+          generateJson({
+            instruction: INSTRUCTION,
+            prompt: `TASK: ${task}\n\n${ev.join("\n")}`,
+            schema: RESPONSE_SCHEMA,
+            apiKey: key,
+            model: getGoogleModel(),
+            temperature: 0.25,
+            // Room for the prose fields PLUS a WHY note per follow-up move.
+            maxOutputTokens: 1200,
+            // gemini-3.5-flash is a thinking model; disable reasoning for speed.
+            // generateJson retries without thinkingConfig if rejected.
+            thinkingBudget: 0,
+          }),
+          LLM_TIMEOUT_MS,
+        );
         explanation = cleanProse(json?.explanation);
         reasoning = cleanProse(json?.reasoning);
+        // One AI call yields per-move notes for the WHOLE line (never per move).
+        annotatedLine = attachNotes(line, json?.steps);
         aiGenerated = !!(explanation || reasoning);
       } catch {
         // LLM failed — fall through to the templated engine-grounded path.
@@ -329,7 +384,10 @@ export const explainOpening = async ({
     return {
       explanation,
       reasoning,
-      line, // Stockfish PV replayed into {from,to,san} — engine truth
+      // Stockfish PV replayed into {from,to,san} — engine truth. Each step may
+      // carry an AI `note` (a short per-move idea) when a Google key is set; the
+      // trainer falls back to a rule-based caption for any step without one.
+      line: annotatedLine,
       lineFromFen,
       arrows,
       aiGenerated,
@@ -415,16 +473,19 @@ export const coachFollowup = async ({
     }
 
     const message = `${ev.join("\n")}\n\nThe student asks: ${question}`;
-    const raw = await generateChat({
-      instruction: FOLLOWUP_INSTRUCTION,
-      history: prior,
-      message,
-      apiKey: key,
-      model: getGoogleModel(),
-      temperature: 0.4,
-      maxOutputTokens: 500,
-      thinkingBudget: 0, // fast, direct answer
-    });
+    const raw = await withTimeout(
+      generateChat({
+        instruction: FOLLOWUP_INSTRUCTION,
+        history: prior,
+        message,
+        apiKey: key,
+        model: getGoogleModel(),
+        temperature: 0.4,
+        maxOutputTokens: 500,
+        thinkingBudget: 0, // fast, direct answer
+      }),
+      LLM_TIMEOUT_MS,
+    );
     const answer = cleanProse(raw);
     return answer || NO_KEY_NOTE;
   } catch {
