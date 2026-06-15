@@ -15,6 +15,7 @@ import {
   loadQuizCatalog,
   shuffleQuizEntries,
 } from "@/lib/puzzle-quizzes";
+import { getAdaptivePuzzle } from "@/lib/puzzles-db";
 
 // Difficulty badge color
 const diffColor = {
@@ -38,12 +39,19 @@ const themeEmoji = {
 /**
  *
  */
-export default function PuzzleMode({ onClose, initialDifficulty = null }) {
+export default function PuzzleMode({
+  onClose,
+  initialDifficulty = null,
+  adaptive = false,
+  userRating = 1200,
+}) {
   const [quizEntries, setQuizEntries] = useState([]);
   const [catalogState, setCatalogState] = useState("loading");
   const [loadError, setLoadError] = useState("");
   const [puzzleIndex, setPuzzleIndex] = useState(0);
   const [sessionStats, setSessionStats] = useState({ solved: 0, failed: 0 });
+  const ratingReference = useRef(userRating);
+  const seenReference = useRef([]);
 
   // Per-puzzle state
   const [chess, setChess] = useState(null); // Chess instance for current puzzle
@@ -63,6 +71,15 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
     const loadCatalog = async () => {
       setCatalogState("loading");
       setLoadError("");
+
+      // Adaptive (DB) mode: synthesize a stream of placeholder entries; each is
+      // resolved to a rating-matched Lichess puzzle in the per-puzzle loader.
+      if (adaptive) {
+        setQuizEntries(Array.from({ length: 50 }, () => ({ adaptive: true })));
+        setPuzzleIndex(0);
+        setCatalogState("ready");
+        return;
+      }
 
       try {
         const data = await loadQuizCatalog();
@@ -90,7 +107,7 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
       cancelled = true;
       clearTimeout(engineTimeoutReference.current);
     };
-  }, [initialDifficulty]);
+  }, [initialDifficulty, adaptive]);
 
   // ── Initialise / reset on puzzle change ──────────────────────────────────
   useEffect(() => {
@@ -103,8 +120,15 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
       clearTimeout(engineTimeoutReference.current);
 
       try {
-        const nextPuzzle = await loadQuizByFile(entry.file);
+        const nextPuzzle = entry.adaptive
+          ? await getAdaptivePuzzle(ratingReference.current, seenReference.current)
+          : await loadQuizByFile(entry.file);
         if (cancelled) return;
+        if (!nextPuzzle) {
+          setLoadError("No puzzles available for your level yet.");
+          return;
+        }
+        if (entry.adaptive) seenReference.current.push(nextPuzzle.id);
 
         const g = new Chess(nextPuzzle.fen);
         setPuzzle(nextPuzzle);
@@ -115,7 +139,7 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
         setWrongMoves(0);
         setHintUsed(false);
         setArrows([]);
-        setLastMoveSquares({});
+        setLastMoveSquares(nextPuzzle.lastMoveSquares ?? {});
       } catch (error) {
         if (cancelled) return;
         setLoadError(
@@ -188,6 +212,11 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
           // Puzzle complete!
           setStatus("solved");
           setSessionStats((s) => ({ ...s, solved: s.solved + 1 }));
+          // Nudge difficulty up on a clean solve, less so if it was a struggle.
+          ratingReference.current = Math.min(
+            2800,
+            ratingReference.current + (wrongMoves === 0 && !hintUsed ? 30 : 10),
+          );
         } else {
           setStatus("correct-step");
           // Engine plays next
@@ -223,6 +252,7 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
   const handleReveal = useCallback(() => {
     if (!puzzle || !chess) return;
     setSessionStats((s) => ({ ...s, failed: s.failed + 1 }));
+    ratingReference.current = Math.max(600, ratingReference.current - 30);
     // Play out remaining solution moves
     const g = chess;
     const newArrows = [];
@@ -504,7 +534,7 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
                   const absIndex = Math.max(0, puzzleIndex - 4) + index;
                   return (
                     <button
-                      key={entry.id}
+                      key={entry.id ?? absIndex}
                       onClick={() => {
                         clearTimeout(engineTimeoutReference.current);
                         setPuzzleIndex(absIndex);
@@ -518,7 +548,7 @@ export default function PuzzleMode({ onClose, initialDifficulty = null }) {
                               ? "bg-yellow-500/50"
                               : "bg-green-500/50"
                       }`}
-                      title={`Puzzle ${absIndex + 1}: ${entry.title}`}
+                      title={`Puzzle ${absIndex + 1}${entry.title ? `: ${entry.title}` : ""}`}
                     />
                   );
                 })}

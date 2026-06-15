@@ -25,6 +25,7 @@ import { migrateMoveHistory } from "@/lib/chess-helpers";
 import { autoSave, loadAutoSave } from "@/lib/db";
 import { getBestMove } from "@/lib/engine";
 import { recordOpeningResult, detectOpening } from "@/lib/opening-stats";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import { OPENINGS } from "@/lib/openings";
 import {
   getStockfishEngine,
@@ -1082,7 +1083,16 @@ const App = () => {
         currentGameSnapshot={getCurrentSnapshot()}
       />
 
-      {puzzleOpen && <PuzzleMode onClose={() => setPuzzleOpen(false)} />}
+      {puzzleOpen && (
+        <PuzzleMode
+          onClose={() => setPuzzleOpen(false)}
+          adaptive={isSupabaseConfigured}
+          userRating={Number.parseInt(
+            localStorage.getItem("chess-coach-elo") || "1200",
+            10,
+          )}
+        />
+      )}
       {openingDrillOpen && (
         <OpeningDrillMode onClose={() => setOpeningDrillOpen(false)} />
       )}

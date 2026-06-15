@@ -10,6 +10,7 @@ import {
   Moon,
   Sun,
   BookOpen,
+  Puzzle,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -124,6 +125,7 @@ const ControlBar = ({
   onOpenSettings,
   onOpenSavedGames,
   onOpenOpenings,
+  onOpenPuzzles,
   opponent,
   onOpponentChange,
   difficulty,
@@ -200,6 +202,11 @@ const ControlBar = ({
       <Button variant="ghost" size="sm" onClick={onOpenOpenings}>
         <BookOpen className="h-4 w-4" />
         Openings
+      </Button>
+
+      <Button variant="ghost" size="sm" onClick={onOpenPuzzles}>
+        <Puzzle className="h-4 w-4" />
+        Puzzles
       </Button>
 
       {/* <Button variant="ghost" size="sm" onClick={onSetPosition}>
