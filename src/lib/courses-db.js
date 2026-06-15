@@ -17,6 +17,21 @@ export const familyOf = (name) => (name || "").split(/[:,]/)[0].trim();
 export const slugify = (s) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
+// Shared upper bound on lines per course, so the catalog card count and the
+// trainer's "all variations" count are computed identically and never disagree.
+export const COURSE_LINE_CAP = 500;
+
+// Cheap, parse-free move signature for dedup: strip move numbers + result and
+// normalise whitespace, leaving the SAN sequence ("d4 d5 Bf4 …"). Identical move
+// sequences collapse to one — matching getCourseLines' per-move dedup without the
+// cost of replaying every PGN during the catalog load.
+const sigOf = (pgn) =>
+  (pgn || "")
+    .replace(/\d+\.(\.\.)?/g, " ")
+    .replace(/\b(1-0|0-1|1\/2-1\/2|\*)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
 /** Final FEN of a PGN's mainline, computed once. Empty string on failure. */
 const finalFenOf = (pgn) => {
   if (!pgn) return "";
@@ -81,6 +96,20 @@ export const listCourses = async ({ min = 2 } = {}) => {
   const plyCount = (pgn) =>
     pgn ? (pgn.replace(/\d+\.(\.\.)?/g, " ").match(/[a-hRNBQKOo][^\s]*/g) || []).length : 0;
 
+  // Precompute each row's name segments + move signature once, so the broad
+  // per-family line count below is fast and matches getCourseLines exactly.
+  const prepared = rows.map((r) => ({
+    segs: (r.name || "").split(/[:,]/).map((s) => s.trim()).filter(Boolean),
+    sig: sigOf(r.pgn),
+  }));
+  const matchesFamily = (segs, family) =>
+    segs.some((seg, i) => {
+      if (seg === family) return true;
+      if (i === 0) return seg.startsWith(`${family} `);
+      return seg.endsWith(` ${family}`) || seg.startsWith(`${family} `);
+    });
+
+  // Card identity = distinct familyOf(name); pick a representative line + terms.
   const fams = new Map();
   for (const r of rows) {
     const fam = familyOf(r.name);
@@ -90,7 +119,6 @@ export const listCourses = async ({ min = 2 } = {}) => {
       cur = { family: fam, slug: slugify(fam), eco: r.eco, lineCount: 0, _repPgn: "", _repScore: -1, _terms: new Set() };
       fams.set(fam, cur);
     }
-    cur.lineCount += 1;
     // Searchable terms: the FULL line name (so sub-variations like "Najdorf",
     // "Dragon", "Berlin" surface their family) + the ECO code.
     if (r.name) cur._terms.add(r.name.toLowerCase());
@@ -107,6 +135,17 @@ export const listCourses = async ({ min = 2 } = {}) => {
       cur._repScore = score;
       cur._repPgn = r.pgn || "";
     }
+  }
+
+  // True line count = DISTINCT move signatures among ALL rows of the system
+  // (broad lineInFamily), capped — IDENTICAL to what getCourseLines returns, so
+  // the card count never disagrees with the trainer's "all variations" count.
+  for (const [family, cur] of fams) {
+    const seen = new Set();
+    for (const p of prepared) {
+      if (p.sig && matchesFamily(p.segs, family)) seen.add(p.sig);
+    }
+    cur.lineCount = Math.min(seen.size, COURSE_LINE_CAP);
   }
 
   _courseCache = [...fams.values()]
@@ -191,7 +230,7 @@ const lineKey = (plies) => plies.map((p) => p.uci).join(" ");
  * match), via `lineInFamily`, then dedupes by move signature so the same line
  * filed under two host families appears once. `side` is handled by the trainer.
  */
-export const getCourseLines = async (family, { limit = 300 } = {}) => {
+export const getCourseLines = async (family, { limit = COURSE_LINE_CAP } = {}) => {
   if (!supabaseAnon || !family) return [];
   // Superset fetch: any name containing the family substring. We over-fetch
   // (`%family%` also catches sibling families) and prune precisely client-side
