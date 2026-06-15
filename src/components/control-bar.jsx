@@ -1,21 +1,16 @@
 import {
   Zap,
-  Settings,
   RotateCcw,
   User,
   Bot,
   Cpu,
   ChevronDown,
   FolderOpen,
-  Moon,
-  Sun,
   BookOpen,
-  Puzzle,
+  Clock,
 } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
-import AuthControls from "@/components/auth-controls";
-import { Button } from "@/components/ui/button";
 import { EditorialButton } from "@/components/ui/editorial";
 import { Switch } from "@/components/ui/switch";
 
@@ -122,6 +117,9 @@ const DIFFICULTY_OPTIONS = [
 ];
 
 // ── ControlBar ─────────────────────────────────────────────────────────────
+// Secondary toolbar for the Play mode. Lives directly under the top product
+// nav and holds all board / game controls (opponent, difficulty, live toggle,
+// new game, save / load, openings explorer).
 /**
  *
  */
@@ -129,149 +127,101 @@ const ControlBar = ({
   isLiveMode,
   onToggleLiveMode,
   onNewGame,
-  onOpenSettings,
   onOpenSavedGames,
   onOpenOpenings,
-  onOpenPuzzles,
   opponent,
   onOpponentChange,
   difficulty,
   onDifficultyChange,
-  isDarkMode,
-  onToggleDarkMode,
-  // Train
+  clockEnabled,
+  onToggleClock,
 }) => (
-  <div className="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-2 border-b border-border bg-background/70 px-4 py-2.5 backdrop-blur-md">
-    {/* Left — branding */}
-    <div className="flex shrink-0 items-center gap-2">
-      <span className="font-display text-lg font-semibold tracking-tight text-foreground">
-        <span className="text-primary">♟</span> vibechess
-      </span>
-    </div>
+  <div className="flex flex-wrap items-center gap-2 border-b border-border bg-card/40 px-4 py-2">
+    {/* Mode label */}
+    <span className="mr-1 hidden font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:inline">
+      Play
+    </span>
+    <div className="mx-1 hidden h-5 w-px bg-border sm:block" />
 
-    {/* Center — controls */}
-    <div className="flex flex-wrap items-center gap-2">
-      {/* Opponent selector */}
+    {/* Opponent selector */}
+    <Dropdown
+      label="Opponent"
+      icon={opponent === "manual" ? User : opponent === "ai" ? Bot : Cpu}
+      options={OPPONENT_OPTIONS}
+      value={opponent}
+      onChange={onOpponentChange}
+    />
+
+    {/* Difficulty — visible when opponent is AI or Chess Engine */}
+    {opponent !== "manual" && (
       <Dropdown
-        label="Opponent"
-        icon={opponent === "manual" ? User : opponent === "ai" ? Bot : Cpu}
-        options={OPPONENT_OPTIONS}
-        value={opponent}
-        onChange={onOpponentChange}
+        label="Difficulty"
+        options={DIFFICULTY_OPTIONS}
+        value={difficulty}
+        onChange={onDifficultyChange}
       />
+    )}
 
-      {/* Difficulty — visible when opponent is AI or Chess Engine */}
-      {opponent !== "manual" && (
-        <Dropdown
-          label="Difficulty"
-          options={DIFFICULTY_OPTIONS}
-          value={difficulty}
-          onChange={onDifficultyChange}
-        />
-      )}
+    <div className="mx-1 h-5 w-px bg-border" />
 
-      {/* Play as — pick side; disabled once game has started 
-        {opponent !== "manual" && (
-          <Dropdown
-            label="Play as"
-            icon={playerColor === "white" ? Crown : CircleUser}
-            options={PLAYER_COLOR_OPTIONS}
-            value={playerColor}
-            onChange={onPlayerColorChange}
-            disabled={isGameInProgress}
-          />
-        )} */}
-
-      <div className="mx-1 h-5 w-px bg-border" />
-
-      <div className="flex items-center gap-2 rounded-[2px] border border-border px-2.5 py-1.5">
-        <Zap
-          className={`h-3.5 w-3.5 transition-colors duration-150 ${
-            isLiveMode ? "text-primary" : "text-muted-foreground"
-          }`}
-        />
-        <span
-          className={`font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
-            isLiveMode ? "text-primary" : "text-muted-foreground"
-          }`}
-        >
-          {isLiveMode ? "Live" : "Training"}
-        </span>
-        <Switch checked={isLiveMode} onCheckedChange={onToggleLiveMode} />
-      </div>
-
-      <EditorialButton
-        variant="ghost"
-        onClick={onNewGame}
-        className="text-[10px] uppercase tracking-[0.12em]"
+    <div className="flex items-center gap-2 rounded-[2px] border border-border px-2.5 py-1.5">
+      <Zap
+        className={`h-3.5 w-3.5 transition-colors duration-150 ${
+          isLiveMode ? "text-primary" : "text-muted-foreground"
+        }`}
+      />
+      <span
+        className={`font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+          isLiveMode ? "text-primary" : "text-muted-foreground"
+        }`}
       >
-        <RotateCcw className="h-3.5 w-3.5" />
-        New Game
-      </EditorialButton>
-
-      <EditorialButton
-        variant="ghost"
-        onClick={onOpenSavedGames}
-        className="text-[10px] uppercase tracking-[0.12em]"
-      >
-        <FolderOpen className="h-3.5 w-3.5" />
-        Save / Load
-      </EditorialButton>
-
-      <EditorialButton
-        variant="ghost"
-        onClick={onOpenOpenings}
-        className="text-[10px] uppercase tracking-[0.12em]"
-      >
-        <BookOpen className="h-3.5 w-3.5" />
-        Openings
-      </EditorialButton>
-
-      <EditorialButton
-        variant="ghost"
-        onClick={onOpenPuzzles}
-        className="text-[10px] uppercase tracking-[0.12em]"
-      >
-        <Puzzle className="h-3.5 w-3.5" />
-        Puzzles
-      </EditorialButton>
-
-      {/* <Button variant="ghost" size="sm" onClick={onSetPosition}>
-        <LayoutGrid className="h-4 w-4" />
-        Set Position
-      </Button> */}
-
-      {/* <TrainDropdown
-        onOpenPuzzles={onOpenPuzzles}
-        onOpenOpeningDrill={onOpenOpeningDrill}
-        onOpenEndgame={onOpenEndgame}
-        onOpenOpeningStats={onOpenOpeningStats}
-        clockEnabled={clockEnabled}
-        clockTimeControl={clockTimeControl}
-        onToggleClock={onToggleClock}
-        onSetTimeControl={onSetTimeControl}
-      /> */}
+        {isLiveMode ? "Live" : "Training"}
+      </span>
+      <Switch checked={isLiveMode} onCheckedChange={onToggleLiveMode} />
     </div>
 
-    {/* Right — dark mode + settings */}
-    <div className="flex items-center gap-1 shrink-0">
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={onToggleDarkMode}
-        title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+    <div className="flex items-center gap-2 rounded-[2px] border border-border px-2.5 py-1.5">
+      <Clock
+        className={`h-3.5 w-3.5 transition-colors duration-150 ${
+          clockEnabled ? "text-primary" : "text-muted-foreground"
+        }`}
+      />
+      <span
+        className={`font-mono text-[10px] uppercase tracking-[0.12em] transition-colors duration-150 ${
+          clockEnabled ? "text-primary" : "text-muted-foreground"
+        }`}
       >
-        {isDarkMode ? (
-          <Sun className="h-4 w-4" />
-        ) : (
-          <Moon className="h-4 w-4" />
-        )}
-      </Button>
-      <Button variant="ghost" size="icon" onClick={onOpenSettings}>
-        <Settings className="h-4 w-4" />
-      </Button>
-      <AuthControls />
+        Clock
+      </span>
+      <Switch checked={clockEnabled} onCheckedChange={onToggleClock} />
     </div>
+
+    <EditorialButton
+      variant="ghost"
+      onClick={onNewGame}
+      className="text-[10px] uppercase tracking-[0.12em]"
+    >
+      <RotateCcw className="h-3.5 w-3.5" />
+      New Game
+    </EditorialButton>
+
+    <EditorialButton
+      variant="ghost"
+      onClick={onOpenSavedGames}
+      className="text-[10px] uppercase tracking-[0.12em]"
+    >
+      <FolderOpen className="h-3.5 w-3.5" />
+      Save / Load
+    </EditorialButton>
+
+    <EditorialButton
+      variant="ghost"
+      onClick={onOpenOpenings}
+      className="text-[10px] uppercase tracking-[0.12em]"
+    >
+      <BookOpen className="h-3.5 w-3.5" />
+      Explore Openings
+    </EditorialButton>
   </div>
 );
 

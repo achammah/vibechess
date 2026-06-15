@@ -176,7 +176,7 @@ export const getGoogleApiKey = () =>
   localStorage.getItem("chess-google-api-key") || "";
 
 export const getGoogleModel = () =>
-  localStorage.getItem("chess-google-model") || "gemini-2.5-flash";
+  localStorage.getItem("chess-google-model") || "gemini-3.5-flash";
 
 export const getModel = () =>
   localStorage.getItem("chess-coach-model") || "gpt-4o-mini";

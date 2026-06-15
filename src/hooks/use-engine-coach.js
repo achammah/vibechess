@@ -472,7 +472,7 @@ const useEngineCoach = ({
 
       const apiKey = getGoogleKey();
       if (apiKey) {
-        const model = localStorage.getItem("chess-google-model") || "gemini-2.5-flash";
+        const model = localStorage.getItem("chess-google-model") || "gemini-3.5-flash";
         const reply = await explainGrounded({
           instruction: GROUNDED_COACH_INSTRUCTION,
           evidenceText: serializeEvidence(evidence),

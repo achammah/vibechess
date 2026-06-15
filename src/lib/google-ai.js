@@ -109,7 +109,7 @@ export const summarizeGoogleConversation = async ({
   messages,
   existingSummary = "",
   apiKey,
-  model = "gemini-2.5-flash",
+  model = "gemini-3.5-flash",
 }) => {
   if (!apiKey) {
     throw new Error("Please set your Google API key in Settings.");
@@ -170,7 +170,7 @@ export const sendGoogleChatMessage = async ({
   fen,
   elo = 1000,
   apiKey,
-  model = "gemini-2.5-flash",
+  model = "gemini-3.5-flash",
   onAction,
 }) => {
   if (!apiKey) throw new Error("Please set your Google API key in Settings.");
@@ -294,22 +294,32 @@ Student ELO: ~${elo}`;
 
 /**
  * One-shot grounded explanation: the model verbalizes the engine evidence only.
- * No board-action tools — we draw arrows/highlights ourselves from the parsed
- * JSON block. Returns the raw reply text (prose + a fenced json block).
+ * No board-action tools and no JSON — the caller draws arrows itself in code.
+ * Returns the raw reply text (plain prose).
+ * @param {object} a
+ * @param {string} a.instruction        system instruction
+ * @param {string} a.evidenceText       grounded evidence block
+ * @param {string} a.task               the specific task line
+ * @param {string} a.apiKey             Google API key
+ * @param {string} [a.model]            Gemini model id
+ * @param {number} [a.temperature]      sampling temperature
+ * @param {number} [a.maxOutputTokens]  output token cap
  */
 export const explainGrounded = async ({
   instruction,
   evidenceText,
   task,
   apiKey,
-  model = "gemini-2.5-flash",
+  model = "gemini-3.5-flash",
+  temperature = 0.3,
+  maxOutputTokens = 700,
 }) => {
   if (!apiKey) throw new Error("Please set your Google API key in Settings.");
   const ai = createGoogleClient(apiKey);
   const response = await ai.models.generateContent({
     model,
     systemInstruction: instruction,
-    config: { temperature: 0.3, maxOutputTokens: 700 },
+    config: { temperature, maxOutputTokens },
     contents: [
       { role: "user", parts: [{ text: `TASK: ${task}\n\n${evidenceText}` }] },
     ],
@@ -325,8 +335,8 @@ export const GEMINI_MODELS = [
     description: "Most capable — deep reasoning & complex analysis",
   },
   {
-    id: "gemini-2.5-flash",
-    label: "Gemini 2.5 Flash",
+    id: "gemini-3.5-flash",
+    label: "Gemini 3.5 Flash",
     description:
       "Best price/performance — fast with strong reasoning (recommended)",
   },

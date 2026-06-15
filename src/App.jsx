@@ -6,16 +6,18 @@ import BlunderReviewMode from "@/components/blunder-review-mode";
 import BoardPanel, { playSound } from "@/components/board-panel";
 import ChatPanel from "@/components/chat-panel";
 import ControlBar from "@/components/control-bar";
+import CourseTrainer from "@/components/course-trainer";
 import EndgameMode from "@/components/endgame-mode";
 import GameReportDialog from "@/components/game-report-dialog";
 import MoveHistorySidebar from "@/components/move-history-sidebar";
 import OpeningDrillMode from "@/components/opening-drill-mode";
 import OpeningStatsPanel from "@/components/opening-stats-panel";
+import OpeningsDialog from "@/components/openings-dialog";
 import PositionSetupDialog from "@/components/position-setup-dialog";
 import PuzzleMode from "@/components/puzzle-mode";
 import SavedGamesDialog from "@/components/saved-games-dialog";
-import OpeningsDialog from "@/components/openings-dialog";
 import SettingsDialog from "@/components/settings-dialog";
+import TopNav from "@/components/top-nav";
 import TrainingPanel from "@/components/training-panel";
 import useAiChat from "@/hooks/use-ai-chat";
 import { useChessClock, TIME_CONTROLS } from "@/hooks/use-chess-clock";
@@ -25,13 +27,13 @@ import { migrateMoveHistory } from "@/lib/chess-helpers";
 import { autoSave, loadAutoSave } from "@/lib/db";
 import { getBestMove } from "@/lib/engine";
 import { recordOpeningResult, detectOpening } from "@/lib/opening-stats";
-import { isSupabaseConfigured } from "@/lib/supabase";
 import { OPENINGS } from "@/lib/openings";
 import {
   getStockfishEngine,
   destroyStockfishEngine,
   StockfishEngine,
 } from "@/lib/stockfish";
+import { isSupabaseConfigured } from "@/lib/supabase";
 
 // ── Local helpers ─────────────────────────────────────────────────────────────
 const getApiKey = () => localStorage.getItem("chess-coach-api-key") || "";
@@ -53,6 +55,7 @@ const App = () => {
   const [moveQuality, setMoveQuality] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [openingsOpen, setOpeningsOpen] = useState(false);
+  const [coursesOpen, setCoursesOpen] = useState(false);
   const [lastMoveSquares, setLastMoveSquares] = useState(null);
   const [evalScore, setEvalScore] = useState(null);
   const [boardOrientation, setBoardOrientation] = useState("white");
@@ -151,7 +154,7 @@ const App = () => {
 
   // ── Chess clock ──────────────────────────────────────────────────────────
   const [clockEnabled, setClockEnabled] = useState(false);
-  const [clockTimeControl, setClockTimeControl] = useState(TIME_CONTROLS[2]);
+  const [clockTimeControl] = useState(TIME_CONTROLS[2]);
 
   // ── Annotations ──────────────────────────────────────────────────────────
   const [annotations, setAnnotations] = useState({});
@@ -934,32 +937,47 @@ const App = () => {
     }
   }, [opponent]);
 
+  // ── Top-level mode nav ─────────────────────────────────────────────────────
+  // "Openings" launches the course trainer (chessreps-style), "Puzzles" opens
+  // puzzle mode. Both are full overlays, so the active mode is derived from
+  // their open state and falls back to "play".
+  const activeMode = coursesOpen ? "openings" : puzzleOpen ? "puzzles" : "play";
+  const handleSelectMode = useCallback((mode) => {
+    if (mode === "openings") {
+      setPuzzleOpen(false);
+      setCoursesOpen(true);
+    } else if (mode === "puzzles") {
+      setCoursesOpen(false);
+      setPuzzleOpen(true);
+    } else {
+      setCoursesOpen(false);
+      setPuzzleOpen(false);
+    }
+  }, []);
+
   // ── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="flex flex-col h-screen">
+      <TopNav
+        activeMode={activeMode}
+        onSelectMode={handleSelectMode}
+        onOpenSettings={() => setSettingsOpen(true)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={toggleDarkMode}
+      />
+
       <ControlBar
         isLiveMode={isLiveMode}
         onToggleLiveMode={setIsLiveMode}
         onNewGame={handleNewGame}
-        onOpenSettings={() => setSettingsOpen(true)}
         onOpenSavedGames={() => setSavedGamesOpen(true)}
         onOpenOpenings={() => setOpeningsOpen(true)}
         opponent={opponent}
         onOpponentChange={setOpponent}
         difficulty={difficulty}
         onDifficultyChange={setDifficulty}
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
-        isGameInProgress={moveHistory.length > 0}
-        onSetPosition={() => setPositionSetupOpen(true)}
-        onOpenPuzzles={() => setPuzzleOpen(true)}
-        onOpenOpeningDrill={() => setOpeningDrillOpen(true)}
-        onOpenEndgame={() => setEndgameOpen(true)}
-        onOpenOpeningStats={() => setOpeningStatsOpen(true)}
         clockEnabled={clockEnabled}
-        clockTimeControl={clockTimeControl}
         onToggleClock={() => setClockEnabled((enabled) => !enabled)}
-        onSetTimeControl={setClockTimeControl}
       />
 
       <div className="grid grid-cols-[220px_1fr_380px] flex-1 overflow-hidden">
@@ -1053,6 +1071,7 @@ const App = () => {
       {/* Dialogs & Overlays */}
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <OpeningsDialog open={openingsOpen} onOpenChange={setOpeningsOpen} />
+      <CourseTrainer open={coursesOpen} onClose={() => setCoursesOpen(false)} />
 
       <GameReportDialog
         open={gameReportOpen}

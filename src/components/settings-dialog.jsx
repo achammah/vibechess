@@ -32,7 +32,7 @@ const OPENAI_MODELS = [
 const SettingsDialog = ({ open, onOpenChange }) => {
   const [provider, setProvider] = useState("google");
   const [googleApiKey, setGoogleApiKey] = useState("");
-  const [googleModel, setGoogleModel] = useState("gemini-2.5-flash");
+  const [googleModel, setGoogleModel] = useState("gemini-3.5-flash");
   const [openaiApiKey, setOpenaiApiKey] = useState("");
   const [openaiModel, setOpenaiModel] = useState("gpt-4o-mini");
   const [elo, setElo] = useState("1000");
@@ -43,7 +43,7 @@ const SettingsDialog = ({ open, onOpenChange }) => {
     setProvider(localStorage.getItem("chess-ai-provider") || "google");
     setGoogleApiKey(localStorage.getItem("chess-google-api-key") || "");
     setGoogleModel(
-      localStorage.getItem("chess-google-model") || "gemini-2.5-flash",
+      localStorage.getItem("chess-google-model") || "gemini-3.5-flash",
     );
     setOpenaiApiKey(localStorage.getItem("chess-coach-api-key") || "");
     setOpenaiModel(localStorage.getItem("chess-coach-model") || "gpt-4o-mini");
