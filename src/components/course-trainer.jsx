@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import ModelPicker from "@/components/ui/model-picker";
 import { toBoardArrows } from "@/lib/board-annotations";
 import { coachFollowup, explainOpening } from "@/lib/coach-opening";
-import { getCourseLines, listCourses } from "@/lib/courses-db";
+import { familyOf, getCourseLines, listCourses } from "@/lib/courses-db";
 import { describeMove, describeReply } from "@/lib/narrate";
 
 // ── localStorage progress ────────────────────────────────────────────────────
@@ -156,11 +156,43 @@ const CATALOG_CAP = 60;
 // ── Course list ────────────────────────────────────────────────────────────
 const CourseList = ({ onPick }) => {
   const [courses, setCourses] = useState(null);
+  const [metas, setMetas] = useState([]);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    listCourses().then(setCourses).catch(() => setCourses([]));
+    listCourses()
+      .then((c) => {
+        setCourses(c);
+        setMetas(c?.metas || []);
+      })
+      .catch(() => {
+        setCourses([]);
+        setMetas([]);
+      });
   }, []);
+
+  // Token search shared by metas + families: every query word must appear in the
+  // name, ECO, or aggregated terms. Returns the ranked, capped matches.
+  const search = useCallback((list, q, tokens, cap) => {
+    const scored = [];
+    for (const c of list) {
+      const fam = c.family.toLowerCase();
+      const hay = `${fam} ${(c.eco || "").toLowerCase()} ${c.terms || ""}`;
+      if (!tokens.every((t) => hay.includes(t))) continue;
+      const rank = fam.includes(q) ? 0 : tokens.every((t) => fam.includes(t)) ? 1 : 2;
+      scored.push({ c, rank });
+    }
+    return scored
+      .sort((a, b) => a.rank - b.rank || b.c.lineCount - a.c.lineCount)
+      .map((s) => s.c)
+      .slice(0, cap);
+  }, []);
+
+  const filteredMetas = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return metas; // always show every meta when not searching
+    return search(metas, q, q.split(/\s+/).filter(Boolean), metas.length);
+  }, [metas, query, search]);
 
   const filtered = useMemo(() => {
     if (!courses) return [];
@@ -170,21 +202,8 @@ const CourseList = ({ onPick }) => {
     // appear somewhere in the family name, ECO, or any variation term (so
     // "najdorf", "dragon", "berlin", "b90", "kings indian" all surface their
     // family). Ranked: family-name hits first, then earliest match.
-    const tokens = q.split(/\s+/).filter(Boolean);
-    const scored = [];
-    for (const c of courses) {
-      const fam = c.family.toLowerCase();
-      const hay = `${fam} ${(c.eco || "").toLowerCase()} ${c.terms || ""}`;
-      if (!tokens.every((t) => hay.includes(t))) continue;
-      // rank: whole query in family name (0) > all tokens in family (1) > terms (2)
-      const rank = fam.includes(q) ? 0 : tokens.every((t) => fam.includes(t)) ? 1 : 2;
-      scored.push({ c, rank });
-    }
-    return scored
-      .sort((a, b) => a.rank - b.rank || b.c.lineCount - a.c.lineCount)
-      .map((s) => s.c)
-      .slice(0, 60);
-  }, [courses, query]);
+    return search(courses, q, q.split(/\s+/).filter(Boolean), 60);
+  }, [courses, query, search]);
 
   return (
     <div className="h-full w-full overflow-y-auto bg-background">
@@ -209,13 +228,75 @@ const CourseList = ({ onPick }) => {
             Loading courses…
           </p>
         )}
-        {courses && filtered.length === 0 && (
+        {courses && filtered.length === 0 && filteredMetas.length === 0 && (
           <p className="mt-10 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
             No openings match “{query.trim()}”.
           </p>
         )}
 
-        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {/* ── Meta systems ───────────────────────────────────────────────────
+            Higher-level groupings rendered FIRST, in a visually distinct style:
+            a "META SYSTEM" mono eyebrow, a primary-accent border + tint, and the
+            member families listed beneath. Clicking trains the whole bundle. */}
+        {filteredMetas.length > 0 && (
+          <>
+            <div className="mt-8 flex items-center gap-3">
+              <Callout className="text-primary">Meta systems</Callout>
+              <div className="h-px flex-1 bg-border" />
+            </div>
+            <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filteredMetas.map((c, i) => {
+                const learned = loadLearned(c.slug).size;
+                const pct = c.lineCount ? Math.min(100, Math.round((learned / c.lineCount) * 100)) : 0;
+                return (
+                  <FadeInUp
+                    as="button"
+                    key={c.slug}
+                    stagger={(i % 5) + 1}
+                    onClick={() => onPick(c)}
+                    className="group flex flex-col overflow-hidden rounded-md border border-primary/40 bg-primary/[0.04] text-left transition-colors hover:border-primary"
+                  >
+                    <div className="border-b border-primary/30 bg-primary/[0.06] p-3">
+                      <BoardThumbnail course={c} className="border border-primary/30" />
+                    </div>
+                    <div className="flex flex-1 flex-col p-4">
+                      <Callout className="text-primary">Meta system</Callout>
+                      <div className="mt-1.5 flex items-baseline justify-between gap-2">
+                        <h3 className="font-display text-base leading-tight text-foreground transition-colors group-hover:text-primary">
+                          {c.family}
+                        </h3>
+                        <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                          {c.eco}
+                        </span>
+                      </div>
+                      <p className="mt-2 font-sans text-[12px] leading-snug text-muted-foreground">
+                        {c.members?.join(" · ")}
+                      </p>
+                      <div className="mt-auto pt-4">
+                        <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                          <span className="text-primary">{c.lineCount} lines</span>
+                          <span>{pct}%</span>
+                        </div>
+                        <div className="mt-2 h-px w-full bg-border">
+                          <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    </div>
+                  </FadeInUp>
+                );
+              })}
+            </div>
+          </>
+        )}
+
+        {filtered.length > 0 && (
+          <div className="mt-8 flex items-center gap-3">
+            <Callout>Openings</Callout>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+        )}
+
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filtered.map((c, i) => {
             const learned = loadLearned(c.slug).size;
             const pct = c.lineCount ? Math.min(100, Math.round((learned / c.lineCount) * 100)) : 0;
@@ -337,19 +418,29 @@ const Trainer = ({ course, onExit, onAddKey }) => {
   // callbacks/effects that depend on it so it's initialized when their dep
   // arrays evaluate.
   const [variationFilter, setVariationFilter] = useState(ALL_VARIATIONS);
+  // For a META course, a line's "variation" is its MEMBER FAMILY (Slav Defense,
+  // Queen's Gambit Declined…) — the line names carry it as their familyOf prefix,
+  // so grouping by familyOf gives the student clean sub-system buckets. For a
+  // regular family course, group by the descriptive tail after the first colon.
+  const labelOf = useCallback(
+    (name) => (course.isMeta ? familyOf(name) : variationLabel(name, course.family)),
+    [course.isMeta, course.family],
+  );
   const variations = useMemo(() => {
     const map = new Map();
     for (const l of lines || []) {
-      const label = variationLabel(l.name, course.family);
+      const label = labelOf(l.name);
       map.set(label, (map.get(label) || 0) + 1);
     }
-    return [...map.entries()].map(([label, count]) => ({ label, count }));
-  }, [lines, course.family]);
+    return [...map.entries()]
+      .map(([label, count]) => ({ label, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [lines, labelOf]);
   const activeLines = useMemo(() => {
     const all = lines || [];
     if (variationFilter === ALL_VARIATIONS) return all;
-    return all.filter((l) => variationLabel(l.name, course.family) === variationFilter);
-  }, [lines, variationFilter, course.family]);
+    return all.filter((l) => labelOf(l.name) === variationFilter);
+  }, [lines, variationFilter, labelOf]);
   const learnedInView = useMemo(
     () => activeLines.filter((l) => learned.has(l.id)).length,
     [activeLines, learned],

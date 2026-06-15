@@ -21,6 +21,81 @@ export const slugify = (s) =>
 // trainer's "all variations" count are computed identically and never disagree.
 export const COURSE_LINE_CAP = 500;
 
+// ── Meta opening systems ──────────────────────────────────────────────────────
+// Higher-level groupings that bundle several related family courses into ONE
+// card. A meta trains every line of every member family at once; the trainer's
+// Variation selector then lets the student drill into a specific sub-system.
+// Each member is a `familyOf(name)` string that EXISTS in the DB (verified live).
+// A family appears in at most one meta. Order here = display order at the top of
+// the catalog. The first member listed is the "lead" — its representative board
+// position + arrow represent the meta on the card.
+export const META_SYSTEMS = [
+  {
+    name: "Queen's Gambit",
+    slug: "meta-queens-gambit",
+    members: [
+      "Queen's Gambit Declined",
+      "Queen's Gambit Accepted",
+      "Slav Defense",
+      "Semi-Slav Defense",
+      "Semi-Slav Defense Accepted",
+      "Tarrasch Defense",
+    ],
+  },
+  {
+    name: "Indian Defenses",
+    slug: "meta-indian-defenses",
+    members: [
+      "King's Indian Defense",
+      "Nimzo-Indian Defense",
+      "Queen's Indian Defense",
+      "Grünfeld Defense",
+      "Neo-Grünfeld Defense",
+      "Benoni Defense",
+      "Bogo-Indian Defense",
+      "Old Indian Defense",
+      "Catalan Opening",
+    ],
+  },
+  {
+    name: "Open Games (1.e4 e5)",
+    slug: "meta-open-games",
+    members: [
+      "Ruy Lopez",
+      "Italian Game",
+      "Scotch Game",
+      "Vienna Game",
+      "Vienna Gambit",
+      "Petrov's Defense",
+      "King's Gambit Accepted",
+      "King's Gambit Declined",
+      "Four Knights Game",
+      "Three Knights Opening",
+      "Philidor Defense",
+      "Bishop's Opening",
+      "Ponziani Opening",
+    ],
+  },
+  {
+    name: "Flank Openings",
+    slug: "meta-flank-openings",
+    members: [
+      "English Opening",
+      "Réti Opening",
+      "Bird Opening",
+      "King's Indian Attack",
+      "Zukertort Opening",
+      "Hungarian Opening",
+      "Nimzo-Larsen Attack",
+      "Polish Opening",
+    ],
+  },
+];
+
+/** Look up a meta system by its family/name (case-sensitive on the curated name). */
+export const metaByName = (name) =>
+  META_SYSTEMS.find((m) => m.name === name) || null;
+
 // Cheap, parse-free move signature for dedup: strip move numbers + result and
 // normalise whitespace, leaving the SAN sequence ("d4 d5 Bf4 …"). Identical move
 // sequences collapse to one — matching getCourseLines' per-move dedup without the
@@ -74,6 +149,17 @@ const arrowOf = (pgn) => {
  * PGN: prefer the line whose name === family (the "bare" family entry), else the
  * shortest reasonable mainline (≥4 plies when one exists, otherwise the shortest
  * available). Its final FEN is the card thumbnail.
+ *
+ * META cards (one per META_SYSTEMS entry, flagged `isMeta:true`) are computed in
+ * the SAME single pass over all rows: a meta's line count = DISTINCT move
+ * signatures across the UNION of its member families (capped), and its
+ * representative position is borrowed from its lead member (most lines). The
+ * caller (CourseList) renders metas first; here they are returned as a separate
+ * `metas` field on the result so regular family cards stay untouched.
+ *
+ * Returns an Array of family cards (legacy shape, so old callers keep working)
+ * that ALSO carries a non-enumerable-friendly `metas` property and a `families`
+ * alias. CourseList reads `.metas` + the array body.
  */
 let _courseCache = null;
 export const listCourses = async ({ min = 2 } = {}) => {
@@ -148,17 +234,91 @@ export const listCourses = async ({ min = 2 } = {}) => {
     cur.lineCount = Math.min(seen.size, COURSE_LINE_CAP);
   }
 
-  _courseCache = [...fams.values()]
+  // ── Meta cards (reuse the same single pass over `prepared`) ─────────────────
+  // For each meta: its line count = DISTINCT move signatures across the UNION of
+  // all member families, capped at COURSE_LINE_CAP. This is computed the SAME way
+  // getMetaLines counts (union of lineInFamily, dedup, cap), so card == trainer.
+  // The lead member (most lines, already computed above) lends its representative
+  // PGN/FEN/arrow + ECO; terms aggregate every member's terms so search hits work.
+  const metas = [];
+  const claimed = new Set(); // family names consumed by a meta (at most one meta each)
+  for (const meta of META_SYSTEMS) {
+    const present = meta.members.filter((m) => fams.has(m) && !claimed.has(m));
+    if (!present.length) continue;
+    for (const m of present) claimed.add(m);
+    // Union DISTINCT signatures across all present member families.
+    const seen = new Set();
+    for (const p of prepared) {
+      if (!p.sig) continue;
+      if (present.some((m) => matchesFamily(p.segs, m))) seen.add(p.sig);
+    }
+    // Lead = present member with the most lines → its board represents the meta.
+    const lead = present
+      .map((m) => fams.get(m))
+      .sort((a, b) => b.lineCount - a.lineCount)[0];
+    const terms = new Set();
+    terms.add(meta.name.toLowerCase());
+    for (const m of present) {
+      const cur = fams.get(m);
+      terms.add(m.toLowerCase());
+      for (const t of cur._terms || []) terms.add(t);
+    }
+    metas.push({
+      isMeta: true,
+      members: present,
+      family: meta.name, // the trainer/UI treat `family` as the course identity
+      slug: meta.slug,
+      eco: lead?.eco || "",
+      lineCount: Math.min(seen.size, COURSE_LINE_CAP),
+      fen: finalFenOf(lead?._repPgn || ""),
+      arrow: arrowOf(lead?._repPgn || ""),
+      terms: [...terms].join(" "),
+    });
+  }
+
+  const families = [...fams.values()]
     .filter((c) => c.lineCount >= min)
     .sort((a, b) => b.lineCount - a.lineCount)
     .map(({ _repPgn, _repScore, _terms, ...c }) => ({
       ...c,
+      isMeta: false,
       fen: finalFenOf(_repPgn),
       arrow: arrowOf(_repPgn),
       // Space-joined searchable terms: family + every variation name + ECOs.
       terms: [...(_terms || [])].join(" "),
     }));
+
+  // Return the family array (legacy shape) with metas attached as a property so
+  // existing callers that just iterate the array are unaffected.
+  families.metas = metas;
+  families.families = families;
+  _courseCache = families;
   return _courseCache;
+};
+
+/**
+ * Lines for a META system: the UNION of every member family's lines, deduped by
+ * move signature across families and capped. Mirrors getCourseLines' dedup/cap so
+ * a meta card's count equals what the trainer shows. Returns [{id,name,eco,plies}].
+ */
+export const getMetaLines = async (members, { limit = COURSE_LINE_CAP } = {}) => {
+  if (!supabaseAnon || !members?.length) return [];
+  const perFamily = await Promise.all(
+    members.map((m) => getCourseLines(m, { limit })),
+  );
+  const seen = new Set();
+  const merged = [];
+  for (const lines of perFamily) {
+    for (const l of lines) {
+      const k = lineKey(l.plies);
+      if (seen.has(k)) continue; // dedup the same line filed under two members
+      seen.add(k);
+      merged.push(l);
+    }
+  }
+  return merged
+    .sort((a, b) => b.plies.length - a.plies.length)
+    .slice(0, limit);
 };
 
 /** Parse a PGN into a line: ordered plies with san/uci/fen + which side moves. */
@@ -232,6 +392,10 @@ const lineKey = (plies) => plies.map((p) => p.uci).join(" ");
  */
 export const getCourseLines = async (family, { limit = COURSE_LINE_CAP } = {}) => {
   if (!supabaseAnon || !family) return [];
+  // A meta system trains the UNION of its member families — dispatch so the
+  // Trainer's getCourseLines(course.family) call works for metas transparently.
+  const meta = metaByName(family);
+  if (meta) return getMetaLines(meta.members, { limit });
   // Superset fetch: any name containing the family substring. We over-fetch
   // (`%family%` also catches sibling families) and prune precisely client-side
   // with `lineInFamily`. A wide cap keeps it to a single round-trip.
