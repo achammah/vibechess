@@ -304,6 +304,8 @@ Student ELO: ~${elo}`;
  * @param {string} [a.model]            Gemini model id
  * @param {number} [a.temperature]      sampling temperature
  * @param {number} [a.maxOutputTokens]  output token cap
+ * @param {number} [a.thinkingBudget]   thinking-model reasoning budget; pass 0 to
+ *                                       disable reasoning for a fast, direct answer
  */
 export const explainGrounded = async ({
   instruction,
@@ -313,18 +315,105 @@ export const explainGrounded = async ({
   model = "gemini-3.5-flash",
   temperature = 0.3,
   maxOutputTokens = 700,
+  thinkingBudget,
 }) => {
   if (!apiKey) throw new Error("Please set your Google API key in Settings.");
   const ai = createGoogleClient(apiKey);
+  const contents = [
+    { role: "user", parts: [{ text: `TASK: ${task}\n\n${evidenceText}` }] },
+  ];
+  const baseConfig = { temperature, maxOutputTokens };
+
+  // When a thinkingBudget is provided, disable/limit the thinking model's
+  // reasoning for a faster, more direct answer. If the SDK/model rejects the
+  // thinkingConfig field, retry once without it so we never lose the answer.
+  if (thinkingBudget != null) {
+    try {
+      const response = await ai.models.generateContent({
+        model,
+        systemInstruction: instruction,
+        config: { ...baseConfig, thinkingConfig: { thinkingBudget } },
+        contents,
+      });
+      return response.text || "";
+    } catch {
+      // fall through to a plain call without thinkingConfig
+    }
+  }
+
   const response = await ai.models.generateContent({
     model,
     systemInstruction: instruction,
-    config: { temperature, maxOutputTokens },
-    contents: [
-      { role: "user", parts: [{ text: `TASK: ${task}\n\n${evidenceText}` }] },
-    ],
+    config: baseConfig,
+    contents,
   });
   return response.text || "";
+};
+
+/**
+ * Structured JSON generation. Forces the model to emit JSON matching `schema`
+ * via responseMimeType + responseSchema, parses it, and returns the parsed
+ * object. Throws on a missing key, an empty reply, or unparseable JSON.
+ *
+ * gemini-3.5-flash is a thinking model; passing thinkingBudget (e.g. 0) disables
+ * its reasoning for a faster answer. If the model rejects thinkingConfig we retry
+ * once without it so the structured answer is never lost.
+ *
+ * @param {object} a
+ * @param {string} a.instruction        system instruction
+ * @param {string} a.prompt             the user prompt / evidence + task
+ * @param {object} a.schema             responseSchema (OpenAPI-subset JSON schema)
+ * @param {string} a.apiKey             Google API key
+ * @param {string} [a.model]            Gemini model id
+ * @param {number} [a.temperature]      sampling temperature
+ * @param {number} [a.maxOutputTokens]  output token cap
+ * @param {number} [a.thinkingBudget]   thinking-model reasoning budget; pass 0 to disable
+ * @returns {Promise<object>} parsed JSON object matching the schema
+ */
+export const generateJson = async ({
+  instruction,
+  prompt,
+  schema,
+  apiKey,
+  model = "gemini-3.5-flash",
+  temperature = 0.3,
+  maxOutputTokens = 1024,
+  thinkingBudget,
+}) => {
+  if (!apiKey) throw new Error("Please set your Google API key in Settings.");
+  const ai = createGoogleClient(apiKey);
+  const contents = [{ role: "user", parts: [{ text: prompt }] }];
+  const baseConfig = {
+    temperature,
+    maxOutputTokens,
+    responseMimeType: "application/json",
+    responseSchema: schema,
+  };
+
+  const call = async (config) => {
+    const response = await ai.models.generateContent({
+      model,
+      systemInstruction: instruction,
+      config,
+      contents,
+    });
+    return response.text || "";
+  };
+
+  let raw = "";
+  if (thinkingBudget != null) {
+    try {
+      raw = await call({ ...baseConfig, thinkingConfig: { thinkingBudget } });
+    } catch {
+      // thinkingConfig rejected — fall through to a plain call below
+    }
+  }
+  if (!raw) raw = await call(baseConfig);
+
+  if (!raw) throw new Error("Gemini returned an empty JSON reply.");
+  // Tolerate a stray ```json fence if the model wraps the payload.
+  const cleaned = raw.replace(/^\s*```(?:json)?\s*/i, "").replace(/\s*```\s*$/i, "").trim();
+  return JSON.parse(cleaned);
 };
 
 // ── Available Gemini models ───────────────────────────────────────────────────

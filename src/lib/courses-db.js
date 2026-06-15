@@ -15,36 +15,77 @@ export const familyOf = (name) => (name || "").split(":")[0].trim();
 export const slugify = (s) =>
   s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 
+/** Final FEN of a PGN's mainline, computed once. Empty string on failure. */
+const finalFenOf = (pgn) => {
+  if (!pgn) return "";
+  try {
+    const g = new Chess();
+    g.loadPgn(pgn);
+    return g.fen();
+  } catch {
+    return "";
+  }
+};
+
 /**
- * List courses (opening families) with line counts. Cached in-memory.
- * Returns [{ slug, family, eco, lineCount }] sorted by lineCount desc.
+ * List courses (opening families) with line counts and a representative board
+ * position. Cached in-memory.
+ * Returns [{ slug, family, eco, lineCount, fen }] sorted by lineCount desc.
+ *
+ * The representative position is computed ONCE per family from a single chosen
+ * PGN: prefer the line whose name === family (the "bare" family entry), else the
+ * shortest reasonable mainline (≥4 plies when one exists, otherwise the shortest
+ * available). Its final FEN is the card thumbnail.
  */
 let _courseCache = null;
 export const listCourses = async ({ min = 4 } = {}) => {
   if (_courseCache) return _courseCache;
   if (!supabaseAnon) return [];
-  // Page through names (PostgREST caps at 1000/req).
+  // Page through names (PostgREST caps at 1000/req). Pull pgn too so we can pick
+  // one representative line per family and compute its FEN without extra reads.
   const rows = [];
   for (let from = 0; ; from += 1000) {
     const { data, error } = await supabaseAnon
       .from("openings")
-      .select("name, eco")
+      .select("name, eco, pgn")
       .range(from, from + 999);
     if (error || !data?.length) break;
     rows.push(...data);
     if (data.length < 1000) break;
   }
+
+  // Cheap ply count from a PGN's move text (no chess.js needed for selection).
+  const plyCount = (pgn) =>
+    pgn ? (pgn.replace(/\d+\.(\.\.)?/g, " ").match(/[a-hRNBQKOo][^\s]*/g) || []).length : 0;
+
   const fams = new Map();
   for (const r of rows) {
     const fam = familyOf(r.name);
     if (!fam) continue;
-    const cur = fams.get(fam) ?? { family: fam, slug: slugify(fam), eco: r.eco, lineCount: 0 };
+    let cur = fams.get(fam);
+    if (!cur) {
+      cur = { family: fam, slug: slugify(fam), eco: r.eco, lineCount: 0, _repPgn: "", _repScore: -1 };
+      fams.set(fam, cur);
+    }
     cur.lineCount += 1;
-    fams.set(fam, cur);
+    // Score each candidate; higher wins. Exact-family name is best; otherwise
+    // favour the shortest sensible mainline (≥4 plies) so the thumbnail shows a
+    // recognisable, characteristic position rather than a deep sideline.
+    const n = plyCount(r.pgn);
+    let score = -1;
+    if (r.name === fam) score = 1_000_000; // bare family entry — ideal representative
+    else if (n >= 4) score = 100_000 - n; // shortest sensible mainline
+    else if (n > 0) score = n; // fallback: anything with moves, longest of the tiny ones
+    if (score > cur._repScore) {
+      cur._repScore = score;
+      cur._repPgn = r.pgn || "";
+    }
   }
+
   _courseCache = [...fams.values()]
     .filter((c) => c.lineCount >= min)
-    .sort((a, b) => b.lineCount - a.lineCount);
+    .sort((a, b) => b.lineCount - a.lineCount)
+    .map(({ _repPgn, _repScore, ...c }) => ({ ...c, fen: finalFenOf(_repPgn) }));
   return _courseCache;
 };
 

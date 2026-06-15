@@ -55,7 +55,9 @@ const App = () => {
   const [moveQuality, setMoveQuality] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [openingsOpen, setOpeningsOpen] = useState(false);
-  const [coursesOpen, setCoursesOpen] = useState(false);
+  // Top-level view: 'play' | 'openings' | 'puzzles'. Persistent TopNav stays
+  // visible at all times; the content region below switches on this.
+  const [activeMode, setActiveMode] = useState("play");
   const [lastMoveSquares, setLastMoveSquares] = useState(null);
   const [evalScore, setEvalScore] = useState(null);
   const [boardOrientation, setBoardOrientation] = useState("white");
@@ -147,7 +149,6 @@ const App = () => {
   const [blunderReviewOpen, setBlunderReviewOpen] = useState(false);
 
   // ── Training modes ───────────────────────────────────────────────────────
-  const [puzzleOpen, setPuzzleOpen] = useState(false);
   const [openingDrillOpen, setOpeningDrillOpen] = useState(false);
   const [endgameOpen, setEndgameOpen] = useState(false);
   const [openingStatsOpen, setOpeningStatsOpen] = useState(false);
@@ -938,21 +939,11 @@ const App = () => {
   }, [opponent]);
 
   // ── Top-level mode nav ─────────────────────────────────────────────────────
-  // "Openings" launches the course trainer (chessreps-style), "Puzzles" opens
-  // puzzle mode. Both are full overlays, so the active mode is derived from
-  // their open state and falls back to "play".
-  const activeMode = coursesOpen ? "openings" : puzzleOpen ? "puzzles" : "play";
+  // Persistent-nav app shell: TopNav is always visible, the content region
+  // below switches between Play (board), Openings (course trainer, inline) and
+  // Puzzles. Clicking a nav item just sets the active view.
   const handleSelectMode = useCallback((mode) => {
-    if (mode === "openings") {
-      setPuzzleOpen(false);
-      setCoursesOpen(true);
-    } else if (mode === "puzzles") {
-      setCoursesOpen(false);
-      setPuzzleOpen(true);
-    } else {
-      setCoursesOpen(false);
-      setPuzzleOpen(false);
-    }
+    setActiveMode(mode);
   }, []);
 
   // ── Render ───────────────────────────────────────────────────────────────
@@ -966,22 +957,47 @@ const App = () => {
         onToggleDarkMode={toggleDarkMode}
       />
 
-      <ControlBar
-        isLiveMode={isLiveMode}
-        onToggleLiveMode={setIsLiveMode}
-        onNewGame={handleNewGame}
-        onOpenSavedGames={() => setSavedGamesOpen(true)}
-        onOpenOpenings={() => setOpeningsOpen(true)}
-        opponent={opponent}
-        onOpponentChange={setOpponent}
-        difficulty={difficulty}
-        onDifficultyChange={setDifficulty}
-        clockEnabled={clockEnabled}
-        onToggleClock={() => setClockEnabled((enabled) => !enabled)}
-      />
+      {/* ── Persistent content region ──────────────────────────────────────
+          TopNav stays mounted above; this region fills the remaining viewport
+          height and swaps the active view. Each branch is h-full so nothing
+          double-scrolls. */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        {activeMode === "openings" && (
+          <CourseTrainer onExitToPlay={() => setActiveMode("play")} />
+        )}
 
-      <div className="grid grid-cols-[220px_1fr_380px] flex-1 overflow-hidden">
-        <div className="min-w-0 min-h-0">
+        {/* PuzzleMode renders as its own fixed overlay (lib component we don't
+            own). TopNav is raised above it (z-[60]) so it stays visible and
+            clickable; closing the puzzle returns to the Play view. */}
+        {activeMode === "puzzles" && (
+          <PuzzleMode
+            onClose={() => setActiveMode("play")}
+            adaptive={isSupabaseConfigured}
+            userRating={Number.parseInt(
+              localStorage.getItem("chess-coach-elo") || "1200",
+              10,
+            )}
+          />
+        )}
+
+        {activeMode === "play" && (
+          <>
+            <ControlBar
+              isLiveMode={isLiveMode}
+              onToggleLiveMode={setIsLiveMode}
+              onNewGame={handleNewGame}
+              onOpenSavedGames={() => setSavedGamesOpen(true)}
+              onOpenOpenings={() => setOpeningsOpen(true)}
+              opponent={opponent}
+              onOpponentChange={setOpponent}
+              difficulty={difficulty}
+              onDifficultyChange={setDifficulty}
+              clockEnabled={clockEnabled}
+              onToggleClock={() => setClockEnabled((enabled) => !enabled)}
+            />
+
+            <div className="grid min-h-0 flex-1 grid-cols-[220px_1fr_380px] overflow-hidden">
+              <div className="min-w-0 min-h-0">
           <MoveHistorySidebar
             game={gameReference.current}
             moveHistory={moveHistory}
@@ -1065,13 +1081,15 @@ const App = () => {
               tokenStats={tokenStats}
             />
           )}
-        </div>
+            </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Dialogs & Overlays */}
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
       <OpeningsDialog open={openingsOpen} onOpenChange={setOpeningsOpen} />
-      <CourseTrainer open={coursesOpen} onClose={() => setCoursesOpen(false)} />
 
       <GameReportDialog
         open={gameReportOpen}
@@ -1102,16 +1120,6 @@ const App = () => {
         currentGameSnapshot={getCurrentSnapshot()}
       />
 
-      {puzzleOpen && (
-        <PuzzleMode
-          onClose={() => setPuzzleOpen(false)}
-          adaptive={isSupabaseConfigured}
-          userRating={Number.parseInt(
-            localStorage.getItem("chess-coach-elo") || "1200",
-            10,
-          )}
-        />
-      )}
       {openingDrillOpen && (
         <OpeningDrillMode onClose={() => setOpeningDrillOpen(false)} />
       )}

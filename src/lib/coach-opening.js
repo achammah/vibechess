@@ -54,16 +54,17 @@ const sideWord = (s) => (s === "w" ? "White" : "Black");
 
 const INSTRUCTION = `You are a chess opening coach speaking directly to the student ("you"). Use ONLY the ENGINE EVIDENCE block; never invent moves, squares, assessments, or lines.
 
-Reply with 1 to 2 short sentences in a warm coach's voice. You MAY wrap a move name in markdown bold like **Nf3** (it is rendered).
+Reply with ONE or TWO sentences, 40 WORDS MAXIMUM, as a single flowing explanation in a warm coach's voice. Give ONLY the single most important idea — do not enumerate multiple reasons. You MAY wrap a move name in markdown bold like **Nf3**.
 
-You MUST NOT include any of the following:
-- preamble or filler ("Based on…", "Here is…", "Okay", "Sure", "Certainly")
-- headings, numbered lists, or bulleted lists
-- any mention of arrows, diagrams, drawing, SVG, or JSON
-- any mention of engines, evaluations, centipawns, scores, or numbers
+ABSOLUTELY FORBIDDEN (the answer will be rejected if it contains any):
+- more than two sentences, or any heading / title line
+- bold section labels such as "**It blocks your bishop:**" or "**Why the book move is stronger**"
+- numbered lists, bulleted lists, or enumerated reasons
+- preamble or filler ("Based on…", "Here is…", "Okay", "Sure")
+- any mention of arrows, diagrams, drawing, SVG, JSON, engines, evaluations, centipawns, scores, or numbers
 
-Output ONLY the explanation sentences, nothing else.
-- For a MISTAKE: "Playing **<played>** <what it allows or concedes>, leaving <plain assessment>. **<book>** is stronger because <reason>."
+Output ONLY the one or two explanation sentences, nothing else.
+- For a MISTAKE: "Playing **<played>** <what it concedes>, leaving <plain assessment>; **<book>** is stronger because <one reason>."
 - For a GOOD/book move: one sentence on what **<book>** controls, threatens, or prepares.`;
 
 // Defensive cleaner: strips leaked preamble / list markers / arrow & drawing
@@ -153,7 +154,8 @@ export const explainOpening = async ({
     lines.push(`Book move (the move this line plays): ${book.san}`);
 
     // Eval AFTER the book move — evaluated from the opponent's view, normalized to White.
-    const bookEval = await sf.analyze(book.fenAfter, 14, 1);
+    // Depth 10 is plenty for opening positions and far faster in WASM.
+    const bookEval = await sf.analyze(book.fenAfter, 10, 1);
     lines.push(
       `After the book move ${book.san}, the position is ${phrase(
         cpToWhite(bookEval, opponent),
@@ -164,7 +166,9 @@ export const explainOpening = async ({
 
     let task;
     if (isError) {
-      const playedEval = await sf.analyze(played.fenAfter, 14, 1);
+      // Second (and last) analyze: eval after the played move. Its bestMove also
+      // gives us the opponent's reply for free — no extra engine call.
+      const playedEval = await sf.analyze(played.fenAfter, 10, 1);
       lines.push(
         `You played ${played.san}. After it, the position is ${phrase(
           cpToWhite(playedEval, opponent),
@@ -178,12 +182,8 @@ export const explainOpening = async ({
       }
       task = `The student played ${played.san}, which is a mistake. Explain what ${played.san} allows or concedes and why the book move ${book.san} is stronger.`;
     } else {
-      // GOOD / book-move explanation (Learn "why this move").
-      const pre = await sf.analyze(fenBefore, 14, 1);
-      if (pre.bestMove) {
-        const eng = moveInfo(fenBefore, pre.bestMove);
-        lines.push(`The engine's top move here is ${eng.san}.`);
-      }
+      // GOOD / book-move explanation (Learn "why this move"). No extra analyze —
+      // the post-book eval above is the only engine truth we need.
       task = `Explain in one sentence what the book move ${book.san} controls, threatens, or prepares here.`;
     }
 
@@ -194,9 +194,12 @@ export const explainOpening = async ({
       apiKey: key,
       model: getGoogleModel(),
       temperature: 0.25,
-      // gemini-3.5-flash is a thinking model — give ample budget so reasoning
-      // tokens don't truncate the (short, prompt-capped) visible answer.
-      maxOutputTokens: 2048,
+      // gemini-3.5-flash is a thinking model. Disable its reasoning for a fast,
+      // direct answer; 512 tokens is generous for a 1-2 sentence reply so it is
+      // never truncated. explainGrounded retries without thinkingConfig if the
+      // model rejects it, so we never lose the answer.
+      thinkingBudget: 0,
+      maxOutputTokens: 512,
     });
 
     const prose = cleanProse(reply);

@@ -38,7 +38,7 @@ const TopNav = ({
   isDarkMode,
   onToggleDarkMode,
 }) => (
-  <header className="sticky top-0 z-50 flex items-center justify-between gap-4 border-b border-border bg-background/70 px-4 py-2.5 backdrop-blur-md">
+  <header className="sticky top-0 z-[60] flex items-center justify-between gap-4 border-b border-border bg-background/70 px-4 py-2.5 backdrop-blur-md">
     {/* Left — wordmark */}
     <div className="flex shrink-0 items-center gap-2">
       <span className="font-display text-lg font-semibold tracking-tight text-foreground">

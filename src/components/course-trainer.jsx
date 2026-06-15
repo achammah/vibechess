@@ -14,7 +14,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Chessboard } from "react-chessboard";
 import ReactMarkdown from "react-markdown";
 
-import { Callout, EditorialButton, FadeInUp, SectionHeader } from "@/components/ui/editorial";
+import { Callout, EditorialButton, FadeInUp } from "@/components/ui/editorial";
 import { Input } from "@/components/ui/input";
 import { toBoardArrows } from "@/lib/board-annotations";
 import { explainOpening } from "@/lib/coach-opening";
@@ -62,6 +62,79 @@ const BOARD_STYLE = {
   lightSquareStyle: { backgroundColor: "#edeed1" },
 };
 
+// ── Lightweight static board thumbnail ──────────────────────────────────────
+// A non-interactive 8×8 CSS grid with Unicode glyphs — cheap enough to render
+// one per card without mounting a full <Chessboard>. Same square palette as the
+// trainer board so the catalog reads as "the same chess world".
+const PIECE_GLYPH = {
+  K: "♔", Q: "♕", R: "♖", B: "♗", N: "♘", P: "♙", // white
+  k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟", // black
+};
+
+/** Parse a FEN's piece-placement field into 64 cells (rank 8 → rank 1). */
+const fenToCells = (fen) => {
+  const placement = (fen || "").split(" ")[0];
+  if (!placement) return null;
+  const cells = [];
+  for (const rank of placement.split("/")) {
+    for (const ch of rank) {
+      if (/\d/.test(ch)) for (let i = 0; i < Number(ch); i += 1) cells.push(null);
+      else cells.push(ch);
+    }
+  }
+  return cells.length === 64 ? cells : null;
+};
+
+const BoardThumbnail = ({ fen, className }) => {
+  const cells = useMemo(() => fenToCells(fen), [fen]);
+  if (!cells) {
+    // Graceful fallback: an empty board so the card still reads as a course.
+    return (
+      <div
+        aria-hidden
+        className={`grid aspect-square w-full grid-cols-8 overflow-hidden rounded-[3px] ${className || ""}`}
+      >
+        {Array.from({ length: 64 }, (_, i) => {
+          const dark = ((i + Math.floor(i / 8)) % 2) === 1;
+          return <div key={i} style={{ backgroundColor: dark ? "#779952" : "#edeed1" }} />;
+        })}
+      </div>
+    );
+  }
+  return (
+    <div
+      aria-hidden
+      className={`grid aspect-square w-full grid-cols-8 overflow-hidden rounded-[3px] ${className || ""}`}
+    >
+      {cells.map((piece, i) => {
+        const dark = ((i + Math.floor(i / 8)) % 2) === 1;
+        const glyph = piece ? PIECE_GLYPH[piece] : "";
+        const white = piece && piece === piece.toUpperCase();
+        return (
+          <div
+            key={i}
+            className="flex items-center justify-center"
+            style={{ backgroundColor: dark ? "#779952" : "#edeed1" }}
+          >
+            {glyph && (
+              <span
+                className="leading-none"
+                style={{
+                  fontSize: "min(2.6vw, 1.05rem)",
+                  color: white ? "#f8f8f2" : "#202020",
+                  textShadow: white ? "0 0 1px rgba(0,0,0,0.55)" : "0 0 1px rgba(255,255,255,0.35)",
+                }}
+              >
+                {glyph}
+              </span>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 // ── Course list ────────────────────────────────────────────────────────────
 const CourseList = ({ onPick }) => {
   const [courses, setCourses] = useState(null);
@@ -78,59 +151,72 @@ const CourseList = ({ onPick }) => {
   }, [courses, query]);
 
   return (
-    <div className="edit-grid h-full w-full overflow-y-auto">
-      <div className="mx-auto max-w-6xl px-6 py-12">
-      <SectionHeader
-        eyebrow="Opening courses"
-        title="Train every line."
-        em="Until it's automatic."
-      />
+    <div className="h-full w-full overflow-y-auto bg-background">
+      <div className="mx-auto max-w-6xl px-6 py-8">
+        {/* Compact top row: small mono label + prominent search. No hero. */}
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <Callout className="shrink-0">Opening courses</Callout>
+          <div className="relative w-full sm:max-w-md">
+            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search openings…"
+              aria-label="Search openings"
+              className="h-11 pl-10 font-sans text-[15px]"
+            />
+          </div>
+        </div>
 
-      <div className="relative mt-8 mb-6 max-w-sm">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search openings…"
-          className="pl-9"
-        />
-      </div>
+        {!courses && (
+          <p className="mt-10 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+            Loading courses…
+          </p>
+        )}
+        {courses && filtered.length === 0 && (
+          <p className="mt-10 font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
+            No openings match “{query.trim()}”.
+          </p>
+        )}
 
-      {!courses && <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">Loading courses…</p>}
-
-      <div className="grid grid-cols-1 gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((c, i) => {
-          const learned = loadLearned(c.slug).size;
-          const pct = c.lineCount ? Math.min(100, Math.round((learned / c.lineCount) * 100)) : 0;
-          return (
-            <FadeInUp
-              as="button"
-              key={c.slug}
-              stagger={((i % 5) + 1)}
-              onClick={() => onPick(c)}
-              className="group flex flex-col bg-card p-5 text-left transition-colors hover:bg-accent"
-            >
-              <div className="flex items-baseline justify-between gap-2">
-                <h3 className="font-display text-lg leading-tight text-foreground group-hover:text-primary transition-colors">
-                  {c.family}
-                </h3>
-                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-                  {c.eco}
-                </span>
-              </div>
-              <div className="mt-auto pt-6">
-                <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-                  <span>{c.lineCount} lines</span>
-                  <span>{pct}%</span>
+        <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((c, i) => {
+            const learned = loadLearned(c.slug).size;
+            const pct = c.lineCount ? Math.min(100, Math.round((learned / c.lineCount) * 100)) : 0;
+            return (
+              <FadeInUp
+                as="button"
+                key={c.slug}
+                stagger={(i % 5) + 1}
+                onClick={() => onPick(c)}
+                className="group flex flex-col overflow-hidden rounded-md border border-border bg-card text-left transition-colors hover:border-foreground/30"
+              >
+                <div className="border-b border-border bg-background/40 p-3">
+                  <BoardThumbnail fen={c.fen} className="border border-border" />
                 </div>
-                <div className="mt-2 h-px w-full bg-border">
-                  <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                <div className="flex flex-1 flex-col p-4">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <h3 className="font-display text-base leading-tight text-foreground transition-colors group-hover:text-primary">
+                      {c.family}
+                    </h3>
+                    <span className="shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                      {c.eco}
+                    </span>
+                  </div>
+                  <div className="mt-auto pt-4">
+                    <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+                      <span>{c.lineCount} lines</span>
+                      <span>{pct}%</span>
+                    </div>
+                    <div className="mt-2 h-px w-full bg-border">
+                      <div className="h-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </FadeInUp>
-          );
-        })}
-      </div>
+              </FadeInUp>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -411,7 +497,11 @@ const Trainer = ({ course, onExit }) => {
         </div>
       </div>
 
-      {/* Coach / controls */}
+      {/* Coach / controls.
+          The whole panel scrolls (min-h-0 + overflow-y-auto) so the coach
+          explanation can grow to its FULL content height and never clip — the
+          box itself carries no fixed/max height. Header + mode selector +
+          controls stay sticky at the panel edges. */}
       <aside className="flex w-full min-h-0 flex-col border-t border-border bg-card lg:h-full lg:w-[400px] lg:border-l lg:border-t-0">
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
           <button onClick={onExit} className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground">
@@ -515,36 +605,42 @@ const Trainer = ({ course, onExit }) => {
 };
 
 // ── Shell ─────────────────────────────────────────────────────────────────────
-const CourseTrainer = ({ open, onClose }) => {
+// Renders INLINE as a plain block that fills its parent (h-full w-full). It is
+// NOT a detached overlay: no fixed positioning, no app header/wordmark — the app
+// shell owns the global TopNav that sits ABOVE this. `open` is still accepted for
+// backward-compatible mounting (render null when false; the parent mounts it only
+// when active). `onExitToPlay` gives a "Back to play" affordance from the catalog;
+// `onClose` is accepted as a fallback for that same intent.
+const CourseTrainer = ({ open = true, onExitToPlay, onClose }) => {
   const [course, setCourse] = useState(null);
   useEffect(() => {
     if (!open) setCourse(null);
   }, [open]);
   if (!open) return null;
+
+  const exitToPlay = onExitToPlay ?? onClose;
+
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background">
-      {/* Shared app header — keeps the trainer part of vibechess, not a detached page */}
-      <header className="flex shrink-0 items-center justify-between border-b border-border bg-background/80 px-6 py-3 backdrop-blur-md">
-        <span className="font-display text-lg font-semibold tracking-tight text-foreground">
-          <span className="text-primary">♟</span> vibechess
-        </span>
-        <span className="hidden font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground sm:inline">
-          Opening Courses
-        </span>
-        <button
-          onClick={onClose}
-          className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground"
-        >
-          <X className="h-4 w-4" /> Close
-        </button>
-      </header>
-      <div className="flex min-h-0 flex-1">
-        {course ? (
-          <Trainer course={course} onExit={() => setCourse(null)} />
-        ) : (
-          <CourseList onPick={setCourse} />
-        )}
-      </div>
+    <div className="flex h-full w-full min-h-0 flex-col bg-background">
+      {course ? (
+        <Trainer course={course} onExit={() => setCourse(null)} />
+      ) : (
+        <>
+          {exitToPlay && (
+            <div className="flex shrink-0 items-center border-b border-border px-6 py-3">
+              <button
+                onClick={exitToPlay}
+                className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronLeft className="h-4 w-4" /> Back to play
+              </button>
+            </div>
+          )}
+          <div className="min-h-0 flex-1">
+            <CourseList onPick={setCourse} />
+          </div>
+        </>
+      )}
     </div>
   );
 };
